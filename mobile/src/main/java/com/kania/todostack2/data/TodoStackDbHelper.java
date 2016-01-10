@@ -32,9 +32,9 @@ public class TodoStackDbHelper extends SQLiteOpenHelper {
                     TodoEntry.TODO_NAME + TEXT_TYPE + COMMA_SEP +
                     TodoEntry.SUBJECT_ID + INTEGER_TYPE + COMMA_SEP +
                     TodoEntry.DATE + TEXT_TYPE + COMMA_SEP +
+                    TodoEntry.TYPE + TEXT_TYPE + COMMA_SEP +
                     TodoEntry.TIME_FROM + TEXT_TYPE + COMMA_SEP +
                     TodoEntry.TIME_TO + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.IS_TASK + TEXT_TYPE + COMMA_SEP +
                     TodoEntry.LOCATION + TEXT_TYPE +
                     " )";
 

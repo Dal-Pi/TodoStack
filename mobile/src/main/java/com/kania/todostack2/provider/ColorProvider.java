@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * Created by user on 2016-01-10.
  */
-public class TodoStackColorProvider {
+public class ColorProvider {
 
     private static final String COLOR_STRING_DEFAULT_BLACK = "#FFFFFFFF";
     private static final String COLOR_STRING_TODAY = "#FFFF0000";
@@ -21,15 +21,15 @@ public class TodoStackColorProvider {
 
     private static ArrayList<Integer> alColors;
 
-    public static TodoStackColorProvider instance;
+    public static ColorProvider instance;
 
-    private TodoStackColorProvider() {
+    private ColorProvider() {
         alColors = new ArrayList<Integer>();
     }
 
-    public static TodoStackColorProvider getInstance() {
+    public static ColorProvider getInstance() {
         if (instance == null) {
-            instance = new TodoStackColorProvider();
+            instance = new ColorProvider();
         }
         return instance;
     }
