@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="@string/cover_title"
         android:paddingStart="30dp"
-        android:paddingTop="50dp"
+        android:paddingTop="70dp"
         android:textSize="30dp"
         android:textColor="@color/cover_text_color"/>
     <TextView

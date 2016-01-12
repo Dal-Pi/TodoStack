@@ -16,7 +16,7 @@ public final class TodoStackContract {
         public static final String TABLE_NAME = "subject";
         public static final String SUBJECT_NAME = "name";
         public static final String COLOR = "color";
-        public static final String ORDER = "order";
+        public static final String SEQUENCE = "sequence";
     }
 
     public static class TodoEntry implements BaseColumns {

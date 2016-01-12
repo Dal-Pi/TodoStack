@@ -12,9 +12,9 @@ import com.kania.todostack2.data.TodoStackDbHelper;
 
 import static com.kania.todostack2.TodoStackContract.*;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Created by user on 2016-01-11.
@@ -28,8 +28,8 @@ public class TodoProvider {
     private TodoStackDbHelper dbHelper;
     private SQLiteDatabase todoStackDb;
 
-    private HashMap<Integer, SubjectData> subjectMap;
-    private HashMap<Integer, TodoData> todoMap;
+    private static HashMap<Integer, SubjectData> subjectMap;
+    private static HashMap<Integer, TodoData> todoMap;
 
     private TodoProvider(Context context) {
         this.context = context;
@@ -54,7 +54,7 @@ public class TodoProvider {
                 SubjectEntry._ID,
                 SubjectEntry.SUBJECT_NAME,
                 SubjectEntry.COLOR,
-                SubjectEntry.ORDER
+                SubjectEntry.SEQUENCE
         };
         Cursor subjectCursor = todoStackDb.query(SubjectEntry.TABLE_NAME,
                 projection, null, null, null, null, null);
@@ -74,7 +74,7 @@ public class TodoProvider {
                 subject.color = ColorProvider.getDefaultColor();
             }
             subject.order = subjectCursor.
-                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.ORDER));
+                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SEQUENCE));
 
             subjectMap.put(subject.id, subject);
         }
@@ -132,5 +132,23 @@ public class TodoProvider {
             instance = new TodoProvider(applicationContext);
         }
         return instance;
+    }
+
+    public static ArrayList<SubjectData> getAllSubject() {
+        ArrayList<SubjectData> allSubjectData = new ArrayList<SubjectData>();
+        Iterator<Integer> it = subjectMap.keySet().iterator();
+        while(it.hasNext()) {
+            allSubjectData.add(subjectMap.get(it.next()));
+        }
+        return allSubjectData;
+    }
+
+    public static ArrayList<TodoData> getAllTodo() {
+        ArrayList<TodoData> allTodoData = new ArrayList<TodoData>();
+        Iterator<Integer> it = todoMap.keySet().iterator();
+        while(it.hasNext()) {
+            allTodoData.add(todoMap.get(it.next()));
+        }
+        return allTodoData;
     }
 }

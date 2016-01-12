@@ -23,7 +23,7 @@ public class TodoStackDbHelper extends SQLiteOpenHelper {
                     SubjectEntry._ID + " INTEGER PRIMARY KEY," +
                     SubjectEntry.SUBJECT_NAME + TEXT_TYPE + COMMA_SEP +
                     SubjectEntry.COLOR + TEXT_TYPE + COMMA_SEP +
-                    SubjectEntry.ORDER + INTEGER_TYPE +
+                    SubjectEntry.SEQUENCE + INTEGER_TYPE +
                     " )";
 
     private static final String SQL_CREATE_TODO_ENTRIES =
