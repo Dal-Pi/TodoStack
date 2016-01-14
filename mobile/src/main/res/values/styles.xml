@@ -1,17 +1,45 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    <style name="AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TextViewStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:textSize">@dimen/text_size_default</item>
+    </style>
+    <style name="EditViewStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:imeOptions">flagNoExtractUi</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textSize">@dimen/text_size_edit</item>
+    </style>
+    <style name="ButtonStyleBase">
+        <item name="android:layout_width">@dimen/button_min_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
+    </style>
+    <style name="ButtonStyleInActivity" parent="@style/ButtonStyleBase">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:background">@drawable/ripple</item>
+    </style>
+    <style name="ButtonStyleInDialog" parent="@style/ButtonStyleBase">
+        <item name="android:background">@drawable/ripple_selector</item>
+    </style>
 
 </resources>

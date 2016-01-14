@@ -28,7 +28,7 @@ public class CoverActivity extends Activity{
 
         colorProvider = ColorProvider.getInstance();
 
-        llCover = (LinearLayout) findViewById(R.id.ll_whole_cover);
+        llCover = (LinearLayout) findViewById(R.id.cover_ll_whole_cover);
         pbCover = (ProgressBar) findViewById(R.id.pb_cover);
 
         setBackgroundColor();

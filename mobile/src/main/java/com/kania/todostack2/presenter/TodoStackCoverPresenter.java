@@ -2,12 +2,9 @@ package com.kania.todostack2.presenter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.widget.TextView;
 
-import com.kania.todostack2.view.WholeTodoActivity;
-
-import java.util.ArrayList;
+import com.kania.todostack2.view.MainActivity;
+import com.kania.todostack2.view.WholeTodoActivityEx;
 
 /**
  * Created by user on 2016-01-13.
@@ -38,7 +35,7 @@ public class TodoStackCoverPresenter {
             @Override
             public void loadFinished() {
                 //TODO save allTextView for next activity
-                Intent intent = new Intent(mContext, WholeTodoActivity.class);
+                Intent intent = new Intent(mContext, MainActivity.class);
                 mContext.startActivity(intent);
                 mCallback.finishProgress();
             }

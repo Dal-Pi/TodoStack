@@ -1,6 +1,12 @@
 <resources>
-    <string name="app_name">TodoStack2</string>
+    <string name="app_name">TodoStack</string>
     <string name="action_settings">Settings</string>
     <string name="cover_title">Todo Stack</string>
     <string name="cover_subtitle">For Simplicity</string>
+    <string name="is_task">Task?</string>
+    <string name="year">Year</string>
+    <string name="month">Month</string>
+    <string name="day">Day</string>
+    <string name="calendar">Calendar</string>
+    <string name="todo_name">Todo Name</string>
 </resources>
