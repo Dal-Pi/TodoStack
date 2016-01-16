@@ -32,21 +32,21 @@ public class MainActivity extends Activity implements View.OnClickListener{
     }
 
     private void initControlView() {
-        editYear = (EditText) findViewById(R.id.main_iib_edit_year);
+        editYear = (EditText) findViewById(R.id.main_edit_input_year);
         editYear.setOnClickListener(this);
-        editMonth = (EditText) findViewById(R.id.main_iib_edit_month);
+        editMonth = (EditText) findViewById(R.id.main_edit_input_month);
         editMonth.setOnClickListener(this);
-        editDay = (EditText) findViewById(R.id.main_iib_edit_day);
+        editDay = (EditText) findViewById(R.id.main_edit_input_day);
         editDay.setOnClickListener(this);
 
-        btnCalendar = (Button) findViewById(R.id.main_iib_btn_calendar);
+        btnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
         btnCalendar.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.main_iib_btn_calendar:
+            case R.id.main_btn_input_calendar:
                 getDateFromDatePicker();
                 break;
         }

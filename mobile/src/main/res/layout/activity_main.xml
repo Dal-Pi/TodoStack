@@ -6,91 +6,193 @@
     android:padding="10dp">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RelativeLayout
-            android:id="@+id/main_rl_action_bar"
+        android:id="@+id/main_layout_action_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_action_bar"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+        <ImageView
+            android:id="@+id/main_ibtn_actionbar_navigation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true">
-            <ImageView
-                android:id="@+id/main_ab_ibtn_navigation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:padding="5dp"
-                android:clickable="true"
-                android:focusable="false"
-                android:src="@drawable/small_oval"
-                android:tintMode="src_in"
-                android:tint="@color/colorAccent"
-                android:background="@drawable/ripple"/>
-            <TextView
-                android:id="@+id/main_ab_text_actionbar_title"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_toEndOf="@id/main_ab_ibtn_navigation"
-                android:text="@string/app_name"
-                android:textSize="@dimen/text_size_title"
-                android:textColor="@color/colorAccent"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/main_rl_input_info_bar"
-            android:layout_width="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:clickable="true"
+            android:focusable="false"
+            android:src="@drawable/small_oval"
+            android:tintMode="src_in"
+            android:tint="@color/colorAccent"
+            android:background="@drawable/ripple"/>
+        <TextView
+            android:id="@+id/main_text_actionbar_title"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/fab_size"
-            android:layout_below="@id/main_rl_action_bar"
-            android:layout_alignParentEnd="true">
-            <EditText
-                android:id="@+id/main_iib_edit_year"
-                android:layout_width="@dimen/edit_width_year"
-                style="@style/EditViewStyle"
-                android:hint="@string/year"
-                android:inputType="number"/>
-            <EditText
-                android:id="@+id/main_iib_edit_month"
-                android:layout_width="@dimen/edit_width_month_and_day"
-                style="@style/EditViewStyle"
-                android:layout_toEndOf="@id/main_iib_edit_year"
-                android:hint="@string/month"
-                android:inputType="number"/>
-            <EditText
-                android:id="@+id/main_iib_edit_day"
-                android:layout_width="@dimen/edit_width_month_and_day"
-                style="@style/EditViewStyle"
-                android:layout_toEndOf="@id/main_iib_edit_month"
-                android:hint="@string/day"
-                android:inputType="number"/>
-            <Button
-                android:id="@+id/main_iib_btn_calendar"
-                style="@style/ButtonStyleInActivity"
-                android:layout_toEndOf="@id/main_iib_edit_day"
-                android:text="@string/calendar" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/main_rl_input_name_bar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/fab_size"
-            android:layout_below="@id/main_rl_input_info_bar"
-            android:layout_alignParentEnd="true">
-            <EditText
-                android:id="@+id/main_inb_edit_name"
-                android:layout_width="@dimen/edit_width_name"
-                style="@style/EditViewStyle"
-                android:hint="@string/todo_name"/>
-            <CheckBox
-                android:id="@+id/main_inb_cb_task"
-                android:layout_width="@dimen/button_min_width"
-                style="@style/TextViewStyle"
-                android:layout_toEndOf="@id/main_inb_edit_name"
-                android:text="@string/is_task"/>
-        </RelativeLayout>
-
+            android:layout_toEndOf="@id/main_ibtn_actionbar_navigation"
+            android:text="@string/app_name"
+            android:textSize="@dimen/text_size_title"
+            android:textColor="@color/colorAccent"/>
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/main_layout_control_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_control_bar"
+        android:orientation="vertical">
+        <!--[start] MODE_INPUT_TODO-->
+        <RelativeLayout
+            android:id="@+id/main_layout_input_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:visibility="visible">
+            <RelativeLayout
+                android:id="@+id/main_layout_input_mode_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/fab_size"
+                android:layout_alignParentEnd="true">
+                <EditText
+                    android:id="@+id/main_edit_input_year"
+                    android:layout_width="@dimen/edit_width_year"
+                    style="@style/EditViewStyle"
+                    android:hint="@string/year"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/main_edit_input_month"
+                    android:layout_width="@dimen/edit_width_month_and_day"
+                    style="@style/EditViewStyle"
+                    android:layout_toEndOf="@id/main_edit_input_year"
+                    android:hint="@string/month"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/main_edit_input_day"
+                    android:layout_width="@dimen/edit_width_month_and_day"
+                    style="@style/EditViewStyle"
+                    android:layout_toEndOf="@id/main_edit_input_month"
+                    android:hint="@string/day"
+                    android:inputType="number"/>
+                <Button
+                    android:id="@+id/main_btn_input_calendar"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_toEndOf="@id/main_edit_input_day"
+                    android:text="@string/calendar" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/main_layout_input_mode_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/fab_size"
+                android:layout_below="@id/main_layout_input_mode_date"
+                android:layout_alignParentEnd="true">
+                <EditText
+                    android:id="@+id/main_edit_input_name"
+                    android:layout_width="@dimen/edit_width_name"
+                    style="@style/EditViewStyle"
+                    android:hint="@string/todo_name"/>
+                <CheckBox
+                    android:id="@+id/main_cb_input_task"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_toEndOf="@id/main_edit_input_name"
+                    android:text="@string/is_task"/>
+            </RelativeLayout>
+        </RelativeLayout>
+        <!--[end] MODE_INPUT_TODO-->
+
+        <!--[start] MODE_VIEW_TODO-->
+        <LinearLayout
+            android:id="@+id/main_layout_viewer_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/main_btn_viewer_info_1"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/todo_done" />
+                <TextView
+                    android:id="@+id/main_text_viewer_done_1"
+                    style="@style/TextViewStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_viewer_info_1"
+                    android:text="@string/initial_todo_info"
+                    android:clickable="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/main_btn_viewer_info_2"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/todo_done" />
+                <TextView
+                    android:id="@+id/main_text_viewer_done_2"
+                    style="@style/TextViewStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_viewer_info_2"
+                    android:text="@string/initial_todo_info"
+                    android:clickable="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <Button
+                    android:id="@+id/main_btn_viewer_info_3_or_more"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/todo_done" />
+                <TextView
+                    android:id="@+id/main_text_viewer_done_3_or_more"
+                    style="@style/TextViewStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_viewer_info_3_or_more"
+                    android:text="@string/initial_todo_info"
+                    android:clickable="true"/>
+            </RelativeLayout>
+        </LinearLayout>
+        <!--[end] MODE_VIEW_TODO-->
+
+        <!--[start] MODE_VIEW_SUBJECT-->
+        <RelativeLayout
+            android:id="@+id/main_layout_subject_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:visibility="gone">
+            <Button
+                android:id="@+id/main_btn_subject_delete"
+                style="@style/ButtonStyleInActivity"
+                android:layout_alignParentEnd="true"
+                android:text="@string/delete"/>
+            <Button
+                android:id="@+id/main_btn_subject_edit"
+                style="@style/ButtonStyleInActivity"
+                android:layout_toStartOf="@id/main_btn_subject_delete"
+                android:text="@string/edit"/>
+            <Button
+                android:id="@+id/main_btn_subject_right"
+                style="@style/ButtonStyleInActivity"
+                android:layout_toStartOf="@id/main_btn_subject_edit"
+                android:text="@string/subject_move_right"/>
+            <Button
+                android:id="@+id/main_btn_subject_left"
+                style="@style/ButtonStyleInActivity"
+                android:layout_toStartOf="@id/main_btn_subject_right"
+                android:text="@string/subject_move_left"/>
+        </RelativeLayout>
+        <!--[end] MODE_VIEW_SUBJECT-->
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+
+    </FrameLayout>
 </LinearLayout>

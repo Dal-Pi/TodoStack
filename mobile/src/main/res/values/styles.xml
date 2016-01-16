@@ -15,10 +15,19 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="TextViewStyle">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">@dimen/view_min_height</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:textSize">@dimen/text_size_default</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="TextViewStyleInActivity" parent="@style/TextViewStyle">
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:background">@drawable/ripple_selector</item>
+    </style>
+    <style name="TextViewStyleInDialog" parent="@style/TextViewStyle">
+        <item name="android:background">@drawable/ripple_selector</item>
     </style>
     <style name="EditViewStyle">
         <item name="android:layout_height">wrap_content</item>
@@ -29,10 +38,13 @@
         <item name="android:textSize">@dimen/text_size_edit</item>
     </style>
     <style name="ButtonStyleBase">
-        <item name="android:layout_width">@dimen/button_min_width</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:minWidth">@dimen/button_min_width</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">@dimen/view_min_height</item>
         <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="android:paddingStart">5dp</item>
+        <item name="android:paddingEnd">5dp</item>
     </style>
     <style name="ButtonStyleInActivity" parent="@style/ButtonStyleBase">
         <item name="android:layout_centerVertical">true</item>

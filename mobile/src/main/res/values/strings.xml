@@ -9,4 +9,11 @@
     <string name="day">Day</string>
     <string name="calendar">Calendar</string>
     <string name="todo_name">Todo Name</string>
+    <string name="initial_todo_info">Loading..</string>
+    <string name="todo_done">Done</string>
+    <string name="subject_move_left">Move Left</string>
+    <string name="subject_move_right">Move Right</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+
 </resources>
