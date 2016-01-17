@@ -44,6 +44,11 @@ public class CoverActivity extends Activity{
         mPresenter.notifyStartCoverProgress();
     }
 
+    @Override
+    public void onBackPressed() {
+        //block backpress button for loading
+    }
+
     public void setBackgroundColor() {
         if (llCover == null)
             return;
