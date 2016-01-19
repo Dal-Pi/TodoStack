@@ -14,7 +14,7 @@
     <dimen name="edit_width_name">150dp</dimen>
     <dimen name="edit_width_year">50dp</dimen>
     <dimen name="edit_width_month_and_day">50dp</dimen>
-    <dimen name="button_min_width">40dp</dimen>
+    <dimen name="button_min_width">50dp</dimen>
     <dimen name="view_min_height">30dp</dimen>
     <dimen name="fab_size">60dp</dimen>
 </resources>

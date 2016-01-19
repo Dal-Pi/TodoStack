@@ -7,10 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.kania.todostack2.R;
+import com.kania.todostack2.presenter.TodoStackPresenter;
 import com.kania.todostack2.util.TodoDatePickerDialog;
 
 /**
@@ -19,10 +21,12 @@ import com.kania.todostack2.util.TodoDatePickerDialog;
  */
 public class MainActivity extends Activity implements IControllerMediator, View.OnClickListener{
 
-    RelativeLayout controllerInputTodo;
-    RelativeLayout controllerInputSubject;
-    LinearLayout controllerViewTodo;
-    RelativeLayout controllerViewSubject;
+    private TodoStackPresenter presenter;
+
+    private RelativeLayout controllerInputTodo;
+    private RelativeLayout controllerInputSubject;
+    private LinearLayout controllerViewTodo;
+    private RelativeLayout controllerViewSubject;
 
     private EditText editYear;
     private EditText editMonth;
@@ -30,11 +34,15 @@ public class MainActivity extends Activity implements IControllerMediator, View.
 
     private Button btnCalendar;
 
+    private FrameLayout todoLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        presenter = new TodoStackPresenter(this);
 
         initControlView();
     }
@@ -54,6 +62,9 @@ public class MainActivity extends Activity implements IControllerMediator, View.
 
         btnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
         btnCalendar.setOnClickListener(this);
+
+        todoLayout = (FrameLayout) findViewById(R.id.main_lf_todo_layout);
+        presenter.initTodoLayoutInfo(todoLayout.getWidth(), todoLayout.getHeight());
     }
 
     @Override
@@ -89,25 +100,20 @@ public class MainActivity extends Activity implements IControllerMediator, View.
             Log.e("TodoStack", "there is(are) null controller");
             return;
         }
-        switch (mode) {
-            case IControllerMediator.MODE_NO_SELECTION:
-                controllerInputTodo.setVisibility(View.GONE);
-                controllerInputSubject.setVisibility(View.GONE);
-                controllerViewTodo.setVisibility(View.GONE);
-                controllerViewSubject.setVisibility(View.GONE);
-                break;
-            case IControllerMediator.MODE_ADD_TODO:
-                //TODO
-                break;
-            case IControllerMediator.MODE_ADD_SUBJECT:
-                //TODO
-                break;
-            case IControllerMediator.MODE_VIEW_TODO:
-                //TODO
-                break;
-            case IControllerMediator.MODE_VIEW_SUBJECT:
-                //TODO
-                break;
+        setEachControllerVisibility(controllerInputTodo, MODE_ADD_TODO, mode);
+        setEachControllerVisibility(controllerInputSubject, MODE_ADD_SUBJECT, mode);
+        setEachControllerVisibility(controllerViewTodo, MODE_VIEW_TODO, mode);
+        setEachControllerVisibility(controllerViewSubject, MODE_VIEW_SUBJECT, mode);
+    }
+
+    private void setEachControllerVisibility(View view ,int ownMode, int targetMode){
+        boolean isVisible = (view.getVisibility() == View.VISIBLE);
+        boolean isTarget = (ownMode == targetMode);
+
+        if (isVisible && !isTarget) {
+            view.setVisibility(View.INVISIBLE);
+        } else if (!isVisible && isTarget) {
+            view.setVisibility(View.VISIBLE);
         }
     }
 }
