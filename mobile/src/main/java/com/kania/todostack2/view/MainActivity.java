@@ -2,6 +2,7 @@ package com.kania.todostack2.view;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +35,10 @@ public class MainActivity extends Activity implements IControllerMediator, View.
 
     private Button btnCalendar;
 
+    private Button btnDone3;
+
     private FrameLayout todoLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,8 @@ public class MainActivity extends Activity implements IControllerMediator, View.
 
         btnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
         btnCalendar.setOnClickListener(this);
+
+        btnDone3 = (Button) findViewById(R.id.main_btn_viewer_info_3_or_more);
 
         todoLayout = (FrameLayout) findViewById(R.id.main_lf_todo_layout);
         presenter.initTodoLayoutInfo(todoLayout.getWidth(), todoLayout.getHeight());

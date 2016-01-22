@@ -17,4 +17,8 @@
     <dimen name="button_min_width">50dp</dimen>
     <dimen name="view_min_height">30dp</dimen>
     <dimen name="fab_size">60dp</dimen>
+    <dimen name="fab_padding">2dp</dimen>
+    <dimen name="navigation_oval_size">20dp</dimen>
+    <dimen name="elevation_size">5dp</dimen>
+    <dimen name="radius">2dp</dimen>
 </resources>

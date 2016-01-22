@@ -15,7 +15,6 @@ public class ColorProvider {
     private static final String COLOR_STRING_TODAY = "#FFFF0000";
 
     private static String[] preloadedcolorStrings = {
-            COLOR_STRING_DEFAULT_BLACK,
             "#FFFF96E6",
             "#FF9696E1",
             "#FF4B6EE1",
