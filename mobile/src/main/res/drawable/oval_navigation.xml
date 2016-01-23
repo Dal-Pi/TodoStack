@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval" >
     <size android:width="@dimen/navigation_oval_size" android:height="@dimen/navigation_oval_size"/>
-    <solid android:color="@color/color_black"/>
+    <solid android:color="@color/color_normal_state"/>
 </shape>

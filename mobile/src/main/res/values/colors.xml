@@ -7,4 +7,5 @@
     <color name="cover_text_color">#FFFFFF</color>
     <color name="color_white">#FFFFFFFF</color>
     <color name="color_black">#FF000000</color>
+    <color name="color_normal_state">@color/colorAccent</color>
 </resources>

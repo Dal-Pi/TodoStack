@@ -151,4 +151,8 @@ public class TodoProvider {
         }
         return allTodoData;
     }
+
+    public static int getSubjectCount() {
+        return subjectMap.size();
+    }
 }

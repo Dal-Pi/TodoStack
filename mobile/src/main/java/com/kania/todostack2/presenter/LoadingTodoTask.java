@@ -18,6 +18,7 @@ import java.util.Date;
  */
 public class LoadingTodoTask extends AsyncTask<Void, Void, Boolean> {
 
+    private final int MINIMUM_LOADING_TIME = 1000;
     private Context mContext;
     private TodoProvider mTodoProvider;
     private TaskEndCallback mCallback;
@@ -55,7 +56,7 @@ public class LoadingTodoTask extends AsyncTask<Void, Void, Boolean> {
 
         long endTime = getCurrentTimeInMillis();
         Log.d("TodoStack", "endTime = " + endTime);
-        long remainTime = 2000 - (endTime - startTime);
+        long remainTime = MINIMUM_LOADING_TIME - (endTime - startTime);
         if (remainTime > 0) {
             try {
                 Thread.sleep(remainTime);

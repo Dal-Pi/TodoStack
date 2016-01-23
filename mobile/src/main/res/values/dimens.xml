@@ -5,7 +5,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     <dimen name="height_action_bar">35dp</dimen>
-    <dimen name="height_control_bar">100dp</dimen>
+    <dimen name="height_control_bar">90dp</dimen>
 
     <dimen name="text_size_default">10dp</dimen>
     <dimen name="text_size_title">30dp</dimen>
@@ -16,8 +16,13 @@
     <dimen name="edit_width_month_and_day">50dp</dimen>
     <dimen name="button_min_width">50dp</dimen>
     <dimen name="view_min_height">30dp</dimen>
-    <dimen name="fab_size">60dp</dimen>
-    <dimen name="fab_padding">2dp</dimen>
+
+    <dimen name="fab_layout_size">60dp</dimen>
+    <dimen name="fab_drawble_size">54dp</dimen>
+    <dimen name="fab_layout_margin">3dp</dimen>
+    <dimen name="fab_padding">0dp</dimen>
+    <dimen name="fab_layout_margin_top">15dp</dimen>
+
     <dimen name="navigation_oval_size">20dp</dimen>
     <dimen name="elevation_size">5dp</dimen>
     <dimen name="radius">2dp</dimen>

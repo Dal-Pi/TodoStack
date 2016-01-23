@@ -16,12 +16,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentBottom="true"
             android:padding="5dp"
             android:clickable="true"
             android:focusable="false"
             android:src="@drawable/selector_navigation"
-            android:tint="@color/colorAccent"
+            android:tint="@color/color_normal_state"
             android:background="@drawable/ripple"/>
         <TextView
             android:id="@+id/main_text_actionbar_title"
@@ -31,236 +31,257 @@
             android:text="@string/app_name"
             android:textSize="@dimen/text_size_title"
             android:layout_centerVertical="true"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/color_normal_state"/>
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/main_layout_control_container"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_control_bar"
-        android:layout_below="@id/main_layout_action_bar"
-        android:orientation="vertical">
-        <!--[start] MODE_INPUT_TODO-->
-        <RelativeLayout
-            android:id="@+id/main_layout_todo_input_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:visibility="visible">
-            <RelativeLayout
-                android:id="@+id/main_layout_todo_input_mode_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/fab_size"
-                android:layout_alignParentEnd="true">
-                <EditText
-                    android:id="@+id/main_edit_input_year"
-                    android:layout_width="@dimen/edit_width_year"
-                    style="@style/EditViewStyle"
-                    android:hint="@string/year"
-                    android:inputType="number"/>
-                <EditText
-                    android:id="@+id/main_edit_input_month"
-                    android:layout_width="@dimen/edit_width_month_and_day"
-                    style="@style/EditViewStyle"
-                    android:layout_toEndOf="@id/main_edit_input_year"
-                    android:hint="@string/month"
-                    android:inputType="number"/>
-                <EditText
-                    android:id="@+id/main_edit_input_day"
-                    android:layout_width="@dimen/edit_width_month_and_day"
-                    style="@style/EditViewStyle"
-                    android:layout_toEndOf="@id/main_edit_input_month"
-                    android:hint="@string/day"
-                    android:inputType="number"/>
-                <Button
-                    android:id="@+id/main_btn_input_calendar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_toEndOf="@id/main_edit_input_day"
-                    android:text="@string/calendar" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/main_layout_todo_input_mode_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/fab_size"
-                android:layout_below="@id/main_layout_todo_input_mode_date"
-                android:layout_alignParentEnd="true">
-                <EditText
-                    android:id="@+id/main_edit_input_todo_name"
-                    android:layout_width="@dimen/edit_width_name"
-                    style="@style/EditViewStyle"
-                    android:hint="@string/todo_name"/>
-                <CheckBox
-                    android:id="@+id/main_cb_input_task"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/CheckBoxStyle"
-                    android:layout_toEndOf="@id/main_edit_input_todo_name"
-                    android:text="@string/is_task"/>
-            </RelativeLayout>
-        </RelativeLayout>
-        <!--[end] MODE_INPUT_TODO-->
-
-        <!--[start] MODE_VIEW_SUBJECT-->
-        <RelativeLayout
-            android:id="@+id/main_layout_subject_input_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:visibility="gone">
-            <!--
-            <Button
-                android:id="@+id/main_btn_subject_add"
-                style="@style/ButtonStyleInActivity"
-                android:layout_alignParentEnd="true"
-                android:text="@string/add"/>
-                -->
-            <EditText
-                android:id="@+id/main_edit_input_subject_name"
-                android:layout_width="@dimen/edit_width_name"
-                style="@style/EditViewStyle"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="@dimen/fab_size"
-                android:hint="@string/subject_name"/>
-        </RelativeLayout>
-        <!--[end] MODE_VIEW_SUBJECT-->
-
-        <!--[start] MODE_VIEW_TODO-->
-        <LinearLayout
-            android:id="@+id/main_layout_todo_viewer_mode"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-
-            android:visibility="gone">
-
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <Button
-                    android:id="@+id/main_btn_viewer_info_1"
-                    android:layout_width="@dimen/fab_size"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/todo_done" />
-                <TextView
-                    android:id="@+id/main_text_viewer_done_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/TextButtonStyleInactivity"
-                    android:layout_toStartOf="@id/main_btn_viewer_info_1"
-                    android:text="@string/initial_todo_info" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <Button
-                    android:id="@+id/main_btn_viewer_info_2"
-                    android:layout_width="@dimen/fab_size"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/todo_done" />
-                <TextView
-                    android:id="@+id/main_text_viewer_done_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/TextButtonStyleInactivity"
-                    android:layout_toStartOf="@id/main_btn_viewer_info_2"
-                    android:text="@string/initial_todo_info" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <Button
-                    android:id="@+id/main_btn_viewer_info_3_or_more"
-                    android:layout_width="@dimen/fab_size"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/todo_done"
-                    android:backgroundTint="@color/colorAccent"/>
-                <TextView
-                    android:id="@+id/main_text_viewer_done_3_or_more"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/TextButtonStyleInactivity"
-                    android:layout_toStartOf="@id/main_btn_viewer_info_3_or_more"
-                    android:text="@string/initial_todo_info" />
-            </RelativeLayout>
-        </LinearLayout>
-        <!--[end] MODE_VIEW_TODO-->
-
-        <!--[start] MODE_VIEW_SUBJECT-->
-        <RelativeLayout
-            android:id="@+id/main_layout_subject_viewer_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:visibility="gone">
-            <Button
-                android:id="@+id/main_btn_subject_delete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/ButtonStyleInActivity"
-                android:layout_alignParentEnd="true"
-                android:text="@string/delete"/>
-            <Button
-                android:id="@+id/main_btn_subject_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/ButtonStyleInActivity"
-                android:layout_toStartOf="@id/main_btn_subject_delete"
-                android:text="@string/edit"/>
-            <Button
-                android:id="@+id/main_btn_subject_right"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/ButtonStyleInActivity"
-                android:layout_toStartOf="@id/main_btn_subject_edit"
-                android:text="@string/subject_move_right"/>
-            <Button
-                android:id="@+id/main_btn_subject_left"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/ButtonStyleInActivity"
-                android:layout_toStartOf="@id/main_btn_subject_right"
-                android:text="@string/subject_move_left"/>
-        </RelativeLayout>
-        <!--[end] MODE_VIEW_SUBJECT-->
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/main_lf_todo_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/main_layout_control_container">
-    </FrameLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/main_text_guide_text"
-            android:text="@string/guide_text"/>
-    </LinearLayout>
+        android:layout_below="@id/main_layout_action_bar">
+        <LinearLayout
+            android:id="@+id/main_layout_control_container"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_control_bar"
 
-    <Button
-        android:id="@+id/main_btn_fab"
-        android:layout_width="@dimen/fab_size"
-        android:layout_height="@dimen/fab_size"
-        style="@style/FloatingActionButtonStyle"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:backgroundTint="@color/colorAccent"
-        android:text="@string/add"/>
+            android:orientation="vertical">
+            <!--[start] MODE_INPUT_TODO-->
+            <RelativeLayout
+                android:id="@+id/main_layout_todo_input_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_layout_margin_top"
+
+                android:visibility="visible">
+                <RelativeLayout
+                    android:id="@+id/main_layout_todo_input_mode_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:layout_alignParentEnd="true">
+                    <EditText
+                        android:id="@+id/main_edit_input_year"
+                        android:layout_width="@dimen/edit_width_year"
+                        style="@style/EditViewStyle"
+                        android:hint="@string/year"
+                        android:inputType="number"/>
+                    <EditText
+                        android:id="@+id/main_edit_input_month"
+                        android:layout_width="@dimen/edit_width_month_and_day"
+                        style="@style/EditViewStyle"
+                        android:layout_toEndOf="@id/main_edit_input_year"
+                        android:hint="@string/month"
+                        android:inputType="number"/>
+                    <EditText
+                        android:id="@+id/main_edit_input_day"
+                        android:layout_width="@dimen/edit_width_month_and_day"
+                        style="@style/EditViewStyle"
+                        android:layout_toEndOf="@id/main_edit_input_month"
+                        android:hint="@string/day"
+                        android:inputType="number"/>
+                    <Button
+                        android:id="@+id/main_btn_input_calendar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/ButtonStyleInActivity"
+                        android:layout_toEndOf="@id/main_edit_input_day"
+                        android:text="@string/calendar" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/main_layout_todo_input_mode_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:layout_below="@id/main_layout_todo_input_mode_date"
+                    android:layout_alignParentEnd="true">
+                    <EditText
+                        android:id="@+id/main_edit_input_todo_name"
+                        android:layout_width="@dimen/edit_width_name"
+                        style="@style/EditViewStyle"
+                        android:hint="@string/todo_name"/>
+                    <CheckBox
+                        android:id="@+id/main_cb_input_task"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/CheckBoxStyle"
+                        android:layout_toEndOf="@id/main_edit_input_todo_name"
+                        android:text="@string/is_task"/>
+                </RelativeLayout>
+            </RelativeLayout>
+            <!--[end] MODE_INPUT_TODO-->
+
+            <!--[start] MODE_VIEW_SUBJECT-->
+            <RelativeLayout
+                android:id="@+id/main_layout_subject_input_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_min_height"
+
+                android:visibility="gone">
+                <!--
+                <Button
+                    android:id="@+id/main_btn_subject_add"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/add"/>
+                    -->
+                <EditText
+                    android:id="@+id/main_edit_input_subject_name"
+                    android:layout_width="@dimen/edit_width_name"
+                    style="@style/EditViewStyle"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:hint="@string/subject_name"/>
+            </RelativeLayout>
+            <!--[end] MODE_VIEW_SUBJECT-->
+
+            <!--[start] MODE_VIEW_TODO-->
+            <LinearLayout
+                android:id="@+id/main_layout_todo_viewer_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/main_btn_viewer_info_1"
+                        android:layout_width="@dimen/fab_layout_size"
+                        android:layout_height="wrap_content"
+                        style="@style/ButtonStyleInActivity"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/todo_done" />
+                    <TextView
+                        android:id="@+id/main_text_viewer_done_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/TextButtonStyleInactivity"
+                        android:layout_toStartOf="@id/main_btn_viewer_info_1"
+                        android:text="@string/initial_todo_info" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/main_btn_viewer_info_2"
+                        android:layout_width="@dimen/fab_layout_size"
+                        android:layout_height="wrap_content"
+                        style="@style/ButtonStyleInActivity"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/todo_done" />
+                    <TextView
+                        android:id="@+id/main_text_viewer_done_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/TextButtonStyleInactivity"
+                        android:layout_toStartOf="@id/main_btn_viewer_info_2"
+                        android:text="@string/initial_todo_info" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <Button
+                        android:id="@+id/main_btn_viewer_info_3_or_more"
+                        android:layout_width="@dimen/fab_layout_size"
+                        android:layout_height="wrap_content"
+                        style="@style/ButtonStyleInActivity"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/todo_done"
+                        android:backgroundTint="@color/color_normal_state"/>
+                    <TextView
+                        android:id="@+id/main_text_viewer_done_3_or_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/TextButtonStyleInactivity"
+                        android:layout_toStartOf="@id/main_btn_viewer_info_3_or_more"
+                        android:text="@string/initial_todo_info" />
+                </RelativeLayout>
+            </LinearLayout>
+            <!--[end] MODE_VIEW_TODO-->
+
+            <!--[start] MODE_VIEW_SUBJECT-->
+            <RelativeLayout
+                android:id="@+id/main_layout_subject_viewer_mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/view_min_height"
+
+                android:visibility="gone">
+                <Button
+                    android:id="@+id/main_btn_subject_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_alignParentEnd="true"
+                    android:text="@string/delete"/>
+                <Button
+                    android:id="@+id/main_btn_subject_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_subject_delete"
+                    android:text="@string/edit"/>
+                <Button
+                    android:id="@+id/main_btn_subject_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_subject_edit"
+                    android:text="@string/subject_move_right"/>
+                <Button
+                    android:id="@+id/main_btn_subject_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_toStartOf="@id/main_btn_subject_right"
+                    android:text="@string/subject_move_left"/>
+            </RelativeLayout>
+            <!--[end] MODE_VIEW_SUBJECT-->
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/main_lf_todo_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/main_layout_control_container">
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/main_text_guide_text"
+                android:text="@string/guide_text"/>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="@dimen/fab_layout_size"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/fab_layout_margin_top"
+            android:layout_alignParentEnd="true">
+
+            <RelativeLayout
+                android:id="@+id/main_layout_fab_bar"
+                android:layout_width="@dimen/fab_layout_size"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/main_btn_fab"
+                    android:layout_width="@dimen/fab_drawble_size"
+                    android:layout_height="@dimen/fab_drawble_size"
+                    style="@style/FloatingActionButtonStyle"
+                    android:layout_alignParentBottom="true"
+                    android:text="@string/fab_add"/>
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+
 </RelativeLayout>

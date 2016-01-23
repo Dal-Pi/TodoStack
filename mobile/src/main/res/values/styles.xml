@@ -41,7 +41,7 @@
         <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/color_normal_state</item>
     </style>
     <style name="ButtonStyle" parent="@style/ButtonStyleBase">
         <item name="android:minHeight">@dimen/view_min_height</item>
@@ -71,7 +71,8 @@
         <item name="android:background">@drawable/ripple_fab</item>
         <item name="android:textColor">@color/color_white</item>
         <item name="android:textSize">@dimen/text_size_button</item>
-        <item name="android:layout_margin">@dimen/fab_padding</item>
+        <item name="android:padding">@dimen/fab_padding</item>
+        <item name="android:layout_margin">@dimen/fab_layout_margin</item>
     </style>
 
 </resources>
