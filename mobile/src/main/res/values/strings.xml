@@ -27,7 +27,11 @@
 
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
-    <string name="guide_text">Guide TextView</string>
     <string name="add">Add</string>
 
+
+    <string name="guide_text_default">Guide TextView.</string>
+    <string name="guide_text_mode_initial_setup">Select \"NEW SUBJECT\".</string>
+    <string name="guide_text_mode_no_selection">Select \"NEW TODO\" for create Todo.</string>
+    <string name="guide_text_mode_input_subject">Input "Subject Name" represent Todo(s).</string>
 </resources>

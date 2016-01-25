@@ -242,12 +242,12 @@
             <!--[end] MODE_VIEW_SUBJECT-->
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/main_lf_todo_layout"
+        <com.kania.todostack2.view.TodoLayout
+            android:id="@+id/main_vg_todo_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/main_layout_control_container">
-        </FrameLayout>
+        </com.kania.todostack2.view.TodoLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -258,7 +258,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/main_text_guide_text"
-                android:text="@string/guide_text"/>
+                android:text="@string/guide_text_default"/>
         </LinearLayout>
 
         <RelativeLayout

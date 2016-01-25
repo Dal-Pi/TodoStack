@@ -6,6 +6,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
@@ -13,11 +15,16 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.kania.todostack2.R;
+import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.presenter.IControllerMediator;
 import com.kania.todostack2.presenter.TodoStackPresenter;
+import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.util.TodoDatePickerDialog;
+
+import java.util.ArrayList;
 
 /**
  * Created by user on 2016-01-14.
@@ -45,9 +52,13 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
 
     private Button btnCalendar;
 
+    private EditText editSubject;
+
     private Button btnDone3;
 
-    private FrameLayout todoLayout;
+    private TodoLayout todoLayout;
+
+    private TextView textGuide;
 
     private int fabOriginLocationLeft;
     private int fabOriginLocationTop;
@@ -80,31 +91,59 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         layoutFabBar = (RelativeLayout) findViewById(R.id.main_layout_fab_bar);
 
         editYear = (EditText) findViewById(R.id.main_edit_input_year);
-        editYear.setOnClickListener(this);
         editMonth = (EditText) findViewById(R.id.main_edit_input_month);
-        editMonth.setOnClickListener(this);
         editDay = (EditText) findViewById(R.id.main_edit_input_day);
-        editDay.setOnClickListener(this);
-
         btnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
         btnCalendar.setOnClickListener(this);
 
+        editSubject = (EditText) findViewById(R.id.main_edit_input_subject_name);
+
         btnDone3 = (Button) findViewById(R.id.main_btn_viewer_info_3_or_more);
 
-        todoLayout = (FrameLayout) findViewById(R.id.main_lf_todo_layout);
-        mediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+        todoLayout = (TodoLayout) findViewById(R.id.main_vg_todo_layout);
+        todoLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                todoLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+            }
+        });
+        textGuide = (TextView) findViewById(R.id.main_text_guide_text);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_btn_fab:
-                mediator.clickFloatingActionButton();
+                mediator.clickFloatingActionButton(getBundleFromVisibleView());
                 break;
             case R.id.main_btn_input_calendar:
                 getDateFromDatePicker();
                 break;
         }
+    }
+
+    private Bundle getBundleFromVisibleView() {
+        Bundle bundle = new Bundle();
+        if (isViewVisible(controllerInputTodo)) {
+            //TODO
+        }
+        if (isViewVisible(controllerInputSubject)) {
+            bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,
+                    editSubject.getText().toString());
+            //TODO add about color
+            bundle.putInt(TodoStackContract.SubjectEntry.COLOR,
+                    ColorProvider.getInstance().getRandomColor());
+        }
+        return bundle;
     }
 
     @Override
@@ -216,6 +255,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
             public void onAnimationStart(Animation animation) {
                 btnFab.setClickable(false);
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 btnFab.setClickable(true);
@@ -226,6 +266,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
                 btnFab.setLayoutParams(params);
                 setFabTheme(action, color);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
@@ -238,34 +279,29 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         return view.getVisibility() == View.VISIBLE;
     }
 
+    @Override
+    public void setTextViewOnTodoLayout(ArrayList<TextView> alTextView) {
+        for (TextView tv : alTextView) {
+            todoLayout.addView(tv);
+        }
+        refreshTodoLayout();
+    }
 
-//    @Override
-//    public void setMode(int mode) {
-//        //checking
-//        if (controllerInputTodo == null
-//                || controllerInputSubject == null
-//                || controllerViewTodo == null
-//                || controllerViewSubject == null) {
-//            Log.e("TodoStack", "there is(are) null controller");
-//            return;
-//        }
-//        setEachControllerVisibility(controllerInputTodo, MODE_ADD_TODO, mode);
-//        setEachControllerVisibility(controllerInputSubject, MODE_ADD_SUBJECT, mode);
-//        setEachControllerVisibility(controllerViewTodo, MODE_VIEW_TODO, mode);
-//        setEachControllerVisibility(controllerViewSubject, MODE_VIEW_SUBJECT, mode);
-//    }
-//
-//    private void setEachControllerVisibility(View view ,int ownMode, int targetMode){
-//        boolean isVisible = (view.getVisibility() == View.VISIBLE);
-//        boolean isTarget = (ownMode == targetMode);
-//
-//        if (isVisible && !isTarget) {
-//            view.setVisibility(View.INVISIBLE);
-//        } else if (!isVisible && isTarget) {
-//            view.setVisibility(View.VISIBLE);
-//        }
-//    }
+    @Override
+    public void refreshTodoLayout() {
+        todoLayout.invalidate();
+    }
 
+    @Override
+    public void setGuideText(String guideText) {
+        setGuideText(guideText, getResources().getColor(R.color.color_normal_state));
+    }
+
+    @Override
+    public void setGuideText(String guideText, int color) {
+        textGuide.setText(guideText);
+        textGuide.setTextColor(color);
+    }
 
     @Override
     public void finishActivity() {

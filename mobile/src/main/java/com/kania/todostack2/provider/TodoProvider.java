@@ -58,7 +58,7 @@ public class TodoProvider {
         };
         Cursor subjectCursor = todoStackDb.query(SubjectEntry.TABLE_NAME,
                 projection, null, null, null, null, null);
-        subjectCursor.moveToFirst();
+//        subjectCursor.moveToFirst();
         while (subjectCursor.moveToNext()) {
             SubjectData subject = new SubjectData();
             subject.id = subjectCursor.
@@ -66,8 +66,8 @@ public class TodoProvider {
             subject.subjectName = subjectCursor.
                     getString(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SUBJECT_NAME));
             try {
-                int color = Color.parseColor(subjectCursor.
-                        getString(subjectCursor.getColumnIndexOrThrow(SubjectEntry.COLOR)));
+                int color = subjectCursor.
+                        getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.COLOR));
                 subject.color = color;
             } catch (IllegalArgumentException e) {
                 Log.e("TodoStck", "error on getting color from Subject DB");
@@ -93,7 +93,7 @@ public class TodoProvider {
         };
         Cursor todoCursor = todoStackDb.query(TodoEntry.TABLE_NAME,
                 projection, null, null, null, null, null);
-        todoCursor.moveToFirst();
+//        todoCursor.moveToFirst();
         while (todoCursor.moveToNext()) {
             TodoData todo = new TodoData();
             todo.id = todoCursor.

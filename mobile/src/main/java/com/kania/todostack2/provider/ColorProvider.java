@@ -11,8 +11,10 @@ import java.util.Random;
  */
 public class ColorProvider {
 
-    private static final String COLOR_STRING_DEFAULT_BLACK = "#FF000000";
-    private static final String COLOR_STRING_TODAY = "#FFFF0000";
+    public static final String COLOR_STRING_DEFAULT_BLACK = "#FF000000";
+    public static final String COLOR_STRING_TODAY = "#FFFF0000";
+    public static final String COLOR_SOLID_PATH = COLOR_STRING_DEFAULT_BLACK;
+    public static final String COLOR_DASH_PATH = COLOR_STRING_DEFAULT_BLACK;
 
     private static String[] preloadedcolorStrings = {
             "#FFFF96E6",
@@ -39,6 +41,10 @@ public class ColorProvider {
             instance = new ColorProvider();
         }
         return instance;
+    }
+
+    public static int getColor(String colorString) {
+        return Color.parseColor(colorString);
     }
 
     public static int getDefaultColor() {

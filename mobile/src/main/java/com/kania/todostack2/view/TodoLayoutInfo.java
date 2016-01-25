@@ -6,14 +6,14 @@ package com.kania.todostack2.view;
 public class TodoLayoutInfo {
 
     //percent of layout
-    private final int PERCENT_DATEWIDTH = 10;
-    private final int PERCENT_SUBJECTHEIGHT = 5;
-    private final int PERCENT_SUBJECTGAPWIDTH = 10;
+    public static final int PERCENT_DATEWIDTH = 10;
+    public static final int PERCENT_SUBJECTHEIGHT = 5;
+    public static final int PERCENT_SUBJECTGAPWIDTH = 2;
     //percent of each view
-    private final int PERCENT_TODOGAPHEIGHT = 10;
+    public static final int PERCENT_TODOGAPHEIGHT = 10;
     //pixel of line
-    private final int DATEDIVIDERLINE_HEIGHT = 1;
-    private final int TASKBASELINE_HEIGHT = 2;
+    public static final int DATEDIVIDERLINE_HEIGHT = 1;
+    public static final int TASKBASELINE_HEIGHT = 2;
 
     public int subjectCount;
     public int taskCount;
@@ -27,6 +27,7 @@ public class TodoLayoutInfo {
     public int todoWidth;
     public int todoHeight;
 
+    public int subjectGap;
     public int dateTodoGap;
     public int stackTodoGap;
 
@@ -45,14 +46,23 @@ public class TodoLayoutInfo {
         refreshEachViewSize(subjectCount, taskCount, dateTodoCount, delayedTodoCount);
     }
 
-    public void refreshEachViewSize(int subjectCount, int taskCount,
+    public boolean refreshEachViewSize(int subjectCount, int taskCount,
                                     int dateTodoCount, int delayedTodoCount) {
-        dateWidth = layoutWidth / PERCENT_DATEWIDTH;
-        subjectHeight = layoutHeight / PERCENT_SUBJECTHEIGHT;
+        if (subjectCount <= 0 || (taskCount + dateTodoCount + delayedTodoCount) <= 0) {
+            return false;
+        }
+        dateWidth = (layoutWidth * PERCENT_DATEWIDTH) / 100;
+        subjectHeight = (layoutHeight * PERCENT_SUBJECTHEIGHT) / 100;
         todoWidth = (layoutWidth - dateWidth) / subjectCount;
-        todoHeight = (layoutHeight - subjectCount) / (taskCount + dateTodoCount + delayedTodoCount);
-        stackTodoGap = todoWidth / PERCENT_TODOGAPHEIGHT;
+        todoHeight = (layoutHeight - (subjectHeight * subjectCount))
+                / (taskCount + dateTodoCount + delayedTodoCount);
+        stackTodoGap = (todoHeight * PERCENT_TODOGAPHEIGHT) / 100;
         dateTodoGap = stackTodoGap + DATEDIVIDERLINE_HEIGHT;
+        subjectGap = (layoutWidth * PERCENT_SUBJECTGAPWIDTH) / 100;
+
+        //renew removing gap
+        todoWidth -= subjectGap;
+        return true;
     }
 
     /**
@@ -61,7 +71,7 @@ public class TodoLayoutInfo {
      * @return ViewPosition of subject
      */
     public ViewPosition getSubjectPosition(int subjectSequence) {
-        int left = dateWidth + (todoWidth * subjectSequence);
+        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * subjectSequence);
         int top = ((todoHeight + stackTodoGap) * taskCount) + TASKBASELINE_HEIGHT +
                 dateTodoGap + ((todoHeight + dateTodoGap) * dateTodoCount);
         return new ViewPosition(left, top, left + todoWidth, top + todoHeight);

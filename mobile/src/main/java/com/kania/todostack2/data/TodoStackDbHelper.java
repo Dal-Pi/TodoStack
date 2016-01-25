@@ -1,8 +1,12 @@
 package com.kania.todostack2.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.kania.todostack2.TodoStackContract;
+import com.kania.todostack2.provider.ColorProvider;
 
 import static com.kania.todostack2.TodoStackContract.*;
 
@@ -51,6 +55,55 @@ public class TodoStackDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_SUBJECT_ENTRIES);
         db.execSQL(SQL_CREATE_TODO_ENTRIES);
+
+        //TODO this is stub, will be deleted
+		ContentValues cvSub = new ContentValues();
+        cvSub.put(SubjectEntry.SUBJECT_NAME, "first subject");
+        cvSub.put(SubjectEntry.COLOR, ColorProvider.getRandomColor());
+        cvSub.put(SubjectEntry.SEQUENCE, 0);
+		db.insert(SubjectEntry.TABLE_NAME, null, cvSub);
+        cvSub.put(SubjectEntry.SUBJECT_NAME, "second subject");
+        cvSub.put(SubjectEntry.COLOR, ColorProvider.getRandomColor());
+        cvSub.put(SubjectEntry.SEQUENCE, 1);
+        db.insert(SubjectEntry.TABLE_NAME, null, cvSub);
+        cvSub.put(SubjectEntry.SUBJECT_NAME, "third subject");
+        cvSub.put(SubjectEntry.COLOR, ColorProvider.getRandomColor());
+        cvSub.put(SubjectEntry.SEQUENCE, 2);
+        db.insert(SubjectEntry.TABLE_NAME, null, cvSub);
+
+        ContentValues cvTodo = new ContentValues();
+		cvTodo.put(TodoEntry.TODO_NAME, "todo1 on first");
+		cvTodo.put(TodoEntry.SUBJECT_ID, 0);
+		cvTodo.put(TodoEntry.DATE, "2016-01-26");
+		cvTodo.put(TodoEntry.TYPE, TodoData.TYPE_ALLDAY);
+		cvTodo.put(TodoEntry.TIME_FROM, "00:00");
+		cvTodo.put(TodoEntry.TIME_TO, "24:00");
+        cvTodo.put(TodoEntry.LOCATION, "");
+		db.insert(TodoEntry.TABLE_NAME, null, cvTodo);
+        cvTodo.put(TodoEntry.TODO_NAME, "todo2 on second");
+        cvTodo.put(TodoEntry.SUBJECT_ID, 0);
+        cvTodo.put(TodoEntry.DATE, "2016-01-27");
+        cvTodo.put(TodoEntry.TYPE, TodoData.TYPE_ALLDAY);
+        cvTodo.put(TodoEntry.TIME_FROM, "00:00");
+        cvTodo.put(TodoEntry.TIME_TO, "24:00");
+        cvTodo.put(TodoEntry.LOCATION, "");
+        db.insert(TodoEntry.TABLE_NAME, null, cvTodo);
+        cvTodo.put(TodoEntry.TODO_NAME, "todo3 on third");
+        cvTodo.put(TodoEntry.SUBJECT_ID, 0);
+        cvTodo.put(TodoEntry.DATE, "2016-01-31");
+        cvTodo.put(TodoEntry.TYPE, TodoData.TYPE_ALLDAY);
+        cvTodo.put(TodoEntry.TIME_FROM, "00:00");
+        cvTodo.put(TodoEntry.TIME_TO, "24:00");
+        cvTodo.put(TodoEntry.LOCATION, "");
+        db.insert(TodoEntry.TABLE_NAME, null, cvTodo);
+        cvTodo.put(TodoEntry.TODO_NAME, "todo4 on first");
+        cvTodo.put(TodoEntry.SUBJECT_ID, 0);
+        cvTodo.put(TodoEntry.DATE, "2016-01-26");
+        cvTodo.put(TodoEntry.TYPE, TodoData.TYPE_TASK);
+        cvTodo.put(TodoEntry.TIME_FROM, "00:00");
+        cvTodo.put(TodoEntry.TIME_TO, "24:00");
+        cvTodo.put(TodoEntry.LOCATION, "");
+        db.insert(TodoEntry.TABLE_NAME, null, cvTodo);
     }
 
     @Override

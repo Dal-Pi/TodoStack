@@ -1,5 +1,7 @@
 package com.kania.todostack2.presenter;
 
+import android.os.Bundle;
+
 import com.kania.todostack2.view.IViewAction;
 
 /**
@@ -17,10 +19,9 @@ public interface IControllerMediator {
     int MODE_VIEW_SUBJECT = 7;
 
     //first, change mode
-
     //second, notify to View
-
     //third, notify to FAB
+    //fourth, change guide text
 
     void setMediator(IViewAction mediator);
 
@@ -28,5 +29,5 @@ public interface IControllerMediator {
 
     void setMode(int targetMode);
     void clickBackPressSoftButton();
-    void clickFloatingActionButton();
+    void clickFloatingActionButton(Bundle bundle);
 }

@@ -9,10 +9,11 @@ public class ViewPosition {
     public int bottom;
     public int right;
 
-    public ViewPosition(int left, int top, int bottom, int right) {
+    public ViewPosition(int left, int top, int right, int bottom) {
         this.left = left;
         this.top = top;
-        this.bottom = bottom;
         this.right = right;
+        this.bottom = bottom;
+
     }
 }
