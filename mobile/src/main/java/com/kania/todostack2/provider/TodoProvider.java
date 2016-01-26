@@ -3,7 +3,6 @@ package com.kania.todostack2.provider;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.util.Log;
 
 import com.kania.todostack2.data.SubjectData;
@@ -107,14 +106,14 @@ public class TodoProvider {
             todo.type = todoCursor.
                     getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.TYPE));
             switch (todo.type) {
-                case TodoData.TYPE_PERIOD:
+                case TodoData.TODO_DB_TYPE_PERIOD:
                     todo.timeFrom = todoCursor.
                             getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_FROM));
                     todo.timeTo = todoCursor.
                             getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_TO));
                     break;
-                case TodoData.TYPE_ALLDAY:
-                case TodoData.TYPE_TASK:
+                case TodoData.TODO_DB_TYPE_ALLDAY:
+                case TodoData.TODO_DB_TYPE_TASK:
                     todo.timeFrom = "";
                     todo.timeTo = "";
                     break;
@@ -150,6 +149,11 @@ public class TodoProvider {
             allTodoData.add(todoMap.get(it.next()));
         }
         return allTodoData;
+    }
+
+    public static SubjectData getSubjectById(int subId) {
+        Log.d("TodoStack", "[getSubjectById] subId = " + subId);
+        return subjectMap.get(subId);
     }
 
     public static int getSubjectCount() {

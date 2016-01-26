@@ -284,7 +284,6 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         for (TextView tv : alTextView) {
             todoLayout.addView(tv);
         }
-        refreshTodoLayout();
     }
 
     @Override

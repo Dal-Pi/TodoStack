@@ -12,8 +12,12 @@ public class TodoLayoutInfo {
     //percent of each view
     public static final int PERCENT_TODOGAPHEIGHT = 10;
     //pixel of line
-    public static final int DATEDIVIDERLINE_HEIGHT = 1;
-    public static final int TASKBASELINE_HEIGHT = 2;
+    public static final int BASICDIVIDERLINE_HEIGHT = 2;
+    public static final int DATEDIVIDERLINE_HEIGHT = 3;
+    public static final int TASKBASELINE_HEIGHT = 3;
+
+    //reduce size
+    public static final int DATETEXT_MARGIN_HEIGHT = 5;
 
     public int subjectCount;
     public int taskCount;
@@ -27,9 +31,17 @@ public class TodoLayoutInfo {
     public int todoWidth;
     public int todoHeight;
 
+    //gapWidth
     public int subjectGap;
-    public int dateTodoGap;
+    //gapHeight
     public int stackTodoGap;
+    public int dateTodoGap;
+    public int delayedTodoGap;
+
+    //public int taskTodoTop; //it is 0
+    public int dateTodoTop;
+    public int subjectTop;
+    public int delayedTodoTop;
 
     private TodoLayoutInfo() {
         //block default constructor
@@ -43,6 +55,10 @@ public class TodoLayoutInfo {
         this.dateTodoCount = dateTodoCount;
         this.delayedTodoCount = delayedTodoCount;
 
+        dateTodoTop = -1;
+        subjectTop = -1;
+        delayedTodoTop = -1;
+
         refreshEachViewSize(subjectCount, taskCount, dateTodoCount, delayedTodoCount);
     }
 
@@ -52,16 +68,18 @@ public class TodoLayoutInfo {
             return false;
         }
         dateWidth = (layoutWidth * PERCENT_DATEWIDTH) / 100;
-        subjectHeight = (layoutHeight * PERCENT_SUBJECTHEIGHT) / 100;
+//        subjectHeight = (layoutHeight * PERCENT_SUBJECTHEIGHT) / 100;
         todoWidth = (layoutWidth - dateWidth) / subjectCount;
-        todoHeight = (layoutHeight - (subjectHeight * subjectCount))
-                / (taskCount + dateTodoCount + delayedTodoCount);
-        stackTodoGap = (todoHeight * PERCENT_TODOGAPHEIGHT) / 100;
-        dateTodoGap = stackTodoGap + DATEDIVIDERLINE_HEIGHT;
+        int exceptGapHeight = layoutHeight
+                - ((dateTodoCount + 1) * DATEDIVIDERLINE_HEIGHT)
+                - ((taskCount + delayedTodoCount) * BASICDIVIDERLINE_HEIGHT);
+        todoHeight = exceptGapHeight / (taskCount + dateTodoCount + delayedTodoCount + 1); //1 is subject
+        subjectHeight = todoHeight;
+        stackTodoGap = BASICDIVIDERLINE_HEIGHT;
+        dateTodoGap = DATEDIVIDERLINE_HEIGHT;
+        delayedTodoGap = BASICDIVIDERLINE_HEIGHT;
         subjectGap = (layoutWidth * PERCENT_SUBJECTGAPWIDTH) / 100;
 
-        //renew removing gap
-        todoWidth -= subjectGap;
         return true;
     }
 
@@ -71,9 +89,51 @@ public class TodoLayoutInfo {
      * @return ViewPosition of subject
      */
     public ViewPosition getSubjectPosition(int subjectSequence) {
-        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * subjectSequence);
-        int top = ((todoHeight + stackTodoGap) * taskCount) + TASKBASELINE_HEIGHT +
-                dateTodoGap + ((todoHeight + dateTodoGap) * dateTodoCount);
+        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
+        int top;
+        if (subjectTop <= 0) {
+            initCommonValues();
+        }
+        top = subjectTop;
         return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+    }
+
+    public ViewPosition getTaskTodoPosition(int subjectSequence, int taskSequence) {
+        int revSeq = taskCount - taskSequence - 1; //reverse sequence
+        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
+        int top = ((todoHeight + stackTodoGap) * revSeq);
+        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+    }
+
+    public ViewPosition getDateTodoPosition(int subjectSequence, int diffDate) {
+        if (subjectTop <= 0) {
+            initCommonValues();
+        }
+        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
+        int top = subjectTop - ((todoHeight + dateTodoGap) * (diffDate + 1));
+        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+    }
+
+    public ViewPosition getDelayedTodoPosition(int subjectSequence, int delayedTodoSequence) {
+        int revSeq = delayedTodoCount - delayedTodoSequence - 1; //reverse sequence
+        int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
+        int top = delayedTodoTop + ((todoHeight + delayedTodoTop) * revSeq);
+        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+    }
+
+    public ViewPosition getDateTextPosition(int diffDate) {
+        if (subjectTop <= 0) {
+            initCommonValues();
+        }
+        int left = 0;
+        int top = subjectTop - ((todoHeight + dateTodoGap) * (diffDate + 1));
+        return new ViewPosition(left, top + DATETEXT_MARGIN_HEIGHT,
+                left + dateWidth, top + todoHeight - DATETEXT_MARGIN_HEIGHT);
+    }
+
+    public void initCommonValues() {
+        dateTodoTop = ((todoHeight + stackTodoGap) * taskCount) + TASKBASELINE_HEIGHT;
+        subjectTop = dateTodoTop + ((todoHeight + dateTodoGap) * dateTodoCount);
+        delayedTodoTop = subjectTop + subjectHeight + delayedTodoGap;
     }
 }

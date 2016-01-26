@@ -28,5 +28,6 @@ public final class TodoStackContract {
         public static final String TIME_FROM = "time_from";
         public static final String TIME_TO = "time_to";
         public static final String LOCATION = "location";
+        public static final String DATAFORMAT_DATE = "yyyyMMdd";
     }
 }

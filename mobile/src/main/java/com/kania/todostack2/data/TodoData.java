@@ -9,10 +9,15 @@ import java.util.Date;
  * for performance, do not use getter or setter method
  */
 public class TodoData {
-    public static final int TYPE_ALLDAY = 1;
-    public static final int TYPE_PERIOD = 2;
-    public static final int TYPE_TASK = 3;
+    public static final int TODO_DB_TYPE_ALLDAY = 1;
+    public static final int TODO_DB_TYPE_PERIOD = 2;
+    public static final int TODO_DB_TYPE_TASK = 3;
 
+//    public static final int TODO_REALTIME_TYPE_TASK = 1;
+    public static final int TODO_REALTIME_TYPE_DATE = 2;
+    public static final int TODO_REALTIME_TYPE_DELAYED = 3;
+
+    //from DB
     public int id;
     public String todoName;
     public int subjectId;
@@ -21,6 +26,9 @@ public class TodoData {
     public String timeFrom;
     public String timeTo;
     public String location;
+
+    //from real time
+    public int realtimeType;
 
     //TODO change structure to bilder
 //    public class Builder {
