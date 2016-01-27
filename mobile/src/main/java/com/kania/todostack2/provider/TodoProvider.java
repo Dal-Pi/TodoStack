@@ -30,11 +30,16 @@ public class TodoProvider {
     private static HashMap<Integer, SubjectData> subjectMap;
     private static HashMap<Integer, TodoData> todoMap;
 
+    private static ArrayList<SubjectData> subjectList;
+    private static ArrayList<TodoData> todoList;
+
     private TodoProvider(Context context) {
         this.context = context;
 
         subjectMap = new HashMap<Integer, SubjectData>();
+        subjectList = new ArrayList<SubjectData>();
         todoMap = new HashMap<Integer, TodoData>();
+        todoList = new ArrayList<TodoData>();
 
         //get data from DB
         initData();
@@ -75,6 +80,7 @@ public class TodoProvider {
             subject.order = subjectCursor.
                     getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SEQUENCE));
 
+            subjectList.add(subject);
             subjectMap.put(subject.id, subject);
         }
     }
@@ -121,6 +127,7 @@ public class TodoProvider {
             todo.location = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.LOCATION));
 
+            todoList.add(todo);
             todoMap.put(todo.id, todo);
         }
     }
@@ -135,25 +142,36 @@ public class TodoProvider {
 
     public static ArrayList<SubjectData> getAllSubject() {
         ArrayList<SubjectData> allSubjectData = new ArrayList<SubjectData>();
-        Iterator<Integer> it = subjectMap.keySet().iterator();
-        while(it.hasNext()) {
-            allSubjectData.add(subjectMap.get(it.next()));
+//        Iterator<Integer> it = subjectMap.keySet().iterator();
+//        while(it.hasNext()) {
+//            allSubjectData.add(subjectMap.get(it.next()));
+//        }
+        for (SubjectData subject : subjectList){
+            allSubjectData.add(subject);
         }
         return allSubjectData;
     }
 
     public static ArrayList<TodoData> getAllTodo() {
         ArrayList<TodoData> allTodoData = new ArrayList<TodoData>();
-        Iterator<Integer> it = todoMap.keySet().iterator();
-        while(it.hasNext()) {
-            allTodoData.add(todoMap.get(it.next()));
+//        Iterator<Integer> it = todoMap.keySet().iterator();
+//        while(it.hasNext()) {
+//            allTodoData.add(todoMap.get(it.next()));
+//        }
+        for (TodoData todo : todoList){
+            allTodoData.add(todo);
         }
         return allTodoData;
     }
 
     public static SubjectData getSubjectById(int subId) {
-        Log.d("TodoStack", "[getSubjectById] subId = " + subId);
+//        Log.d("TodoStack", "[getSubjectById] subId = " + subId);
         return subjectMap.get(subId);
+    }
+
+    public static TodoData getTodoById(int todoId) {
+//        Log.d("TodoStack", "[getTodoById] subId = " + todoId);
+        return todoMap.get(todoId);
     }
 
     public static int getSubjectCount() {

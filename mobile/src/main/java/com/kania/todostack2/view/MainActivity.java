@@ -6,13 +6,11 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -174,6 +172,14 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     }
 
     @Override
+    public void setInputTodoVisible() {
+        if (controllerInputTodo.getVisibility() != View.VISIBLE) {
+            setAllControllerGone();
+            controllerInputTodo.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void setInputSubjectVisible() {
         if (controllerInputSubject.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
@@ -185,7 +191,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     public void setFabToInputTodo(String action, int color, boolean needMove) {
         if (needMove) {
             if (isViewVisible(controllerInputTodo)) {
-                setFabThemWithMoveUp(action, color);
+                setFabThemeWithMoveUp(action, color);
             }
         } else {
             setFabTheme(action, color);
@@ -196,7 +202,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     public void setFabToInputSubject(String action, int color, boolean needMove) {
         if (needMove) {
             if (isViewVisible(controllerInputSubject)) {
-                setFabThemWithMoveUp(action, color);
+                setFabThemeWithMoveUp(action, color);
             }
         } else {
             setFabTheme(action, color);
@@ -206,7 +212,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     @Override
     public void setFabToBase(String action, int color, boolean needMove) {
         if (needMove) {
-            setFabThemWithMoveDown(action, color);
+            setFabThemeWithMoveDown(action, color);
         } else {
             setFabTheme(action, color);
         }
@@ -220,7 +226,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         }
     }
 
-    public void setFabThemWithMoveUp(final String action, final int color) {
+    public void setFabThemeWithMoveUp(final String action, final int color) {
         Animation animation =
                 new TranslateAnimation(0, 0, 0, layoutFabBar.getTop() - btnFab.getTop());
         animation.setDuration(DURATION_ANIMATION);
@@ -246,7 +252,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         btnFab.startAnimation(animation);
     }
 
-    public void setFabThemWithMoveDown(final String action, final int color) {
+    public void setFabThemeWithMoveDown(final String action, final int color) {
         Animation animation =
                 new TranslateAnimation(0, 0, 0, layoutFabBar.getBottom() - btnFab.getBottom());
         animation.setDuration(DURATION_ANIMATION);
@@ -277,6 +283,11 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
 
     public boolean isViewVisible(View view) {
         return view.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
+    public void clearTodoLayout() {
+        todoLayout.removeAllViews();
     }
 
     @Override

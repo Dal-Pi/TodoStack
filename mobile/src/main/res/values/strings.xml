@@ -33,5 +33,6 @@
     <string name="guide_text_default">Guide TextView.</string>
     <string name="guide_text_mode_initial_setup">Select \"NEW SUBJECT\".</string>
     <string name="guide_text_mode_no_selection">Select \"NEW TODO\" for create Todo.</string>
+    <string name="guide_text_mode_input_todo">Input information represent Todo.</string>
     <string name="guide_text_mode_input_subject">Input "Subject Name" represent Todo(s).</string>
 </resources>

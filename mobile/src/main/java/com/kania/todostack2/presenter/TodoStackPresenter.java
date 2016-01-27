@@ -2,9 +2,7 @@ package com.kania.todostack2.presenter;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -25,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * Created by user on 2016-01-20.
@@ -38,6 +35,8 @@ public class TodoStackPresenter implements IControllerMediator {
 
     private IViewAction mTodoView;
     private int mViewMode;
+
+    private boolean mIsFabTop = false;
 
     public TodoStackPresenter(Context context) {
         mContext = context;
@@ -79,34 +78,37 @@ public class TodoStackPresenter implements IControllerMediator {
         boolean needAnimation = false;
         switch (targetMode) {
             case MODE_INITIAL_SETUP:
-                if (mViewMode == MODE_ADD_SUBJECT || mViewMode == MODE_VIEW_SUBJECT) {
-                    needAnimation = true;
-                }
+                needAnimation = isFabTop();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_subject),
                         res.getColor(R.color.color_normal_state), needAnimation);
+                mIsFabTop = false;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_initial_setup));
                 break;
             case MODE_NO_SELECTION:
-                if (mViewMode != MODE_INITIAL_SETUP && mViewMode != MODE_NO_SELECTION) {
-                    needAnimation = true;
-                }
+                needAnimation = isFabTop();
                 //set data to TodoLayout
                 sendDataToTodoViewAfterConverting();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_todo),
                         res.getColor(R.color.color_normal_state), needAnimation);
+                mIsFabTop = false;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_no_selection));
                 break;
             case MODE_ADD_TODO:
+                needAnimation = !isFabTop();
+                mTodoView.setInputTodoVisible();
+                mTodoView.setFabToInputTodo(res.getString(R.string.fab_add),
+                        res.getColor(R.color.color_normal_state), needAnimation);
+                mIsFabTop = true;
+                mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_todo));
                 break;
             case MODE_ADD_SUBJECT:
-                if (mViewMode != MODE_ADD_SUBJECT) {
-                    needAnimation = true;
-                }
+                needAnimation = !isFabTop();
                 mTodoView.setInputSubjectVisible();
                 mTodoView.setFabToInputSubject(res.getString(R.string.fab_add),
                         res.getColor(R.color.color_normal_state), needAnimation);
+                mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
                 break;
             case MODE_VIEW_TODO_ONELINE:
@@ -122,7 +124,12 @@ public class TodoStackPresenter implements IControllerMediator {
         Log.d("TodoStack", "Now Mode = " + printMode(mViewMode));
     }
 
+    private boolean isFabTop() {
+        return mIsFabTop;
+    }
+
     private void sendDataToTodoViewAfterConverting() {
+        mTodoView.clearTodoLayout();
         sendDateTextData();
         sendSubjectData();
         sendTodoData();
@@ -160,6 +167,11 @@ public class TodoStackPresenter implements IControllerMediator {
         ArrayList<SubjectData> subData = TodoProvider.getInstance(mContext).getAllSubject();
 
         for(SubjectData sd : subData) {
+            //before send TodoDatas, initialize counts
+            sd.taskCount = 0;
+            sd.dateTodoCount = 0;
+            sd.delayedTodoCount = 0;
+
             TextView tv = new TextView(mContext);
             tv.setIncludeFontPadding(false);
             tv.setText(sd.subjectName);
@@ -211,14 +223,22 @@ public class TodoStackPresenter implements IControllerMediator {
 
                     if (cmpDiffDays < 0) { //delayed
                         subjectdata.delayedTodoCount++;
-                        tv = getDelayedTodoTextView(td, subjectdata);
+                        if (subjectdata.delayedTodoCount < settingValues.getVisivleDelayedCount()) {
+                            tv = getDelayedTodoTextView(td, subjectdata);
+                        } else if (subjectdata.delayedTodoCount == settingValues.getVisivleDelayedCount()) {
+                            //TODO more option
+                        } else {
+                            continue;
+                        }
                     }
                     else if (cmpDiffDays >= 0
                             && cmpDiffDays < settingValues.getVisivleDateCount()) { //ranged
+                        Log.d("TodoStack", "[sendTodoData] delyed case, cmpDiffDays of "
+                                + td.todoName + " = " + cmpDiffDays);
                         subjectdata.dateTodoCount++;
                         tv = getDateTodoTextView(td, subjectdata, cmpDiffDays);
                         if (cmpDiffDays == 0) { //today
-                            tv.setTextColor(ColorProvider.getInstance().getTodayColor());
+                            tv.setBackgroundColor(ColorProvider.getInstance().getTodayColor());
                         }
                     } else {
                         continue;
@@ -271,6 +291,14 @@ public class TodoStackPresenter implements IControllerMediator {
      */
     private int campareDate(Calendar target, Calendar today) {
         int diffDays;
+        target.set(Calendar.HOUR_OF_DAY, 0);
+        target.set(Calendar.MINUTE, 0);
+        target.set(Calendar.SECOND, 0);
+        target.set(Calendar.MILLISECOND, 0);
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
         diffDays = (int) ((target.getTimeInMillis() - today.getTimeInMillis())
                 / (1000 * 60 * 60 * 24));
 
@@ -298,8 +326,10 @@ public class TodoStackPresenter implements IControllerMediator {
                 setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_NO_SELECTION:
+                setMode(MODE_ADD_TODO);
                 break;
             case MODE_ADD_TODO:
+                //TODO request add todo using asynctask
                 break;
             case MODE_ADD_SUBJECT:
                 //TODO request add subject using asynctask

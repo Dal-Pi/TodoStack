@@ -7,9 +7,9 @@ import android.util.Log;
  * Created by user on 2016-01-25.
  */
 public class TodoStackSettingValues {
-    public static int DEFAULT_VISIBLE_TASK_COUNT = 7;
-    public static int DEFAULT_VISIBLE_DATE_COUNT = 15;
-    public static int DEFAULT_VISIBLE_DELAYED_COUNT = 5;
+    public static int DEFAULT_VISIBLE_TASK_COUNT = 10;
+    public static int DEFAULT_VISIBLE_DATE_COUNT = 21;
+    public static int DEFAULT_VISIBLE_DELAYED_COUNT = 10;
 
     public static TodoStackSettingValues instance;
 

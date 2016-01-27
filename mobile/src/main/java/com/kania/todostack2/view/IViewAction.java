@@ -11,12 +11,14 @@ public interface IViewAction {
 
     void setAllControllerGone();
     void setInputSubjectVisible();
+    void setInputTodoVisible();
 
     void setFabToInputTodo(String action, int color, boolean needMove);
     void setFabToInputSubject(String action, int color, boolean needMove);
 
     void setFabToBase(String action, int color, boolean needMove);
 
+    void clearTodoLayout();
     void setTextViewOnTodoLayout(ArrayList<TextView> alTextView);
     void refreshTodoLayout();
 
