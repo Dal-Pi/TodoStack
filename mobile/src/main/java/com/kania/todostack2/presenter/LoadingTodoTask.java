@@ -53,6 +53,7 @@ public class LoadingTodoTask extends AsyncTask<Void, Void, Boolean> {
 
         //just call getInstance for init
         mTodoProvider = TodoProvider.getInstance(mContext);
+        mTodoProvider.initData();
 
         long endTime = getCurrentTimeInMillis();
         Log.d("TodoStack", "endTime = " + endTime);

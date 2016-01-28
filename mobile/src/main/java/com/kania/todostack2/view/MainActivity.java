@@ -288,6 +288,8 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     @Override
     public void clearTodoLayout() {
         todoLayout.removeAllViews();
+        //TODO need to be improve logic
+        mediator.refreshTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
     }
 
     @Override

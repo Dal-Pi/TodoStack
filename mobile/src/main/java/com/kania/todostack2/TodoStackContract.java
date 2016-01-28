@@ -16,13 +16,13 @@ public final class TodoStackContract {
         public static final String TABLE_NAME = "subject";
         public static final String SUBJECT_NAME = "name";
         public static final String COLOR = "color";
-        public static final String SEQUENCE = "sequence";
+        public static final String ORDER = "sequence";
     }
 
     public static class TodoEntry implements BaseColumns {
         public static final String TABLE_NAME = "todo";
         public static final String TODO_NAME = "name";
-        public static final String SUBJECT_ID = "sub_id";
+        public static final String SUBJECT_ORDER = "sub_id";
         public static final String DATE = "date";
         public static final String TYPE = "type";
         public static final String TIME_FROM = "time_from";

@@ -13,7 +13,6 @@ import static com.kania.todostack2.TodoStackContract.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Created by user on 2016-01-11.
@@ -22,10 +21,10 @@ public class TodoProvider {
 
     public static TodoProvider instance;
 
-    private Context context;
+    private static Context context;
 
-    private TodoStackDbHelper dbHelper;
-    private SQLiteDatabase todoStackDb;
+    private static TodoStackDbHelper dbHelper;
+    private static SQLiteDatabase todoStackDb;
 
     private static HashMap<Integer, SubjectData> subjectMap;
     private static HashMap<Integer, TodoData> todoMap;
@@ -40,25 +39,32 @@ public class TodoProvider {
         subjectList = new ArrayList<SubjectData>();
         todoMap = new HashMap<Integer, TodoData>();
         todoList = new ArrayList<TodoData>();
-
-        //get data from DB
-        initData();
     }
 
-    private void initData() {
+    public static void initData() {
         dbHelper = new TodoStackDbHelper(context);
         todoStackDb = dbHelper.getReadableDatabase();
 
         getSubjectFromDb();
         getTodoFromDb();
+
+        todoStackDb.close();
     }
 
-    private void getSubjectFromDb() {
+    private static void getSubjectFromDb() {
+        if (subjectMap == null)
+            subjectMap = new HashMap<Integer, SubjectData>();
+        if (subjectList == null)
+            subjectList = new ArrayList<SubjectData>();
+        subjectMap.clear();
+        subjectList.clear();
+
+
         final String[] projection = {
                 SubjectEntry._ID,
                 SubjectEntry.SUBJECT_NAME,
                 SubjectEntry.COLOR,
-                SubjectEntry.SEQUENCE
+                SubjectEntry.ORDER
         };
         Cursor subjectCursor = todoStackDb.query(SubjectEntry.TABLE_NAME,
                 projection, null, null, null, null, null);
@@ -78,18 +84,25 @@ public class TodoProvider {
                 subject.color = ColorProvider.getDefaultColor();
             }
             subject.order = subjectCursor.
-                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SEQUENCE));
+                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.ORDER));
 
             subjectList.add(subject);
             subjectMap.put(subject.id, subject);
         }
     }
 
-    private void getTodoFromDb() {
+    private static void getTodoFromDb() {
+        if (todoMap == null)
+            todoMap = new HashMap<Integer, TodoData>();
+        if (todoList == null)
+            todoList = new ArrayList<TodoData>();
+        todoMap.clear();
+        todoList.clear();
+
         final String[] projection = {
                 TodoEntry._ID,
                 TodoEntry.TODO_NAME,
-                TodoEntry.SUBJECT_ID,
+                TodoEntry.SUBJECT_ORDER,
                 TodoEntry.DATE,
                 TodoEntry.TYPE,
                 TodoEntry.TIME_FROM,
@@ -106,7 +119,7 @@ public class TodoProvider {
             todo.todoName = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TODO_NAME));
             todo.subjectId = todoCursor.
-                    getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.SUBJECT_ID));
+                    getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.SUBJECT_ORDER));
             todo.date = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.DATE));
             todo.type = todoCursor.

@@ -26,6 +26,7 @@ public interface IControllerMediator {
     void setMediator(IViewAction mediator);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);
+    void refreshTodoLayout(int layoutWidth, int layoutHeight);
 
     void setMode(int targetMode);
     void clickBackPressSoftButton();

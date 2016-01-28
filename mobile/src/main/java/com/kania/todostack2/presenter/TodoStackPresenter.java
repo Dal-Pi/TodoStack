@@ -54,18 +54,29 @@ public class TodoStackPresenter implements IControllerMediator {
     public void initTodoLayout(int layoutWidth, int layoutHeight) {
         Log.d("TodoStack", "[initTodoLayout] width/height = " + layoutWidth + "/" + layoutHeight);
         TodoProvider provider = TodoProvider.getInstance(mContext);
-        //if there is no subject, do not perform.
+
         if (provider.getSubjectCount() > 0) {
-            //TODO implement this
+            refreshTodoLayout(layoutWidth, layoutHeight);
+            setMode(MODE_NO_SELECTION);
+        } else {
+            setMode(MODE_INITIAL_SETUP);
+        }
+    }
+
+    @Override
+    public void refreshTodoLayout(int layoutWidth, int layoutHeight) {
+        TodoProvider provider = TodoProvider.getInstance(mContext);
+        if (mTodolayoutInfo == null) {
             mTodolayoutInfo = new TodoLayoutInfo(layoutWidth, layoutHeight,
                     provider.getSubjectCount(),
                     TodoStackSettingValues.getVisivleTaskCount(),
                     TodoStackSettingValues.getVisivleDateCount(),
                     TodoStackSettingValues.getVisivleDelayedCount());
-            //after define all length, set mode to MODE_NO_SELECTION
-            setMode(MODE_NO_SELECTION);
         } else {
-            setMode(MODE_INITIAL_SETUP);
+            mTodolayoutInfo.refreshEachViewSize(provider.getSubjectCount(),
+                    TodoStackSettingValues.getVisivleTaskCount(),
+                    TodoStackSettingValues.getVisivleDateCount(),
+                    TodoStackSettingValues.getVisivleDelayedCount());
         }
     }
 
@@ -182,7 +193,7 @@ public class TodoStackPresenter implements IControllerMediator {
             sendData.add(tv);
 
             //debug
-            Log.d("TodoStack", "[sendSubjectData] subject id = " + sd.id);
+            Log.d("TodoStack", "[sendSubjectData] subject id = " + sd.order);
         }
         mTodoView.setTextViewOnTodoLayout(sendData);
     }
@@ -274,6 +285,10 @@ public class TodoStackPresenter implements IControllerMediator {
 
     private TextView getCommonTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = new TextView(mContext);
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        tv.setLayoutParams(params);
         tv.setIncludeFontPadding(false);
         tv.setText(td.todoName);
         tv.setTextColor(res.getColor(R.color.color_todo_text));
@@ -326,13 +341,16 @@ public class TodoStackPresenter implements IControllerMediator {
                 setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_NO_SELECTION:
-                setMode(MODE_ADD_TODO);
+                //for debug
+//                setMode(MODE_ADD_TODO);
+                setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_ADD_TODO:
                 //TODO request add todo using asynctask
                 break;
             case MODE_ADD_SUBJECT:
-                //TODO request add subject using asynctask
+                // request add subject using asynctask
+                insertSubject(bundle);
                 break;
             case MODE_VIEW_TODO_ONELINE:
             case MODE_VIEW_TODO_TWOLINE:
@@ -345,25 +363,35 @@ public class TodoStackPresenter implements IControllerMediator {
         }
     }
 
-    private TextView getTextViewTemplet() {
-        TextView textView = new TextView(mContext);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        textView.setLayoutParams(params);
-
-        return textView;
+    private void insertSubject(Bundle bundle) {
+        UpdateSubjectTask insertSubjectTask =
+                new UpdateSubjectTask(mContext, new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void loadFinished() {
+                        LoadingTodoTask refreshTask = new LoadingTodoTask(
+                                mContext, new LoadingTodoTask.TaskEndCallback() {
+                            @Override
+                            public void loadFinished() {
+                                setMode(MODE_NO_SELECTION);
+                            }
+                        });
+                        refreshTask.execute();
+                    }
+                });
+        insertSubjectTask.setData(
+                makeSubjectData(bundle), UpdateSubjectTask.SUBJECT_TASK_ADD_SUBJECT);
+        insertSubjectTask.execute();
     }
 
-    private TextView setSubjectTodoView(TextView textView, Bundle bundle) {
-        String subjectName =
-                bundle.getString(TodoStackContract.SubjectEntry.SUBJECT_NAME, "ERROR");
-        int color = bundle.getInt(
-                TodoStackContract.SubjectEntry.COLOR, res.getColor(R.color.color_normal_state));
-        textView.setText(subjectName);
-        textView.setTextColor(color);
 
-        return textView;
+
+    private SubjectData makeSubjectData(Bundle bundle) {
+        SubjectData subject = new SubjectData();
+        subject.subjectName = bundle.getString(TodoStackContract.SubjectEntry.SUBJECT_NAME);
+        subject.color = bundle.getInt(TodoStackContract.SubjectEntry.COLOR);
+        subject.order = TodoProvider.getInstance(mContext).getSubjectCount();
+
+        return subject;
     }
 
     //for debug
