@@ -50,7 +50,7 @@ public class TodoLayout extends ViewGroup {
     }
 
     private void setLayoutFromTag(TextView tv) {
-        ViewPosition pos = (ViewPosition) tv.getTag();
+        TextViewInfo pos = (TextViewInfo) tv.getTag();
         if (pos == null)
             return;
         Log.d("TodoStack", "[setLayoutFromTag] l/t/r/b = "

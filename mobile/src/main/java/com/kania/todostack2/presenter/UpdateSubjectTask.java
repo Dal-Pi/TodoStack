@@ -57,23 +57,26 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Void... params) {
-        dbHelper = new TodoStackDbHelper(mContext);
-        todoStackDb = dbHelper.getReadableDatabase();
 
         if (mData == null || mTaskType == -1) {
             return false;
+        } else {
+            dbHelper = new TodoStackDbHelper(mContext);
+            todoStackDb = dbHelper.getReadableDatabase();
+            switch (mTaskType) {
+                case SUBJECT_TASK_ADD_SUBJECT:
+                    ContentValues cvSub = new ContentValues();
+                    cvSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
+                    cvSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
+                    cvSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
+                    todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvSub);
+                    break;
+                default:
+                    return false;
+            }
+            todoStackDb.close();
         }
-        switch (mTaskType) {
-            case SUBJECT_TASK_ADD_SUBJECT:
-                ContentValues cvSub = new ContentValues();
-                cvSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
-                cvSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
-                cvSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
-                todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvSub);
-                break;
-            default:
-                return false;
-        }
+
         return true;
     }
 

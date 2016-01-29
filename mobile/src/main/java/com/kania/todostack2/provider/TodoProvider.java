@@ -118,7 +118,7 @@ public class TodoProvider {
                     getInt(todoCursor.getColumnIndexOrThrow(TodoEntry._ID));
             todo.todoName = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TODO_NAME));
-            todo.subjectId = todoCursor.
+            todo.subjectOrder = todoCursor.
                     getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.SUBJECT_ORDER));
             todo.date = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.DATE));

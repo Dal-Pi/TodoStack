@@ -13,7 +13,7 @@ import static com.kania.todostack2.TodoStackContract.*;
  * Created by user on 2016-01-10.
  */
 public class TodoStackDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "todostack.db";
 
     private static final String TEXT_TYPE = " TEXT";

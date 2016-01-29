@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -16,7 +17,10 @@ import com.kania.todostack2.data.TodoStackSettingValues;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.provider.TodoProvider;
 import com.kania.todostack2.view.IViewAction;
+import com.kania.todostack2.view.TextViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
+
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,7 +31,7 @@ import java.util.Date;
 /**
  * Created by user on 2016-01-20.
  */
-public class TodoStackPresenter implements IControllerMediator {
+public class TodoStackPresenter implements IControllerMediator, View.OnClickListener {
     private Context mContext;
     private TodoLayoutInfo mTodolayoutInfo;
 
@@ -36,6 +40,7 @@ public class TodoStackPresenter implements IControllerMediator {
     private IViewAction mTodoView;
     private int mViewMode;
 
+    private int mNowSelectSubjectOrder = -1;
     private boolean mIsFabTop = false;
 
     public TodoStackPresenter(Context context) {
@@ -89,6 +94,8 @@ public class TodoStackPresenter implements IControllerMediator {
         boolean needAnimation = false;
         switch (targetMode) {
             case MODE_INITIAL_SETUP:
+                mTodoView.setActionBarText(res.getString(R.string.app_name),
+                        res.getColor(R.color.colorAccent));
                 needAnimation = isFabTop();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_subject),
@@ -97,6 +104,8 @@ public class TodoStackPresenter implements IControllerMediator {
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_initial_setup));
                 break;
             case MODE_NO_SELECTION:
+                mTodoView.setActionBarText(res.getString(R.string.app_name),
+                        res.getColor(R.color.colorAccent));
                 needAnimation = isFabTop();
                 //set data to TodoLayout
                 sendDataToTodoViewAfterConverting();
@@ -104,17 +113,25 @@ public class TodoStackPresenter implements IControllerMediator {
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_todo),
                         res.getColor(R.color.color_normal_state), needAnimation);
                 mIsFabTop = false;
-                mTodoView.setGuideText(res.getString(R.string.guide_text_mode_no_selection));
+                mTodoView.setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
                 break;
             case MODE_ADD_TODO:
+                TodoProvider provider = TodoProvider.getInstance(mContext);
+                SubjectData subject = provider.getSubjectById(mNowSelectSubjectOrder);
+                int targetSubjectColor = subject.color;
                 needAnimation = !isFabTop();
-                mTodoView.setInputTodoVisible();
-                mTodoView.setFabToInputTodo(res.getString(R.string.fab_add),
-                        res.getColor(R.color.color_normal_state), needAnimation);
+                mTodoView.setActionBarText(
+                        res.getString(R.string.adding_text_on_new_todo) + " " + subject.subjectName,
+                        targetSubjectColor);
+                mTodoView.setInputTodoVisible(targetSubjectColor);
+                mTodoView.setFabToInputTodo(res.getString(R.string.fab_add), targetSubjectColor,
+                        needAnimation);
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_todo));
                 break;
             case MODE_ADD_SUBJECT:
+                mTodoView.setActionBarText(res.getString(R.string.title_text_on_new_subject),
+                        res.getColor(R.color.colorAccent));
                 needAnimation = !isFabTop();
                 mTodoView.setInputSubjectVisible();
                 mTodoView.setFabToInputSubject(res.getString(R.string.fab_add),
@@ -165,7 +182,7 @@ public class TodoStackPresenter implements IControllerMediator {
             calendar.add(Calendar.DATE, 1);
         }
 
-        mTodoView.setTextViewOnTodoLayout(sendData);
+        mTodoView.setTextViewsOnTodoLayout(sendData);
     }
 
     private String getFormatedDateTextFromDate(Date date) {
@@ -188,14 +205,18 @@ public class TodoStackPresenter implements IControllerMediator {
             tv.setText(sd.subjectName);
             tv.setTextColor(sd.color);
             tv.setBackgroundColor(res.getColor(R.color.color_subject_background));
-            tv.setTag(mTodolayoutInfo.getSubjectPosition(sd.order));
+            TextViewInfo info = mTodolayoutInfo.getSubjectPosition(sd.order);
+            info.type = TextViewInfo.TYPE_SUBJECT;
+            info.id = sd.id;
+            tv.setTag(info);
+            tv.setOnClickListener(this);
 
             sendData.add(tv);
 
             //debug
             Log.d("TodoStack", "[sendSubjectData] subject id = " + sd.order);
         }
-        mTodoView.setTextViewOnTodoLayout(sendData);
+        mTodoView.setTextViewsOnTodoLayout(sendData);
     }
     private void sendTodoData() {
         ArrayList<TextView> sendData = new ArrayList<TextView>();
@@ -206,7 +227,7 @@ public class TodoStackPresenter implements IControllerMediator {
         TodoStackSettingValues settingValues = TodoStackSettingValues.getInstance(mContext);
 
         for(TodoData td : todoData) {
-            SubjectData subjectdata = todoProvider.getSubjectById(td.subjectId);
+            SubjectData subjectdata = todoProvider.getSubjectById(td.subjectOrder);
             if (subjectdata == null) {
                 Log.e("TodoStack", "[sendTodoData] subjectdata is null!");
                 continue;
@@ -259,26 +280,35 @@ public class TodoStackPresenter implements IControllerMediator {
                     sendData.add(tv);
             }
         }
-        mTodoView.setTextViewOnTodoLayout(sendData);
+        mTodoView.setTextViewsOnTodoLayout(sendData);
     }
 
     private TextView getTaskTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td, sd);
-        tv.setTag(mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount));
+        TextViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
+        info.type = TextViewInfo.TYPE_TODO;
+        info.id = td.id;
+        tv.setTag(info);
 
         return tv;
     }
 
     private TextView getDateTodoTextView(TodoData td, SubjectData sd, int diffDays) {
         TextView tv = getCommonTodoTextView(td, sd);
-        tv.setTag(mTodolayoutInfo.getDateTodoPosition(sd.order, diffDays));
+        TextViewInfo info = mTodolayoutInfo.getDateTodoPosition(sd.order, diffDays);
+        info.type = TextViewInfo.TYPE_TODO;
+        info.id = td.id;
+        tv.setTag(info);
 
         return tv;
     }
 
     private TextView getDelayedTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td, sd);
-        tv.setTag(mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount));
+        TextViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
+        info.type = TextViewInfo.TYPE_TODO;
+        info.id = td.id;
+        tv.setTag(info);
 
         return tv;
     }
@@ -341,12 +371,13 @@ public class TodoStackPresenter implements IControllerMediator {
                 setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_NO_SELECTION:
-                //for debug
+                //print guide to select Subject
 //                setMode(MODE_ADD_TODO);
-                setMode(MODE_ADD_SUBJECT);
+                mTodoView.setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
                 break;
             case MODE_ADD_TODO:
                 //TODO request add todo using asynctask
+                insertTodo(bundle);
                 break;
             case MODE_ADD_SUBJECT:
                 // request add subject using asynctask
@@ -383,7 +414,25 @@ public class TodoStackPresenter implements IControllerMediator {
         insertSubjectTask.execute();
     }
 
-
+    private void insertTodo(Bundle bundle) {
+        UpdateTodoTask insertTodoTask =
+                new UpdateTodoTask(mContext, new UpdateTodoTask.TaskEndCallback() {
+                    @Override
+                    public void loadFinished() {
+                        LoadingTodoTask refreshTask = new LoadingTodoTask(
+                                mContext, new LoadingTodoTask.TaskEndCallback() {
+                            @Override
+                            public void loadFinished() {
+                                setMode(MODE_NO_SELECTION);
+                            }
+                        });
+                        refreshTask.execute();
+                    }
+                });
+        insertTodoTask.setData(
+                makeTodoData(bundle), UpdateTodoTask.TODO_TASK_ADD_TODO);
+        insertTodoTask.execute();
+    }
 
     private SubjectData makeSubjectData(Bundle bundle) {
         SubjectData subject = new SubjectData();
@@ -392,6 +441,24 @@ public class TodoStackPresenter implements IControllerMediator {
         subject.order = TodoProvider.getInstance(mContext).getSubjectCount();
 
         return subject;
+    }
+
+    private TodoData makeTodoData(Bundle bundle) {
+        TodoData todo = new TodoData();
+        todo.todoName = bundle.getString(TodoStackContract.TodoEntry.TODO_NAME);
+        todo.subjectOrder = mNowSelectSubjectOrder;
+        todo.date = bundle.getString(TodoStackContract.TodoEntry.DATE);
+        todo.type = bundle.getInt(TodoStackContract.TodoEntry.TYPE);
+        todo.timeFrom = bundle.getString(TodoStackContract.TodoEntry.TIME_FROM);
+        todo.timeTo = bundle.getString(TodoStackContract.TodoEntry.TIME_TO);
+        todo.location = bundle.getString(TodoStackContract.TodoEntry.LOCATION);
+
+        return todo;
+    }
+
+    @Override
+    public void selectMenuAddSubject() {
+        setMode(MODE_ADD_SUBJECT);
     }
 
     //for debug
@@ -418,5 +485,17 @@ public class TodoStackPresenter implements IControllerMediator {
                 ret = "UNKNOWN_MODE!!!"; break;
         }
         return ret;
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        Object tag = v.getTag();
+        if (tag != null && tag instanceof TextViewInfo) {
+            if (((TextViewInfo) tag).type == TextViewInfo.TYPE_SUBJECT) {
+                mNowSelectSubjectOrder = ((TextViewInfo) tag).id;
+                setMode(MODE_ADD_TODO);
+            }
+        }
     }
 }

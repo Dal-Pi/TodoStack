@@ -31,4 +31,5 @@ public interface IControllerMediator {
     void setMode(int targetMode);
     void clickBackPressSoftButton();
     void clickFloatingActionButton(Bundle bundle);
+    void selectMenuAddSubject();
 }

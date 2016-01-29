@@ -8,8 +8,6 @@ import android.provider.BaseColumns;
  */
 public final class TodoStackContract {
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
-
     public TodoStackContract() {}
 
     public static class SubjectEntry implements BaseColumns {
@@ -28,6 +26,9 @@ public final class TodoStackContract {
         public static final String TIME_FROM = "time_from";
         public static final String TIME_TO = "time_to";
         public static final String LOCATION = "location";
+
         public static final String DATAFORMAT_DATE = "yyyyMMdd";
+        public static final String DATEFORMAT_TIME = "hhmm";
+        public static final String DATEFORMAT_TIME_DEFAULT = "0000";
     }
 }

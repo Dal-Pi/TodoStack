@@ -20,7 +20,7 @@ public class TodoData {
     //from DB
     public int id;
     public String todoName;
-    public int subjectId;
+    public int subjectOrder;
     public String date;
     public int type;
     public String timeFrom;

@@ -86,47 +86,47 @@ public class TodoLayoutInfo {
     /**
      *
      * @param subjectSequence sequence of subject, first item sequence is 0
-     * @return ViewPosition of subject
+     * @return TextViewInfo of subject
      */
-    public ViewPosition getSubjectPosition(int subjectSequence) {
+    public TextViewInfo getSubjectPosition(int subjectSequence) {
         int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
         int top;
         if (subjectTop <= 0) {
             initCommonValues();
         }
         top = subjectTop;
-        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+        return new TextViewInfo(left, top, left + todoWidth, top + todoHeight);
     }
 
-    public ViewPosition getTaskTodoPosition(int subjectSequence, int taskSequence) {
+    public TextViewInfo getTaskTodoPosition(int subjectSequence, int taskSequence) {
         int revSeq = taskCount - taskSequence; //reverse sequence
         int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
         int top = ((todoHeight + stackTodoGap) * revSeq);
-        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+        return new TextViewInfo(left, top, left + todoWidth, top + todoHeight);
     }
 
-    public ViewPosition getDateTodoPosition(int subjectSequence, int diffDate) {
+    public TextViewInfo getDateTodoPosition(int subjectSequence, int diffDate) {
         if (subjectTop <= 0) {
             initCommonValues();
         }
         int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
         int top = subjectTop - ((todoHeight + dateTodoGap) * (diffDate + 1));
-        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+        return new TextViewInfo(left, top, left + todoWidth, top + todoHeight);
     }
 
-    public ViewPosition getDelayedTodoPosition(int subjectSequence, int delayedTodoSequence) {
+    public TextViewInfo getDelayedTodoPosition(int subjectSequence, int delayedTodoSequence) {
         int left = dateWidth + (todoWidth * subjectSequence) + (subjectGap * (subjectSequence + 1));
         int top = delayedTodoTop + ((todoHeight + delayedTodoGap) * (delayedTodoSequence - 1));
-        return new ViewPosition(left, top, left + todoWidth, top + todoHeight);
+        return new TextViewInfo(left, top, left + todoWidth, top + todoHeight);
     }
 
-    public ViewPosition getDateTextPosition(int diffDate) {
+    public TextViewInfo getDateTextPosition(int diffDate) {
         if (subjectTop <= 0) {
             initCommonValues();
         }
         int left = 0;
         int top = subjectTop - ((todoHeight + dateTodoGap) * (diffDate + 1));
-        return new ViewPosition(left, top + DATETEXT_MARGIN_HEIGHT,
+        return new TextViewInfo(left, top + DATETEXT_MARGIN_HEIGHT,
                 left + dateWidth, top + todoHeight - DATETEXT_MARGIN_HEIGHT);
     }
 

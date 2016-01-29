@@ -5,6 +5,9 @@
     <string name="cover_title">Todo Stack</string>
     <string name="cover_subtitle">For Simplicity</string>
 
+    <string name="adding_text_on_new_todo">New Subject</string>
+    <string name="title_text_on_new_subject">New Todo on</string>
+
     <string name="fab_create_subject">New\nSubject</string>
     <string name="fab_create_todo">New\nTodo</string>
     <string name="fab_add">Add</string>
@@ -33,6 +36,7 @@
     <string name="guide_text_default">Guide TextView.</string>
     <string name="guide_text_mode_initial_setup">Select \"NEW SUBJECT\".</string>
     <string name="guide_text_mode_no_selection">Select \"NEW TODO\" for create Todo.</string>
+    <string name="guide_text_suggest_select_subject">For add Todo, select subject title.</string>
     <string name="guide_text_mode_input_todo">Input information represent Todo.</string>
     <string name="guide_text_mode_input_subject">Input "Subject Name" represent Todo(s).</string>
 </resources>

@@ -1,15 +1,20 @@
 package com.kania.todostack2.view;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -17,23 +22,26 @@ import android.widget.TextView;
 
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
+import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.IControllerMediator;
 import com.kania.todostack2.presenter.TodoStackPresenter;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.util.TodoDatePickerDialog;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by user on 2016-01-14.
  * Activity that present all todos
  */
-public class MainActivity extends Activity implements IViewAction, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements IViewAction, View.OnClickListener{
 
     private final int DURATION_ANIMATION = 500;
 
     private IControllerMediator mediator;
 
+    private Toolbar toolbarActionBar;
     private Button btnFab;
 
     private LinearLayout layoutControllerContainer;
@@ -47,6 +55,8 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     private EditText editYear;
     private EditText editMonth;
     private EditText editDay;
+    private CheckBox checkTask;
+    private EditText editTodoName;
 
     private Button btnCalendar;
 
@@ -68,6 +78,9 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        toolbarActionBar = (Toolbar) findViewById(R.id.main_layout_action_bar);
+        setSupportActionBar(toolbarActionBar);
 
         mediator = new TodoStackPresenter(this);
         mediator.setMediator(this);
@@ -91,6 +104,8 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         editYear = (EditText) findViewById(R.id.main_edit_input_year);
         editMonth = (EditText) findViewById(R.id.main_edit_input_month);
         editDay = (EditText) findViewById(R.id.main_edit_input_day);
+        checkTask = (CheckBox) findViewById(R.id.main_cb_input_task);
+        editTodoName = (EditText) findViewById(R.id.main_edit_input_todo_name);
         btnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
         btnCalendar.setOnClickListener(this);
 
@@ -118,10 +133,34 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.add_subject:
+                mediator.selectMenuAddSubject();
+                break;
+            case R.id.action_settings:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.main_btn_fab:
-                mediator.clickFloatingActionButton(getBundleFromVisibleView());
+                mediator.clickFloatingActionButton(getBundleFromVisibleLayout());
                 break;
             case R.id.main_btn_input_calendar:
                 getDateFromDatePicker();
@@ -129,10 +168,25 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
         }
     }
 
-    private Bundle getBundleFromVisibleView() {
+    private Bundle getBundleFromVisibleLayout() {
         Bundle bundle = new Bundle();
         if (isViewVisible(controllerInputTodo)) {
             //TODO
+            bundle.putString(TodoStackContract.TodoEntry.TODO_NAME,
+                    editTodoName.getText().toString());
+            //subject order set on presenter
+            String dateString = String.format("%4s%2s%2s", editYear.getText().toString(),
+                    editMonth.getText().toString(), editDay.getText().toString());
+            bundle.putString(TodoStackContract.TodoEntry.DATE, dateString);
+            bundle.putInt(TodoStackContract.TodoEntry.TYPE,
+                    checkTask.isChecked() ?
+                            TodoData.TODO_DB_TYPE_TASK : TodoData.TODO_DB_TYPE_ALLDAY);
+            //fast input case input 00:00
+            bundle.putString(TodoStackContract.TodoEntry.TIME_FROM,
+                    TodoStackContract.TodoEntry.DATEFORMAT_TIME_DEFAULT);
+            bundle.putString(TodoStackContract.TodoEntry.TIME_TO,
+                    TodoStackContract.TodoEntry.DATEFORMAT_TIME_DEFAULT);
+            bundle.putString(TodoStackContract.TodoEntry.LOCATION, "");
         }
         if (isViewVisible(controllerInputSubject)) {
             bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,
@@ -164,7 +218,22 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     }
 
     @Override
+    public void setActionBarText(String title, int color) {
+        toolbarActionBar.setTitle(title);
+        toolbarActionBar.setTitleTextColor(color);
+        setSupportActionBar(toolbarActionBar);
+    }
+
+    @Override
     public void setAllControllerGone() {
+        if (controllerInputTodo.getVisibility() == View.VISIBLE) {
+            editTodoName.setText("");
+            hideInputMethod(editTodoName);
+        } else if (controllerInputSubject.getVisibility() == View.VISIBLE) {
+            editSubject.setText("");
+            checkTask.setChecked(false);
+            hideInputMethod(editSubject);
+        }
         controllerInputTodo.setVisibility(View.GONE);
         controllerInputSubject.setVisibility(View.GONE);
         controllerViewTodo.setVisibility(View.GONE);
@@ -172,11 +241,21 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     }
 
     @Override
-    public void setInputTodoVisible() {
+    public void setInputTodoVisible(int color) {
         if (controllerInputTodo.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             controllerInputTodo.setVisibility(View.VISIBLE);
         }
+        //present today
+        Calendar calendar = Calendar.getInstance();
+        String year = "" + calendar.get(Calendar.YEAR);
+        editYear.setText(year);
+        String month = "" + (calendar.get(Calendar.MONTH) + 1);
+        editMonth.setText(month);
+        String day = "" + calendar.get(Calendar.DAY_OF_MONTH);
+        editDay.setText(day);
+        btnCalendar.setTextColor(color);
+        checkTask.setTextColor(color);
     }
 
     @Override
@@ -235,6 +314,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
             public void onAnimationStart(Animation animation) {
                 btnFab.setClickable(false);
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
                 btnFab.setClickable(true);
@@ -245,6 +325,7 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
                 btnFab.setLayoutParams(params);
                 setFabTheme(action, color);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
@@ -293,10 +374,15 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     }
 
     @Override
-    public void setTextViewOnTodoLayout(ArrayList<TextView> alTextView) {
+    public void setTextViewsOnTodoLayout(ArrayList<TextView> alTextView) {
         for (TextView tv : alTextView) {
             todoLayout.addView(tv);
         }
+    }
+
+    @Override
+    public void setTextViewOnTodoLayout(TextView textView) {
+        todoLayout.addView(textView);
     }
 
     @Override
@@ -318,5 +404,10 @@ public class MainActivity extends Activity implements IViewAction, View.OnClickL
     @Override
     public void finishActivity() {
         finish();
+    }
+
+    private void hideInputMethod(EditText edit) {
+        InputMethodManager inputManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(edit.getWindowToken(),0);
     }
 }
