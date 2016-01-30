@@ -2,12 +2,14 @@ package com.kania.todostack2.presenter;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
@@ -32,6 +34,7 @@ import java.util.Date;
  * Created by user on 2016-01-20.
  */
 public class TodoStackPresenter implements IControllerMediator, View.OnClickListener {
+    public static final int NOT_SELECTED_SUBJECT = -1;
     private Context mContext;
     private TodoLayoutInfo mTodolayoutInfo;
 
@@ -40,7 +43,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private IViewAction mTodoView;
     private int mViewMode;
 
-    private int mNowSelectSubjectOrder = -1;
+    private int mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
     private boolean mIsFabTop = false;
 
     public TodoStackPresenter(Context context) {
@@ -94,6 +97,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         boolean needAnimation = false;
         switch (targetMode) {
             case MODE_INITIAL_SETUP:
+                mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
                 mTodoView.setActionBarText(res.getString(R.string.app_name),
                         res.getColor(R.color.colorAccent));
                 needAnimation = isFabTop();
@@ -104,6 +108,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_initial_setup));
                 break;
             case MODE_NO_SELECTION:
+                mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
                 mTodoView.setActionBarText(res.getString(R.string.app_name),
                         res.getColor(R.color.colorAccent));
                 needAnimation = isFabTop();
@@ -117,12 +122,21 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 break;
             case MODE_ADD_TODO:
                 TodoProvider provider = TodoProvider.getInstance(mContext);
-                SubjectData subject = provider.getSubjectById(mNowSelectSubjectOrder);
-                int targetSubjectColor = subject.color;
+                int targetSubjectColor;
+                String subjectName = "";
+                if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
+                    targetSubjectColor = res.getColor(R.color.colorAccent);
+                    mTodoView.setActionBarText(
+                            res.getString(R.string.adding_text_new_todo), targetSubjectColor);
+                } else {
+                    SubjectData subject = provider.getSubjectById(mNowSelectSubjectOrder);
+                    targetSubjectColor = subject.color;
+                    subjectName = subject.subjectName;
+                    mTodoView.setActionBarText(
+                            res.getString(R.string.adding_text_on_new_todo) + " " + subjectName,
+                            targetSubjectColor);
+                }
                 needAnimation = !isFabTop();
-                mTodoView.setActionBarText(
-                        res.getString(R.string.adding_text_on_new_todo) + " " + subject.subjectName,
-                        targetSubjectColor);
                 mTodoView.setInputTodoVisible(targetSubjectColor);
                 mTodoView.setFabToInputTodo(res.getString(R.string.fab_add), targetSubjectColor,
                         needAnimation);
@@ -320,6 +334,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(params);
         tv.setIncludeFontPadding(false);
+        tv.setSingleLine();
         tv.setText(td.todoName);
         tv.setTextColor(res.getColor(R.color.color_todo_text));
         tv.setBackgroundColor(sd.color);
@@ -371,13 +386,18 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_NO_SELECTION:
-                //print guide to select Subject
-//                setMode(MODE_ADD_TODO);
-                mTodoView.setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
+                setMode(MODE_ADD_TODO);
                 break;
             case MODE_ADD_TODO:
-                //TODO request add todo using asynctask
-                insertTodo(bundle);
+                //request add todo using asynctask
+                //TODO check subject is verified
+                if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
+                    Toast.makeText(mContext,
+                            res.getText(R.string.guide_text_suggest_select_subject),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    insertTodo(bundle);
+                }
                 break;
             case MODE_ADD_SUBJECT:
                 // request add subject using asynctask
