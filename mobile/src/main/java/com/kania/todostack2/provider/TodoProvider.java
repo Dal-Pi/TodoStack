@@ -71,8 +71,9 @@ public class TodoProvider {
 //        subjectCursor.moveToFirst();
         while (subjectCursor.moveToNext()) {
             SubjectData subject = new SubjectData();
-            subject.id = subjectCursor.
-                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry._ID));
+            //do not ues id yet
+//            subject.id = subjectCursor.
+//                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry._ID));
             subject.subjectName = subjectCursor.
                     getString(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SUBJECT_NAME));
             try {
@@ -87,7 +88,7 @@ public class TodoProvider {
                     getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.ORDER));
 
             subjectList.add(subject);
-            subjectMap.put(subject.id, subject);
+            subjectMap.put(subject.order, subject);
         }
     }
 
@@ -177,9 +178,9 @@ public class TodoProvider {
         return allTodoData;
     }
 
-    public static SubjectData getSubjectById(int subId) {
-//        Log.d("TodoStack", "[getSubjectById] subId = " + subId);
-        return subjectMap.get(subId);
+    public static SubjectData getSubjectByOrder(int subOrder) {
+//        Log.d("TodoStack", "[getSubjectByOrder] subOrder = " + subOrder);
+        return subjectMap.get(subOrder);
     }
 
     public static TodoData getTodoById(int todoId) {

@@ -6,7 +6,8 @@ package com.kania.todostack2.data;
  */
 public class SubjectData {
     //from DB
-    public int id;
+    //do not ues id yet
+//    public int id;
     public String subjectName;
     public int color;
     public int order;

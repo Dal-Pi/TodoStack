@@ -331,15 +331,15 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         if (controllerInputTodo.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             controllerInputTodo.setVisibility(View.VISIBLE);
+            //present today
+            Calendar calendar = Calendar.getInstance();
+            String year = "" + calendar.get(Calendar.YEAR);
+            editYear.setText(year);
+            String month = "" + (calendar.get(Calendar.MONTH) + 1);
+            editMonth.setText(month);
+            String day = "" + calendar.get(Calendar.DAY_OF_MONTH);
+            editDay.setText(day);
         }
-        //present today
-        Calendar calendar = Calendar.getInstance();
-        String year = "" + calendar.get(Calendar.YEAR);
-        editYear.setText(year);
-        String month = "" + (calendar.get(Calendar.MONTH) + 1);
-        editMonth.setText(month);
-        String day = "" + calendar.get(Calendar.DAY_OF_MONTH);
-        editDay.setText(day);
         btnCalendar.setTextColor(color);
         checkTask.setTextColor(color);
     }
