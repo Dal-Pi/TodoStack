@@ -17,6 +17,7 @@ public class TextViewInfo {
 
     public int type;
     public String id;
+    public boolean isToday;
 
     public TextViewInfo(int left, int top, int right, int bottom) {
         this.left = left;

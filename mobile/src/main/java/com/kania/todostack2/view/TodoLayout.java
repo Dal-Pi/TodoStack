@@ -19,6 +19,8 @@ import java.util.ArrayList;
  * Created by user on 2016-01-25.
  */
 public class TodoLayout extends ViewGroup {
+
+    public static final int RATE_TEXT_SCALE = 9;
     private ArrayList<Integer> alSolidPathPos;
     private ArrayList<Integer> alDashPathPos;
 
@@ -56,7 +58,8 @@ public class TodoLayout extends ViewGroup {
         Log.d("TodoStack", "[setLayoutFromTag] l/t/r/b = "
                 + pos.left + "/" + pos.top + "/" + pos.right + "/" + pos.bottom);
         tv.layout(pos.left, pos.top, pos.right, pos.bottom);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, pos.bottom - pos.top);
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                ((pos.bottom - pos.top) * RATE_TEXT_SCALE) / 10 );
     }
 
     @Override

@@ -8,7 +8,7 @@ public class TodoLayoutInfo {
     //percent of layout
     public static final int PERCENT_DATEWIDTH = 10;
     public static final int PERCENT_SUBJECTHEIGHT = 5;
-    public static final int PERCENT_SUBJECTGAPWIDTH = 2;
+    public static final int PERCENT_SUBJECTGAPWIDTH = 1;
     //percent of each view
     public static final int PERCENT_TODOGAPHEIGHT = 10;
     //pixel of line
@@ -18,6 +18,9 @@ public class TodoLayoutInfo {
 
     //reduce size
     public static final int DATETEXT_MARGIN_HEIGHT = 5;
+
+    //subject size per todosize
+    public static final int PER_SUBJECT_SCALE = 130;
 
     public int subjectCount;
     public int taskCount;
@@ -72,8 +75,8 @@ public class TodoLayoutInfo {
         int exceptGapHeight = layoutHeight
                 - ((dateTodoCount + 1) * DATEDIVIDERLINE_HEIGHT)
                 - ((taskCount + delayedTodoCount) * BASICDIVIDERLINE_HEIGHT);
-        todoHeight = exceptGapHeight / (taskCount + dateTodoCount + delayedTodoCount + 1); //1 is subject
-        subjectHeight = todoHeight;
+        todoHeight = exceptGapHeight / (taskCount + dateTodoCount + delayedTodoCount + 2); //1 is subject (+1 for expending)
+        subjectHeight = (todoHeight * PER_SUBJECT_SCALE) / 100;
         stackTodoGap = BASICDIVIDERLINE_HEIGHT;
         dateTodoGap = DATEDIVIDERLINE_HEIGHT;
         delayedTodoGap = BASICDIVIDERLINE_HEIGHT;
@@ -95,7 +98,7 @@ public class TodoLayoutInfo {
             initCommonValues();
         }
         top = subjectTop;
-        return new TextViewInfo(left, top, left + todoWidth, top + todoHeight);
+        return new TextViewInfo(left, top, left + todoWidth, top + subjectHeight);
     }
 
     public TextViewInfo getTaskTodoPosition(int subjectSequence, int taskSequence) {

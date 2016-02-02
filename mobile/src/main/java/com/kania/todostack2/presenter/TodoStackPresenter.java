@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -191,7 +192,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             TextView tv = new TextView(mContext);
             tv.setIncludeFontPadding(false);
             tv.setText(getFormatedDateTextFromDate(calendar.getTime()));
-            tv.setTextColor(ColorProvider.getInstance().getDefaultColor());
+            tv.setTextColor(res.getColor(R.color.color_black));
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundColor(res.getColor(R.color.color_date_text_background));
             tv.setTag(mTodolayoutInfo.getDateTextPosition(i));
@@ -296,6 +297,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                                     subjectdata.order, cmpDiffDays);
                             info.type = TextViewInfo.TYPE_DATE_TODO;
                             info.id = td.id + "";
+                            if (cmpDiffDays == 0) { //today
+                                info.isToday = true;
+                            } else {
+                                info.isToday = false;
+                            }
                         } else {
                             info.id += TextViewInfo.DELIMITER_ID + td.id;
                         }
@@ -317,7 +323,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 if (i == 0) {
                     TodoData firstTodoData = todoProvider.getTodoById(Integer.parseInt(ids[i]));
                     combinedText = firstTodoData.todoName;
-                    subjectColor = todoProvider.getSubjectByOrder(firstTodoData.subjectOrder).color;
+                    if (combinedInfo.isToday) {
+                        subjectColor = ColorProvider.getInstance().getTodayColor();
+                    } else {
+                        subjectColor = todoProvider.getSubjectByOrder(firstTodoData.subjectOrder).color;
+                    }
                 } else {
                     combinedText += TextViewInfo.DELIMITER_ID +
                             todoProvider.getTodoById(Integer.parseInt(ids[i])).todoName;
