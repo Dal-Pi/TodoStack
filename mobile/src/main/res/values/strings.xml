@@ -32,6 +32,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="color">Color</string>
 
 
     <string name="guide_text_default">Guide TextView.</string>
@@ -40,4 +42,8 @@
     <string name="guide_text_suggest_select_subject">For adding Todo, select subject title.</string>
     <string name="guide_text_mode_input_todo">Input information represent Todo.</string>
     <string name="guide_text_mode_input_subject">Input \"Subject Name\" represent Todo(s).</string>
+
+    <string name="dialog_select_subject_title">Select Subject to add Todo.</string>
+    <string name="dialog_select_subject_tip">Tip. You can skip this step \n    by selecting Subject title \n    on main screen.</string>
+    <string name="dialog_select_color_title">Select Subject represent Todo.</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.kania.todostack2.presenter;
 
+import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -34,6 +37,8 @@ import java.util.Iterator;
  */
 public class TodoStackPresenter implements IControllerMediator, View.OnClickListener {
     public static final int NOT_SELECTED_SUBJECT = -1;
+
+    public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
     private Context mContext;
     private TodoLayoutInfo mTodolayoutInfo;
 
@@ -109,7 +114,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             case MODE_NO_SELECTION:
                 mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
                 mTodoView.setActionBarText(res.getString(R.string.app_name),
-                        res.getColor(R.color.colorAccent));
+                        res.getColor(R.color.color_normal_state));
                 needAnimation = isFabTop();
                 //set data to TodoLayout
                 sendDataToTodoViewAfterConverting();
@@ -124,7 +129,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 int targetSubjectColor;
                 String subjectName = "";
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
-                    targetSubjectColor = res.getColor(R.color.colorAccent);
+                    targetSubjectColor = res.getColor(R.color.color_normal_state);
                     mTodoView.setActionBarText(
                             res.getString(R.string.adding_text_new_todo), targetSubjectColor);
                 } else {
@@ -148,7 +153,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 needAnimation = !isFabTop();
                 mTodoView.setInputSubjectVisible();
                 mTodoView.setFabToInputSubject(res.getString(R.string.fab_add),
-                        res.getColor(R.color.color_normal_state), needAnimation);
+                        res.getColor(R.color.colorAccent), needAnimation);
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
                 break;
@@ -414,7 +419,17 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 setMode(MODE_ADD_SUBJECT);
                 break;
             case MODE_NO_SELECTION:
-                setMode(MODE_ADD_TODO);
+                if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
+                    showSubjectSelectDialog(new SelectSubjectDialog.Callback() {
+                        @Override
+                        public void onSelectSubject(int order) {
+                            mNowSelectSubjectOrder = order;
+                            setMode(MODE_ADD_TODO);
+                        }
+                    });
+                } else { //it never used
+                    setMode(MODE_ADD_TODO);
+                }
                 break;
             case MODE_ADD_TODO:
                 //request add todo using asynctask
@@ -545,5 +560,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 setMode(MODE_ADD_TODO);
             }
         }
+    }
+
+    private void showSubjectSelectDialog(SelectSubjectDialog.Callback callback) {
+        FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
+        DialogFragment dialog = SelectSubjectDialog.newInstance(callback);
+        dialog.show(ft, TAG_DIALOG_SELECT_SUBJECT);
+
     }
 }

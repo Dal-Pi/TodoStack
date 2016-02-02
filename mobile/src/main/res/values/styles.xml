@@ -23,8 +23,8 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">@dimen/view_min_height</item>
         <item name="android:layout_centerVertical">true</item>
-        <item name="android:textSize">@dimen/text_size_default</item>
-        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/text_size_textview</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
     <style name="TextViewStyleInActivity" parent="@style/TextViewStyle">
         <item name="android:layout_centerVertical">true</item>
@@ -42,21 +42,23 @@
         <item name="android:textSize">@dimen/text_size_edit</item>
     </style>
     <style name="ButtonStyleBase">
-        <item name="android:textSize">@dimen/text_size_button</item>
         <item name="android:paddingStart">5dp</item>
         <item name="android:paddingEnd">5dp</item>
-        <item name="android:textColor">@color/color_normal_state</item>
-    </style>
-    <style name="ButtonStyle" parent="@style/ButtonStyleBase">
-        <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:textColor">@color/colorAccent</item>
         <item name="android:background">@drawable/selector_transparent</item>
     </style>
+    <style name="ButtonStyle" parent="@style/ButtonStyleBase">
+        <item name="android:textSize">@dimen/text_size_button</item>
+    </style>
     <style name="ButtonStyleInActivity" parent="@style/ButtonStyle">
+        <item name="android:minHeight">@dimen/view_min_height</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
     <style name="TextButtonStyle" parent="@style/ButtonStyleBase">
-        <item name="android:background">@drawable/selector_transparent</item>
+        <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:textSize">@dimen/text_size_text_clickable</item>
         <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
     </style>
     <style name="TextButtonStyleInactivity" parent="@style/TextButtonStyle">
         <item name="android:layout_centerVertical">true</item>
@@ -65,11 +67,6 @@
         <item name="android:minHeight">@dimen/view_min_height</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:background">@drawable/ripple</item>
-    </style>
-    <style name="ColoredButtonStyle" parent="@style/ButtonStyleBase">
-        <item name="android:minHeight">@dimen/view_min_height</item>
-        <item name="android:background">@drawable/ripple_colored_button</item>
-        <item name="android:textColor">@color/color_white</item>
     </style>
     <style name="FloatingActionButtonStyle">
         <item name="android:background">@drawable/ripple_fab</item>

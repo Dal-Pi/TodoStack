@@ -12,6 +12,7 @@ import java.util.Random;
 public class ColorProvider {
 
     public static final String COLOR_STRING_DEFAULT_BLACK = "#FF000000";
+    public static final String COLOR_STRING_DEFAULT_GRAY = "#FF888888";
     public static final String COLOR_STRING_TODAY = "#FFFF0000";
     public static final String COLOR_SOLID_PATH = COLOR_STRING_DEFAULT_BLACK;
     public static final String COLOR_DASH_PATH = COLOR_STRING_DEFAULT_BLACK;
@@ -26,6 +27,7 @@ public class ColorProvider {
             "#FFB4D25A",
             "#FFCDBE46",
             "#FFFFB446",
+            "#FF555555"
     };
 
     private static ArrayList<Integer> alColors;
@@ -48,7 +50,8 @@ public class ColorProvider {
     }
 
     public static int getDefaultColor() {
-        return Color.parseColor(COLOR_STRING_DEFAULT_BLACK);
+//        return Color.parseColor(COLOR_STRING_DEFAULT_BLACK);
+        return Color.parseColor(COLOR_STRING_DEFAULT_GRAY);
     }
 
     public static int getTodayColor() {
@@ -70,5 +73,14 @@ public class ColorProvider {
                 preloadedcolorStrings[random.nextInt(preloadedcolorStrings.length)];
         Log.d("TodoStack", "random color is " + randomColorString);
         return Color.parseColor(randomColorString);
+    }
+
+    public static ArrayList<String> getAllColor() {
+        ArrayList<String> colors = new ArrayList<String>();
+        for (String colorString : preloadedcolorStrings) {
+            colors.add(colorString);
+        }
+
+        return colors;
     }
 }

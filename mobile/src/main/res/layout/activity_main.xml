@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/fab_layout_margin_top"
 
-                android:visibility="visible">
+                android:visibility="gone">
                 <RelativeLayout
                     android:id="@+id/main_layout_todo_input_mode_date"
                     android:layout_width="wrap_content"
@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/view_min_height"
 
-                android:visibility="gone">
+                android:visibility="invisible">
                 <!--
                 <Button
                     android:id="@+id/main_btn_subject_add"
@@ -111,8 +111,19 @@
                     android:layout_width="@dimen/edit_width_name"
                     style="@style/EditViewStyle"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="false"
                     android:layout_marginEnd="@dimen/fab_layout_size"
                     android:hint="@string/subject_name"/>
+                <Button
+                    android:id="@+id/main_btn_input_subject_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/main_edit_input_subject_name"
+                    android:layout_alignParentEnd="true"
+                    style="@style/ButtonStyleInActivity"
+                    android:layout_centerVertical="false"
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:text="@string/color"/>
             </RelativeLayout>
             <!--[end] MODE_VIEW_SUBJECT-->
 
@@ -240,7 +251,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/main_text_guide_text"
                 android:text="@string/guide_text_default"
-                android:textSize="@dimen/text_size_default"/>
+                android:textSize="@dimen/text_size_guide"/>
         </LinearLayout>
 
         <RelativeLayout

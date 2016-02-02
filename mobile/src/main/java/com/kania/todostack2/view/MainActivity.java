@@ -25,6 +25,7 @@ import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.IControllerMediator;
+import com.kania.todostack2.presenter.SelectSubjectColorDialog;
 import com.kania.todostack2.presenter.TodoStackPresenter;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.util.TodoDatePickerDialog;
@@ -58,10 +59,10 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private EditText editDay;
     private CheckBox checkTask;
     private EditText editTodoName;
-
     private Button btnCalendar;
 
     private EditText editSubjectName;
+    private Button btnSubjectColor;
 
     private Button btnDone3;
 
@@ -111,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         btnCalendar.setOnClickListener(this);
 
         editSubjectName = (EditText) findViewById(R.id.main_edit_input_subject_name);
+        btnSubjectColor = (Button) findViewById(R.id.main_btn_input_subject_color);
+        btnSubjectColor.setOnClickListener(this);
 
         btnDone3 = (Button) findViewById(R.id.main_btn_viewer_info_3_or_more);
 
@@ -167,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                 break;
             case R.id.main_btn_input_calendar:
                 getDateFromDatePicker();
+                break;
+            case R.id.main_btn_input_subject_color:
+                getColorFromColorDialog();
                 break;
         }
     }
@@ -277,9 +283,15 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         if (isViewVisible(controllerInputSubject)) {
             bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,
                     editSubjectName.getText().toString());
-            //TODO add about color
-            bundle.putInt(TodoStackContract.SubjectEntry.COLOR,
-                    ColorProvider.getInstance().getRandomColor());
+            ColorTag colorTag = (ColorTag) btnSubjectColor.getTag();
+            if (colorTag != null) {
+                bundle.putInt(TodoStackContract.SubjectEntry.COLOR, colorTag.color);
+                btnSubjectColor.setTag(null);
+            } else {
+                bundle.putInt(TodoStackContract.SubjectEntry.COLOR,
+                        ColorProvider.getInstance().getDefaultColor());
+            }
+
         }
         return bundle;
     }
@@ -298,6 +310,22 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                         editYear.setText("" + year);
                         editMonth.setText("" + monthOfYear);
                         editDay.setText("" + dayOfMonth);
+                    }
+                });
+        dialog.show(getFragmentManager(), dialogTag);
+    }
+
+    private void getColorFromColorDialog() {
+        final String dialogTag = SelectSubjectColorDialog.class.getSimpleName();
+        DialogFragment dialog =
+                SelectSubjectColorDialog.newInstance(new SelectSubjectColorDialog.Callback() {
+                    @Override
+                    public void onSelectColor(int color) {
+                        btnSubjectColor.setTextColor(color);
+                        ColorTag colorTag = new ColorTag();
+                        colorTag.color = color;
+                        btnSubjectColor.setTag(colorTag);
+                        setFabTheme(null, color);
                     }
                 });
         dialog.show(getFragmentManager(), dialogTag);
@@ -349,6 +377,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         if (controllerInputSubject.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             controllerInputSubject.setVisibility(View.VISIBLE);
+            btnSubjectColor.setTextColor(getResources().getColor(R.color.colorAccent));
         }
     }
 
@@ -384,7 +413,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     public void setFabTheme(String action, int color) {
-        btnFab.setText(action);
+        if (action != null) {
+            btnFab.setText(action);
+        }
         Drawable bgButton = btnFab.getBackground();
         if (bgButton != null) {
             bgButton.mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN);
@@ -495,5 +526,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private void hideInputMethod(EditText edit) {
         InputMethodManager inputManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(edit.getWindowToken(),0);
+    }
+
+    class ColorTag {
+        int color;
     }
 }
