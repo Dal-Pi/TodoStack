@@ -18,7 +18,7 @@ import java.util.Date;
  */
 public class LoadingTodoTask extends AsyncTask<Void, Void, Boolean> {
 
-    private final int MINIMUM_LOADING_TIME = 1000;
+    private final int MINIMUM_LOADING_TIME = 500;
     private Context mContext;
     private TodoProvider mTodoProvider;
     private TaskEndCallback mCallback;

@@ -55,8 +55,8 @@ public class TodoLayout extends ViewGroup {
         TextViewInfo pos = (TextViewInfo) tv.getTag();
         if (pos == null)
             return;
-        Log.d("TodoStack", "[setLayoutFromTag] l/t/r/b = "
-                + pos.left + "/" + pos.top + "/" + pos.right + "/" + pos.bottom);
+//        Log.d("TodoStack", "[setLayoutFromTag] l/t/r/b = "
+//                + pos.left + "/" + pos.top + "/" + pos.right + "/" + pos.bottom);
         tv.layout(pos.left, pos.top, pos.right, pos.bottom);
         tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 ((pos.bottom - pos.top) * RATE_TEXT_SCALE) / 10 );
