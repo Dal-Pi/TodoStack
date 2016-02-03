@@ -611,7 +611,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             int type = ((TextViewInfo) tag).type;
             if (type == TextViewInfo.TYPE_SUBJECT) {
                 ret = Integer.parseInt(((TextViewInfo) tag).id);
-                setMode(MODE_ADD_TODO);
             } else if (type == TextViewInfo.TYPE_DATE_TODO || type == TextViewInfo.TYPE_TASK_TODO) {
                 String combinedId = ((TextViewInfo) tag).id;
                 String[] stringIds = combinedId.split(TextViewInfo.DELIMITER_ID);

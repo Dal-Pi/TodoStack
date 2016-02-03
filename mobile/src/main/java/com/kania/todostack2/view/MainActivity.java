@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -441,6 +442,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     public void setFabThemeWithMoveUp(final String action, final int color) {
+        Log.d("TodoStack",
+                "[setFabThemeWithMoveUp] call! action = " + action + " / color = " + color);
         Animation animation =
                 new TranslateAnimation(0, 0, 0, layoutFabBar.getTop() - btnFab.getTop());
         animation.setDuration(DURATION_ANIMATION);
