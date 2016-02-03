@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private RelativeLayout controllerInputTodo;
     private RelativeLayout controllerInputSubject;
     private LinearLayout controllerViewTodo;
-    private RelativeLayout controllerViewSubject;
+    private LinearLayout controllerViewSubject;
 
     private RelativeLayout layoutFabBar;
 
@@ -64,16 +64,19 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private EditText editSubjectName;
     private Button btnSubjectColor;
 
+    private Button btnEditSubjectName;
+    private Button btnChangeSubjectcolor;
+    private Button btnDeleteSubject;
+    private Button btnMoveLeft;
+    private Button btnMoveRight;
+
+
+
     private Button btnDone3;
 
     private TodoLayout todoLayout;
 
     private TextView textGuide;
-
-    private int fabOriginLocationLeft;
-    private int fabOriginLocationTop;
-    private int fabOriginLocationRight;
-    private int fabOriginLocationBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         controllerInputTodo = (RelativeLayout) findViewById(R.id.main_layout_todo_input_mode);
         controllerInputSubject = (RelativeLayout) findViewById(R.id.main_layout_subject_input_mode);
         controllerViewTodo = (LinearLayout) findViewById(R.id.main_layout_todo_viewer_mode);
-        controllerViewSubject = (RelativeLayout) findViewById(R.id.main_layout_subject_viewer_mode);
+        controllerViewSubject = (LinearLayout) findViewById(R.id.main_layout_subject_viewer_mode);
 
         layoutFabBar = (RelativeLayout) findViewById(R.id.main_layout_fab_bar);
 
@@ -114,6 +117,17 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         editSubjectName = (EditText) findViewById(R.id.main_edit_input_subject_name);
         btnSubjectColor = (Button) findViewById(R.id.main_btn_input_subject_color);
         btnSubjectColor.setOnClickListener(this);
+
+        btnEditSubjectName = (Button) findViewById(R.id.main_btn_edit_subject_name);
+        btnEditSubjectName.setOnClickListener(this);
+        btnChangeSubjectcolor = (Button) findViewById(R.id.main_btn_edit_subject_color);
+        btnChangeSubjectcolor.setOnClickListener(this);
+        btnDeleteSubject = (Button) findViewById(R.id.main_btn_subject_delete);
+        btnDeleteSubject.setOnClickListener(this);
+        btnMoveLeft = (Button) findViewById(R.id.main_btn_subject_left);
+        btnMoveLeft.setOnClickListener(this);
+        btnMoveRight = (Button) findViewById(R.id.main_btn_subject_right);
+        btnMoveRight.setOnClickListener(this);
 
         btnDone3 = (Button) findViewById(R.id.main_btn_viewer_info_3_or_more);
 
@@ -382,20 +396,24 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
-    public void setFabToInputTodo(String action, int color, boolean needMove) {
-        if (needMove) {
-            if (isViewVisible(controllerInputTodo)) {
-                setFabThemeWithMoveUp(action, color);
-            }
-        } else {
-            setFabTheme(action, color);
+    public void setViewSubjectVisible(int color) {
+        if (controllerViewSubject.getVisibility() != View.VISIBLE) {
+            setAllControllerGone();
+            controllerViewSubject.setVisibility(View.VISIBLE);
         }
+        btnEditSubjectName.setTextColor(color);
+        btnChangeSubjectcolor.setTextColor(color);
+        btnDeleteSubject.setTextColor(color);
+        btnMoveLeft.setTextColor(color);
+        btnMoveRight.setTextColor(color);
     }
 
     @Override
-    public void setFabToInputSubject(String action, int color, boolean needMove) {
+    public void setFab(String action, int color, boolean needMove) {
         if (needMove) {
-            if (isViewVisible(controllerInputSubject)) {
+            if (isViewVisible(controllerInputTodo) ||
+                    isViewVisible(controllerInputSubject) ||
+                    isViewVisible(controllerViewSubject)) {
                 setFabThemeWithMoveUp(action, color);
             }
         } else {

@@ -18,11 +18,6 @@ public interface IControllerMediator {
     int MODE_VIEW_TODO_THREELINE = 6;
     int MODE_VIEW_SUBJECT = 7;
 
-    //first, change mode
-    //second, notify to View
-    //third, notify to FAB
-    //fourth, change guide text
-
     void setMediator(IViewAction mediator);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);

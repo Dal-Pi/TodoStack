@@ -13,9 +13,9 @@ public interface IViewAction {
     void setAllControllerGone();
     void setInputSubjectVisible();
     void setInputTodoVisible(int color);
+    void setViewSubjectVisible(int color);
 
-    void setFabToInputTodo(String action, int color, boolean needMove);
-    void setFabToInputSubject(String action, int color, boolean needMove);
+    void setFab(String action, int color, boolean needMove);
 
     void setFabToBase(String action, int color, boolean needMove);
 

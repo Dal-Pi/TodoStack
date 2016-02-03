@@ -51,7 +51,10 @@
         <item name="android:textSize">@dimen/text_size_button</item>
     </style>
     <style name="ButtonStyleInActivity" parent="@style/ButtonStyle">
+        <item name="android:minWidth">@dimen/button_min_width</item>
         <item name="android:minHeight">@dimen/view_min_height</item>
+        <item name="android:paddingStart">@dimen/button_horizontal_padding</item>
+        <item name="android:paddingEnd">@dimen/button_horizontal_padding</item>
         <item name="android:layout_centerVertical">true</item>
     </style>
     <style name="TextButtonStyle" parent="@style/ButtonStyleBase">

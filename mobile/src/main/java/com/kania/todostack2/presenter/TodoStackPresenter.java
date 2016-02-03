@@ -5,7 +5,6 @@ import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,7 +35,8 @@ import java.util.Iterator;
 /**
  * Created by user on 2016-01-20.
  */
-public class TodoStackPresenter implements IControllerMediator, View.OnClickListener {
+public class TodoStackPresenter implements IControllerMediator, View.OnClickListener,
+        View.OnLongClickListener {
     public static final int NOT_SELECTED_SUBJECT = -1;
 
     public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
@@ -99,6 +99,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
      */
     @Override
     public void setMode(int targetMode) {
+        TodoProvider provider = TodoProvider.getInstance(mContext);
         boolean needAnimation = false;
         switch (targetMode) {
             case MODE_INITIAL_SETUP:
@@ -126,7 +127,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mTodoView.setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
                 break;
             case MODE_ADD_TODO:
-                TodoProvider provider = TodoProvider.getInstance(mContext);
                 int targetSubjectColor;
                 String subjectName = "";
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
@@ -143,7 +143,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 }
                 needAnimation = !isFabTop();
                 mTodoView.setInputTodoVisible(targetSubjectColor);
-                mTodoView.setFabToInputTodo(res.getString(R.string.fab_add), targetSubjectColor,
+                mTodoView.setFab(res.getString(R.string.fab_add), targetSubjectColor,
                         needAnimation);
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_todo));
@@ -153,7 +153,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         res.getColor(R.color.colorAccent));
                 needAnimation = !isFabTop();
                 mTodoView.setInputSubjectVisible();
-                mTodoView.setFabToInputSubject(res.getString(R.string.fab_add),
+                mTodoView.setFab(res.getString(R.string.fab_add),
                         res.getColor(R.color.colorAccent), needAnimation);
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
@@ -163,6 +163,19 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             case MODE_VIEW_TODO_THREELINE:
                 break;
             case MODE_VIEW_SUBJECT:
+                if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
+                    Log.e("TodoStack",
+                            "[setMode] error on MODE_VIEW_SUBJECT, mNowSelectSubjectOrder is -1");
+                } else {
+                    SubjectData sd = provider.getSubjectByOrder(mNowSelectSubjectOrder);
+                    mTodoView.setActionBarText(sd.subjectName, sd.color);
+                    needAnimation = !isFabTop();
+                    mTodoView.setViewSubjectVisible(sd.color);
+                    mTodoView.setFab(res.getString(R.string.subject_view_all_todo),
+                            sd.color, needAnimation);
+                    mIsFabTop = true;
+                    mTodoView.setGuideText(res.getString(R.string.guide_text_mode_view_subject));
+                }
                 break;
             default:
                 break;
@@ -229,6 +242,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             info.id = sd.order + "";
             tv.setTag(info);
             tv.setOnClickListener(this);
+            tv.setOnLongClickListener(this);
 
             sendData.add(tv);
 
@@ -381,6 +395,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         tv.setText(todoName);
         tv.setTextColor(res.getColor(R.color.color_todo_text));
         tv.setBackgroundColor(subjectColor);
+        //TODO implement onclick
+//        tv.setOnClickListener(this);
+        tv.setOnLongClickListener(this);
 
         return tv;
     }
@@ -560,22 +577,50 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return ret;
     }
 
-
-    @Override
-    public void onClick(View v) {
-        Object tag = v.getTag();
-        if (tag != null && tag instanceof TextViewInfo) {
-            if (((TextViewInfo) tag).type == TextViewInfo.TYPE_SUBJECT) {
-                mNowSelectSubjectOrder = Integer.parseInt(((TextViewInfo) tag).id);
-                setMode(MODE_ADD_TODO);
-            }
-        }
-    }
-
     private void showSubjectSelectDialog(SelectSubjectDialog.Callback callback) {
         FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
         DialogFragment dialog = SelectSubjectDialog.newInstance(callback);
         dialog.show(ft, TAG_DIALOG_SELECT_SUBJECT);
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        Object tag = v.getTag();
+        if (tag != null && tag instanceof TextViewInfo) {
+            mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
+            setMode(MODE_ADD_TODO);
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Object tag = v.getTag();
+        if (tag != null && tag instanceof TextViewInfo) {
+            mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
+            setMode(MODE_VIEW_SUBJECT);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private int getSelectedSubjectOrderFromTag(Object tag) {
+        int ret = NOT_SELECTED_SUBJECT;
+        if (tag != null && tag instanceof TextViewInfo) {
+            int type = ((TextViewInfo) tag).type;
+            if (type == TextViewInfo.TYPE_SUBJECT) {
+                ret = Integer.parseInt(((TextViewInfo) tag).id);
+                setMode(MODE_ADD_TODO);
+            } else if (type == TextViewInfo.TYPE_DATE_TODO || type == TextViewInfo.TYPE_TASK_TODO) {
+                String combinedId = ((TextViewInfo) tag).id;
+                String[] stringIds = combinedId.split(TextViewInfo.DELIMITER_ID);
+                TodoData td = TodoProvider.getInstance(mContext).getTodoById(
+                        Integer.parseInt(stringIds[0]));
+                ret = td.subjectOrder;
+            }
+        }
+        Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
+        return ret;
     }
 }

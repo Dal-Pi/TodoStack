@@ -91,14 +91,14 @@
             </RelativeLayout>
             <!--[end] MODE_INPUT_TODO-->
 
-            <!--[start] MODE_VIEW_SUBJECT-->
+            <!--[start] MODE_INPUT_SUBJECT-->
             <RelativeLayout
                 android:id="@+id/main_layout_subject_input_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/view_min_height"
 
-                android:visibility="invisible">
+                android:visibility="gone">
                 <!--
                 <Button
                     android:id="@+id/main_btn_subject_add"
@@ -125,7 +125,7 @@
                     android:layout_marginEnd="@dimen/fab_layout_size"
                     android:text="@string/color"/>
             </RelativeLayout>
-            <!--[end] MODE_VIEW_SUBJECT-->
+            <!--[end] MODE_INPUT_SUBJECT-->
 
             <!--[start] MODE_VIEW_TODO-->
             <LinearLayout
@@ -195,42 +195,75 @@
             <!--[end] MODE_VIEW_TODO-->
 
             <!--[start] MODE_VIEW_SUBJECT-->
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/main_layout_subject_viewer_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/view_min_height"
+                android:orientation="vertical"
 
-                android:visibility="gone">
-                <Button
-                    android:id="@+id/main_btn_subject_delete"
-                    android:layout_width="wrap_content"
+                android:visibility="visible">
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/delete"/>
-                <Button
-                    android:id="@+id/main_btn_subject_edit"
-                    android:layout_width="wrap_content"
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:layout_marginTop="@dimen/fab_layout_margin_top"
+                    android:orientation="horizontal">
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                        <Button
+                            android:id="@+id/main_btn_edit_subject_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/ButtonStyleInActivity"
+                            android:text="@string/subject_edit_name"/>
+                        <Button
+                            android:id="@+id/main_btn_edit_subject_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/ButtonStyleInActivity"
+                            android:text="@string/color"/>
+                        <Button
+                            android:id="@+id/main_btn_subject_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/ButtonStyleInActivity"
+                            android:text="@string/delete"/>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_toStartOf="@id/main_btn_subject_delete"
-                    android:text="@string/edit"/>
-                <Button
-                    android:id="@+id/main_btn_subject_right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_toStartOf="@id/main_btn_subject_edit"
-                    android:text="@string/subject_move_right"/>
-                <Button
-                    android:id="@+id/main_btn_subject_left"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/ButtonStyleInActivity"
-                    android:layout_toStartOf="@id/main_btn_subject_right"
-                    android:text="@string/subject_move_left"/>
-            </RelativeLayout>
+                    android:layout_marginEnd="@dimen/fab_layout_size"
+                    android:orientation="horizontal">
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent">
+                        <Button
+                            android:id="@+id/main_btn_subject_left"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/ButtonStyleInActivity"
+                            android:text="@string/subject_move_left"/>
+                        <Button
+                            android:id="@+id/main_btn_subject_right"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/ButtonStyleInActivity"
+                            android:text="@string/subject_move_right"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
             <!--[end] MODE_VIEW_SUBJECT-->
         </LinearLayout>
 

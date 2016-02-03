@@ -23,8 +23,11 @@
     <string name="is_task">Task?</string>
 
     <string name="subject_name">Subject Name</string>
+    <string name="subject_edit_name">Edit Name</string>
     <string name="subject_move_left">Move Left</string>
     <string name="subject_move_right">Move Right</string>
+    <string name="subject_delete">Delete Subject</string>
+    <string name="subject_view_all_todo">View Todo</string>
 
     <string name="initial_todo_info">Loading..</string>
     <string name="todo_done">Done</string>
@@ -40,8 +43,9 @@
     <string name="guide_text_mode_initial_setup">Select \"NEW SUBJECT\".</string>
     <string name="guide_text_mode_no_selection">Select \"NEW TODO\" for create Todo.</string>
     <string name="guide_text_suggest_select_subject">For adding Todo, select subject title.</string>
-    <string name="guide_text_mode_input_todo">Input information represent Todo.</string>
-    <string name="guide_text_mode_input_subject">Input \"Subject Name\" represent Todo(s).</string>
+    <string name="guide_text_mode_input_todo">Input information represents Todo.</string>
+    <string name="guide_text_mode_input_subject">Input \"Subject Name\" represents Todo(s).</string>
+    <string name="guide_text_mode_view_subject">Select action button for viewing all todo.</string>
 
     <string name="dialog_select_subject_title">Select Subject to add Todo.</string>
     <string name="dialog_select_subject_tip">Tip. You can skip this step \n    by selecting Subject title \n    on main screen.</string>

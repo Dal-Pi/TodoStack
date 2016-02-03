@@ -19,6 +19,7 @@
     <dimen name="edit_width_month_and_day">50dp</dimen>
     <dimen name="button_min_width">50dp</dimen>
     <dimen name="view_min_height">30dp</dimen>
+    <dimen name="button_horizontal_padding">10dp</dimen>
 
     <dimen name="fab_layout_size">60dp</dimen>
     <dimen name="fab_drawble_size">54dp</dimen>
