@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                 btnSubjectColor.setTag(null);
             } else {
                 bundle.putInt(TodoStackContract.SubjectEntry.COLOR,
-                        ColorProvider.getInstance().getDefaultColor());
+                        getResources().getColor(R.color.colorAccent));
             }
 
         }
