@@ -17,6 +17,7 @@ import com.kania.todostack2.provider.TodoProvider;
 public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
 
     public static final int SUBJECT_TASK_ADD_SUBJECT = 1;
+    public static final int SUBJECT_TASK_MODIFY_NAME = 2;
 
     private Context mContext;
     private TodoProvider mTodoProvider;
@@ -65,11 +66,19 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
             todoStackDb = dbHelper.getReadableDatabase();
             switch (mTaskType) {
                 case SUBJECT_TASK_ADD_SUBJECT:
-                    ContentValues cvSub = new ContentValues();
-                    cvSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
-                    cvSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
-                    cvSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
-                    todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvSub);
+                    ContentValues cvAddSub = new ContentValues();
+                    cvAddSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
+                    cvAddSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
+                    cvAddSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
+                    todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvAddSub);
+                    break;
+                case SUBJECT_TASK_MODIFY_NAME:
+                    ContentValues cvUpdateSub = new ContentValues();
+                    cvUpdateSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
+                    String updateSelection =
+                            TodoStackContract.SubjectEntry._ID + " LIKE " + mData.id;
+                    todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
+                            cvUpdateSub, updateSelection, null);
                     break;
                 default:
                     return false;

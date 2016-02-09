@@ -71,9 +71,8 @@ public class TodoProvider {
 //        subjectCursor.moveToFirst();
         while (subjectCursor.moveToNext()) {
             SubjectData subject = new SubjectData();
-            //do not ues id yet
-//            subject.id = subjectCursor.
-//                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry._ID));
+            subject.id = subjectCursor.
+                    getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry._ID));
             subject.subjectName = subjectCursor.
                     getString(subjectCursor.getColumnIndexOrThrow(SubjectEntry.SUBJECT_NAME));
             try {

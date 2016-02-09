@@ -27,6 +27,8 @@
     <dimen name="fab_padding">0dp</dimen>
     <dimen name="fab_layout_margin_top">15dp</dimen>
 
+    <dimen name="listview_vertical_padding">20dp</dimen>
+
     <dimen name="navigation_oval_size">20dp</dimen>
     <dimen name="elevation_size">4dp</dimen>
     <dimen name="radius">2dp</dimen>

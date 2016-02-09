@@ -14,7 +14,9 @@
     <ListView
         android:id="@+id/dialog_select_subject_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/listview_vertical_padding"
+        android:paddingBottom="@dimen/listview_vertical_padding"/>
 
     <TextView
         style="@style/TextViewStyle"
