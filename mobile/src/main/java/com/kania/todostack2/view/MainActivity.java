@@ -26,9 +26,9 @@ import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.IControllerMediator;
-import com.kania.todostack2.presenter.SelectSubjectColorDialog;
+import com.kania.todostack2.presenter.SubjectColorSelectDialog;
 import com.kania.todostack2.presenter.TodoStackPresenter;
-import com.kania.todostack2.provider.ColorProvider;
+import com.kania.todostack2.util.SubjectNameUpdateDialog;
 import com.kania.todostack2.util.TodoDatePickerDialog;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private final int DURATION_ANIMATION = 500;
 
-    private IControllerMediator mediator;
+    private IControllerMediator mMediator;
 
     private Toolbar toolbarActionBar;
     private Button btnFab;
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private EditText editSubjectName;
     private Button btnSubjectColor;
 
-    private Button btnEditSubjectName;
+    private Button btnChangeSubjectName;
     private Button btnChangeSubjectcolor;
     private Button btnDeleteSubject;
     private Button btnMoveLeft;
@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private TextView textGuide;
 
+    private boolean bViewClickable = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         toolbarActionBar = (Toolbar) findViewById(R.id.main_layout_action_bar);
         setSupportActionBar(toolbarActionBar);
 
-        mediator = new TodoStackPresenter(this);
-        mediator.setMediator(this);
+        mMediator = new TodoStackPresenter(this);
+        mMediator.setMediator(this);
 
         initControlView();
     }
@@ -119,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         btnSubjectColor = (Button) findViewById(R.id.main_btn_input_subject_color);
         btnSubjectColor.setOnClickListener(this);
 
-        btnEditSubjectName = (Button) findViewById(R.id.main_btn_edit_subject_name);
-        btnEditSubjectName.setOnClickListener(this);
+        btnChangeSubjectName = (Button) findViewById(R.id.main_btn_edit_subject_name);
+        btnChangeSubjectName.setOnClickListener(this);
         btnChangeSubjectcolor = (Button) findViewById(R.id.main_btn_edit_subject_color);
         btnChangeSubjectcolor.setOnClickListener(this);
         btnDeleteSubject = (Button) findViewById(R.id.main_btn_subject_delete);
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             @Override
             public void onGlobalLayout() {
                 todoLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+                mMediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
             }
         });
         textGuide = (TextView) findViewById(R.id.main_text_guide_text);
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
         switch (id) {
             case R.id.add_subject:
-                mediator.selectMenuAddSubject();
+                mMediator.selectMenuAddSubject();
                 break;
             case R.id.action_settings:
                 break;
@@ -177,18 +179,35 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.main_btn_fab:
-                if (checkVaildData()){
-                    mediator.clickFloatingActionButton(getBundleFromVisibleLayout());
-                }
-                break;
-            case R.id.main_btn_input_calendar:
-                getDateFromDatePicker();
-                break;
-            case R.id.main_btn_input_subject_color:
-                getColorFromColorDialog();
-                break;
+        if (bViewClickable) {
+            switch (v.getId()) {
+                case R.id.main_btn_fab:
+                    if (checkVaildData()) {
+                        mMediator.clickFloatingActionButton(getBundleFromVisibleLayout());
+                    }
+                    break;
+                case R.id.main_btn_input_calendar:
+                    getDateFromDatePicker();
+                    break;
+                case R.id.main_btn_input_subject_color:
+                    getColorFromColorDialog();
+                    break;
+                case R.id.main_btn_edit_subject_name:
+                    editSubjectName();
+                    break;
+                case R.id.main_btn_edit_subject_color:
+                    editSubjectColor();
+                    break;
+                case R.id.main_btn_subject_delete:
+                    //TODO implement after add removing Todos
+                    break;
+                case R.id.main_btn_subject_left:
+                    mMediator.moveSubjectOrder(true);
+                    break;
+                case R.id.main_btn_subject_right:
+                    mMediator.moveSubjectOrder(false);
+                    break;
+            }
         }
     }
 
@@ -313,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     @Override
     public void onBackPressed() {
-        mediator.clickBackPressSoftButton();
+        mMediator.clickBackPressSoftButton();
     }
 
     private void getDateFromDatePicker() {
@@ -331,9 +350,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     private void getColorFromColorDialog() {
-        final String dialogTag = SelectSubjectColorDialog.class.getSimpleName();
+        final String dialogTag = SubjectColorSelectDialog.class.getSimpleName();
         DialogFragment dialog =
-                SelectSubjectColorDialog.newInstance(new SelectSubjectColorDialog.Callback() {
+                SubjectColorSelectDialog.newInstance(new SubjectColorSelectDialog.Callback() {
                     @Override
                     public void onSelectColor(int color) {
                         btnSubjectColor.setTextColor(color);
@@ -346,11 +365,40 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         dialog.show(getFragmentManager(), dialogTag);
     }
 
+    private void editSubjectName() {
+        final String dialogTag = SubjectNameUpdateDialog.class.getSimpleName();
+        DialogFragment dialog =
+                SubjectNameUpdateDialog.newInstance(new SubjectNameUpdateDialog.Callback() {
+                    @Override
+                    public void onEditName(String name) {
+                        mMediator.changeSubjectName(name);
+                    }
+                });
+        dialog.show(getFragmentManager(), dialogTag);
+    }
+
+    private void editSubjectColor() {
+        final String dialogTag = SubjectColorSelectDialog.class.getSimpleName();
+        DialogFragment dialog =
+                SubjectColorSelectDialog.newInstance(new SubjectColorSelectDialog.Callback() {
+                    @Override
+                    public void onSelectColor(int color) {
+                        mMediator.changeSubjectColor(color);
+                    }
+                });
+        dialog.show(getFragmentManager(), dialogTag);
+    }
+
     @Override
     public void setActionBarText(String title, int color) {
         toolbarActionBar.setTitle(title);
         toolbarActionBar.setTitleTextColor(color);
         setSupportActionBar(toolbarActionBar);
+    }
+
+    @Override
+    public void setViewClickEnable(boolean enable) {
+        bViewClickable = enable;
     }
 
     @Override
@@ -397,16 +445,20 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
-    public void setViewSubjectVisible(int color) {
+    public void setViewSubjectVisible(int color, boolean leftEnable, boolean RightEnable) {
         if (controllerViewSubject.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             controllerViewSubject.setVisibility(View.VISIBLE);
         }
-        btnEditSubjectName.setTextColor(color);
+        btnChangeSubjectName.setTextColor(color);
         btnChangeSubjectcolor.setTextColor(color);
         btnDeleteSubject.setTextColor(color);
-        btnMoveLeft.setTextColor(color);
-        btnMoveRight.setTextColor(color);
+        btnMoveLeft.setEnabled(leftEnable);
+        btnMoveLeft.setTextColor(
+                leftEnable ? color : getResources().getColor(R.color.color_lightgray));
+        btnMoveRight.setEnabled(RightEnable);
+        btnMoveRight.setTextColor(
+                RightEnable ? color : getResources().getColor(R.color.color_lightgray));
     }
 
     @Override
@@ -508,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     public void clearTodoLayout() {
         todoLayout.removeAllViews();
         //TODO need to be improve logic
-        mediator.refreshTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+        mMediator.refreshTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
     }
 
     @Override

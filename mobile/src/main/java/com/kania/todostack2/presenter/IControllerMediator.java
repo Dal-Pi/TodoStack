@@ -26,5 +26,10 @@ public interface IControllerMediator {
     void setMode(int targetMode);
     void clickBackPressSoftButton();
     void clickFloatingActionButton(Bundle bundle);
+
     void selectMenuAddSubject();
+
+    void changeSubjectName(String name);
+    void changeSubjectColor(int color);
+    void moveSubjectOrder(boolean isLeft);
 }

@@ -10,10 +10,12 @@ import java.util.ArrayList;
 public interface IViewAction {
     void setActionBarText(String title, int color);
 
+    void setViewClickEnable(boolean enable);
+
     void setAllControllerGone();
     void setInputSubjectVisible();
     void setInputTodoVisible(int color);
-    void setViewSubjectVisible(int color);
+    void setViewSubjectVisible(int color, boolean leftEnable, boolean RightEnable);
 
     void setFab(String action, int color, boolean needMove);
 

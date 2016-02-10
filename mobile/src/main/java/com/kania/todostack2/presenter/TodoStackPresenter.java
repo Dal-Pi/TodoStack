@@ -170,7 +170,14 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     SubjectData sd = provider.getSubjectByOrder(mNowSelectSubjectOrder);
                     mTodoView.setActionBarText(sd.subjectName, sd.color);
                     needAnimation = !isFabTop();
-                    mTodoView.setViewSubjectVisible(sd.color);
+                    boolean leftEnable = !(mNowSelectSubjectOrder <= 0);
+                    boolean rightEnable =
+                            !(mNowSelectSubjectOrder >= (provider.getSubjectCount() - 1));
+                    Log.d("TodoStack", "[setMode] provider.getSubjectCount() = "
+                            + provider.getSubjectCount());
+                    Log.d("TodoStack", "[setMode] leftEnable = " + leftEnable
+                            + " / rightEnable = " + rightEnable);
+                    mTodoView.setViewSubjectVisible(sd.color, leftEnable, rightEnable);
                     mTodoView.setFab(res.getString(R.string.subject_view_all_todo),
                             sd.color, needAnimation);
                     mIsFabTop = true;
@@ -190,13 +197,13 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private void sendDataToTodoViewAfterConverting() {
         mTodoView.clearTodoLayout();
-        sendDateTextData();
-        sendSubjectData();
-        sendTodoData();
+        addDateTextData();
+        addSubjectData();
+        addTodoData();
         mTodoView.refreshTodoLayout();
     }
 
-    private void sendDateTextData() {
+    private void addDateTextData() {
         ArrayList<TextView> sendData = new ArrayList<TextView>();
         int dateCount = TodoStackSettingValues.getInstance(mContext).getVisivleDateCount();
         Calendar calendar = Calendar.getInstance();
@@ -222,7 +229,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         SimpleDateFormat day = new SimpleDateFormat("d");
         return String.format("%2s-%2s", month.format(date), day.format(date));
     }
-    private void sendSubjectData() {
+    private void addSubjectData() {
         ArrayList<TextView> sendData = new ArrayList<TextView>();
         ArrayList<SubjectData> subData = TodoProvider.getInstance(mContext).getAllSubject();
 
@@ -237,6 +244,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             tv.setText(sd.subjectName);
             tv.setTextColor(sd.color);
             tv.setBackgroundColor(res.getColor(R.color.color_subject_background));
+            tv.setSingleLine();
             TextViewInfo info = mTodolayoutInfo.getSubjectPosition(sd.order);
             info.type = TextViewInfo.TYPE_SUBJECT;
             info.id = sd.order + "";
@@ -247,11 +255,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             sendData.add(tv);
 
             //debug
-            Log.d("TodoStack", "[sendSubjectData] subject id = " + sd.order);
+            Log.d("TodoStack", "[addSubjectData] subject id = " + sd.order);
         }
         mTodoView.setTextViewsOnTodoLayout(sendData);
     }
-    private void sendTodoData() {
+    private void addTodoData() {
         ArrayList<TextView> sendData = new ArrayList<TextView>();
         ArrayList<TodoData> todoData = TodoProvider.getInstance(mContext).getAllTodo();
         TodoProvider todoProvider = TodoProvider.getInstance(mContext);
@@ -265,7 +273,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         for(TodoData td : todoData) {
             SubjectData subjectdata = todoProvider.getSubjectByOrder(td.subjectOrder);
             if (subjectdata == null) {
-                Log.e("TodoStack", "[sendTodoData] subjectdata is null!");
+                Log.e("TodoStack", "[addTodoData] subjectdata is null!");
                 continue;
             } else {
                 if (td.type == TodoData.TODO_DB_TYPE_TASK) {
@@ -286,7 +294,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         targetCalendar.setTime(sdf.parse(td.date));
                         cmpDiffDays = campareDate(targetCalendar, calendarToday);
                     } catch (ParseException e) {
-                        Log.e("TodoStack", "[sendTodoData] parse error!!");
+                        Log.e("TodoStack", "[addTodoData] parse error!!");
                         e.printStackTrace();
                     }
 
@@ -488,7 +496,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         UpdateSubjectTask insertSubjectTask =
                 new UpdateSubjectTask(mContext, new UpdateSubjectTask.TaskEndCallback() {
                     @Override
-                    public void loadFinished() {
+                    public void updateFinished() {
                         LoadingTodoTask refreshTask = new LoadingTodoTask(
                                 mContext, new LoadingTodoTask.TaskEndCallback() {
                             @Override
@@ -500,7 +508,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     }
                 });
         insertSubjectTask.setData(
-                makeSubjectData(bundle), UpdateSubjectTask.SUBJECT_TASK_ADD_SUBJECT);
+                makeNewSubjectDataFromBundle(bundle), UpdateSubjectTask.SUBJECT_TASK_ADD_SUBJECT);
         insertSubjectTask.execute();
     }
 
@@ -508,7 +516,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         UpdateTodoTask insertTodoTask =
                 new UpdateTodoTask(mContext, new UpdateTodoTask.TaskEndCallback() {
                     @Override
-                    public void loadFinished() {
+                    public void updateFinished() {
                         LoadingTodoTask refreshTask = new LoadingTodoTask(
                                 mContext, new LoadingTodoTask.TaskEndCallback() {
                             @Override
@@ -524,7 +532,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         insertTodoTask.execute();
     }
 
-    private SubjectData makeSubjectData(Bundle bundle) {
+    private SubjectData makeNewSubjectDataFromBundle(Bundle bundle) {
         SubjectData subject = new SubjectData();
         subject.subjectName = bundle.getString(TodoStackContract.SubjectEntry.SUBJECT_NAME);
         subject.color = bundle.getInt(TodoStackContract.SubjectEntry.COLOR);
@@ -621,5 +629,84 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         }
         Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
         return ret;
+    }
+
+    @Override
+    public void changeSubjectName(String name) {
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+            @Override
+            public void updateFinished() {
+                LoadingTodoTask refreshTask = new LoadingTodoTask(
+                        mContext, new LoadingTodoTask.TaskEndCallback() {
+                    @Override
+                    public void loadFinished() {
+                        sendDataToTodoViewAfterConverting();
+                        setMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+                refreshTask.execute();
+            }
+        });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        sd.subjectName = name;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_NAME);
+        updateSubjectTask.execute();
+    }
+
+    @Override
+    public void changeSubjectColor(int color) {
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+            @Override
+            public void updateFinished() {
+                LoadingTodoTask refreshTask = new LoadingTodoTask(
+                        mContext, new LoadingTodoTask.TaskEndCallback() {
+                    @Override
+                    public void loadFinished() {
+                        sendDataToTodoViewAfterConverting();
+                        setMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+                refreshTask.execute();
+            }
+        });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        sd.color = color;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_COLOR);
+        updateSubjectTask.execute();
+    }
+
+    @Override
+    public void moveSubjectOrder(final boolean isLeft) {
+        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
+                + "direction = " + (isLeft ? "left" : "right"));
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+            @Override
+            public void updateFinished() {
+                mNowSelectSubjectOrder += isLeft ? UpdateSubjectTask.DIRECTION_LEFT :
+                        UpdateSubjectTask.DIRECTION_RIGHT;
+                LoadingTodoTask refreshTask = new LoadingTodoTask(
+                        mContext, new LoadingTodoTask.TaskEndCallback() {
+                    @Override
+                    public void loadFinished() {
+                        sendDataToTodoViewAfterConverting();
+                        setMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+                refreshTask.execute();
+            }
+        });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        if (isLeft) {
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_LEFT);
+        } else {
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_RIGHT);
+        }
+        updateSubjectTask.execute();
     }
 }

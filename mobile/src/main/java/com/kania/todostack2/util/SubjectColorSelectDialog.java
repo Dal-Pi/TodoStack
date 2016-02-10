@@ -13,7 +13,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kania.todostack2.R;
-import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.provider.ColorProvider;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by user on 2016-02-01.
  */
-public class SelectSubjectColorDialog extends DialogFragment {
+public class SubjectColorSelectDialog extends DialogFragment {
 
     private Callback mCallback;
 
@@ -29,8 +28,8 @@ public class SelectSubjectColorDialog extends DialogFragment {
         void onSelectColor(int color);
     }
 
-    public SelectSubjectColorDialog() {
-        setCallback(new SelectSubjectColorDialog.Callback() {
+    public SubjectColorSelectDialog() {
+        setCallback(new SubjectColorSelectDialog.Callback() {
             @Override
             public void onSelectColor(int order) {
                 //empty callback
@@ -38,8 +37,8 @@ public class SelectSubjectColorDialog extends DialogFragment {
         });
     }
 
-    public static SelectSubjectColorDialog newInstance(Callback callback) {
-        SelectSubjectColorDialog dialog = new SelectSubjectColorDialog();
+    public static SubjectColorSelectDialog newInstance(Callback callback) {
+        SubjectColorSelectDialog dialog = new SubjectColorSelectDialog();
         dialog.setCallback(callback);
         return dialog;
     }
@@ -60,12 +59,12 @@ public class SelectSubjectColorDialog extends DialogFragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View colorSelectView = inflater.inflate(R.layout.dialog_select_color, container, false);
         ListView colorListView =
-                (ListView) colorSelectView.findViewById(R.id.dialog_select_color_list);
+                (ListView) colorSelectView.findViewById(R.id.dialog_list_select_color);
         ArrayList<String> colors = ColorProvider.getInstance().getAllColor();
         ColorTextButtonAdapter adapter = new ColorTextButtonAdapter(getActivity(), colors);
         colorListView.setAdapter(adapter);
         Button btnCancel =
-                (Button) colorSelectView.findViewById(R.id.dialog_select_color_button_cancel);
+                (Button) colorSelectView.findViewById(R.id.dialog_btn_select_color_cancel);
         btnCancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

@@ -12,11 +12,11 @@
         android:textStyle="bold"/>
 
     <ListView
-        android:id="@+id/dialog_select_subject_list"
+        android:id="@+id/dialog_list_select_subject"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/listview_vertical_padding"
-        android:paddingBottom="@dimen/listview_vertical_padding"/>
+        android:paddingTop="@dimen/dialog_contents_vertical_padding"
+        android:paddingBottom="@dimen/dialog_contents_vertical_padding"/>
 
     <TextView
         style="@style/TextViewStyle"
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
             <Button
-                android:id="@+id/dialog_select_subject_button_cancel"
+                android:id="@+id/dialog_btn_select_subject_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/ButtonStyle"

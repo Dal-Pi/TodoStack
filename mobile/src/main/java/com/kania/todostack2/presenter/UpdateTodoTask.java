@@ -29,7 +29,7 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
     private TodoData mData;
 
     public interface TaskEndCallback {
-        void loadFinished();
+        void updateFinished();
     }
 
     public UpdateTodoTask(Context context, TaskEndCallback callback) {
@@ -44,7 +44,7 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
             mCallback = new TaskEndCallback() {
                 //empty callback
                 @Override
-                public void loadFinished() {
+                public void updateFinished() {
                 }
             };
         }
@@ -88,7 +88,7 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
         if (result)
-            mCallback.loadFinished();
+            mCallback.updateFinished();
         else
             Log.d("TodoStack", "[onPostExecute] fail to progress todo task");
     }

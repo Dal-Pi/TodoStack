@@ -66,8 +66,9 @@ public class TodoProvider {
                 SubjectEntry.COLOR,
                 SubjectEntry.ORDER
         };
+        final String sortOrder = SubjectEntry.ORDER + " ASC";
         Cursor subjectCursor = todoStackDb.query(SubjectEntry.TABLE_NAME,
-                projection, null, null, null, null, null);
+                projection, null, null, null, null, sortOrder);
 //        subjectCursor.moveToFirst();
         while (subjectCursor.moveToNext()) {
             SubjectData subject = new SubjectData();

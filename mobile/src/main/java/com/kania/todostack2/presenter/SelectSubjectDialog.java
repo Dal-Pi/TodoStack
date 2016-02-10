@@ -59,12 +59,12 @@ public class SelectSubjectDialog extends DialogFragment {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View subjectSelectView = inflater.inflate(R.layout.dialog_select_subject, container, false);
         ListView subjectListView =
-                (ListView) subjectSelectView.findViewById(R.id.dialog_select_subject_list);
+                (ListView) subjectSelectView.findViewById(R.id.dialog_list_select_subject);
         ArrayList<SubjectData> subjects = TodoProvider.getInstance(getActivity()).getAllSubject();
         SubjectTextButtonAdapter adapter = new SubjectTextButtonAdapter(getActivity(), subjects);
         subjectListView.setAdapter(adapter);
         Button btnCancel =
-                (Button) subjectSelectView.findViewById(R.id.dialog_select_subject_button_cancel);
+                (Button) subjectSelectView.findViewById(R.id.dialog_btn_select_subject_cancel);
         btnCancel.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {

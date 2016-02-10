@@ -47,7 +47,11 @@
     <string name="guide_text_mode_input_subject">Input \"Subject Name\" represents Todo(s).</string>
     <string name="guide_text_mode_view_subject">Select action button for viewing all todo.</string>
 
+    <string name="dialog_progress_updating">Updating...</string>
     <string name="dialog_select_subject_title">Select Subject to add Todo.</string>
     <string name="dialog_select_subject_tip">Tip. You can skip this step \n    by selecting Subject title \n    on main screen.</string>
     <string name="dialog_select_color_title">Select Subject represent Todo.</string>
+    <string name="dialog_update_subject_name">Change Subject name</string>
+
+
 </resources>
