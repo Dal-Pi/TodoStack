@@ -18,7 +18,7 @@ public interface IControllerMediator {
     int MODE_VIEW_TODO_THREELINE = 6;
     int MODE_VIEW_SUBJECT = 7;
 
-    void setMediator(IViewAction mediator);
+    void setTargetView(IViewAction targetView);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);
     void refreshTodoLayout(int layoutWidth, int layoutHeight);

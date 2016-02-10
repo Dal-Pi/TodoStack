@@ -59,8 +59,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     }
 
     @Override
-    public void setMediator(IViewAction mediator) {
-        mTodoView = mediator;
+    public void setTargetView(IViewAction targetView) {
+        mTodoView = targetView;
+    }
+
+    private void setNowBusy(boolean nowBusy) {
+        mTodoView.setNowBusy(nowBusy);
     }
 
     @Override
@@ -187,6 +191,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             default:
                 break;
         }
+        setNowBusy(false);
         mViewMode = targetMode;
         Log.d("TodoStack", "Now Mode = " + printMode(mViewMode));
     }
@@ -436,6 +441,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     @Override
     public void clickBackPressSoftButton() {
         if (mViewMode != MODE_INITIAL_SETUP && mViewMode != MODE_NO_SELECTION) {
+            //check now busy
+            if (mTodoView.getNowBusy())
+                return;
             //any mode
             if (TodoProvider.getSubjectCount() > 0) {
                 setMode(MODE_NO_SELECTION);
@@ -493,6 +501,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     }
 
     private void insertSubject(Bundle bundle) {
+        setNowBusy(true);
         UpdateSubjectTask insertSubjectTask =
                 new UpdateSubjectTask(mContext, new UpdateSubjectTask.TaskEndCallback() {
                     @Override
@@ -594,6 +603,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void onClick(View v) {
+        if (mTodoView.getNowBusy())
+            return;
         Object tag = v.getTag();
         if (tag != null && tag instanceof TextViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
@@ -603,6 +614,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public boolean onLongClick(View v) {
+        if (mTodoView.getNowBusy())
+            return false;
         Object tag = v.getTag();
         if (tag != null && tag instanceof TextViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
@@ -633,6 +646,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void changeSubjectName(String name) {
+        setNowBusy(true);
         UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
                 new UpdateSubjectTask.TaskEndCallback() {
             @Override
@@ -657,6 +671,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void changeSubjectColor(int color) {
+        setNowBusy(true);
         UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
                 new UpdateSubjectTask.TaskEndCallback() {
             @Override
@@ -683,6 +698,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public void moveSubjectOrder(final boolean isLeft) {
         Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
                 + "direction = " + (isLeft ? "left" : "right"));
+        setNowBusy(true);
         UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
                 new UpdateSubjectTask.TaskEndCallback() {
             @Override

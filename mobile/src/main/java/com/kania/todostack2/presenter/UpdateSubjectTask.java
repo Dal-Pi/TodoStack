@@ -125,9 +125,9 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
-        super.onPostExecute(result);
         if (result)
             mCallback.updateFinished();
         else

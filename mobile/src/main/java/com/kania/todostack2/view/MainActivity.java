@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private TextView textGuide;
 
-    private boolean bViewClickable = true;
+    private boolean bNowBusy = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         setSupportActionBar(toolbarActionBar);
 
         mMediator = new TodoStackPresenter(this);
-        mMediator.setMediator(this);
+        mMediator.setTargetView(this);
 
         initControlView();
     }
@@ -179,35 +179,35 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     @Override
     public void onClick(View v) {
-        if (bViewClickable) {
-            switch (v.getId()) {
-                case R.id.main_btn_fab:
-                    if (checkVaildData()) {
-                        mMediator.clickFloatingActionButton(getBundleFromVisibleLayout());
-                    }
-                    break;
-                case R.id.main_btn_input_calendar:
-                    getDateFromDatePicker();
-                    break;
-                case R.id.main_btn_input_subject_color:
-                    getColorFromColorDialog();
-                    break;
-                case R.id.main_btn_edit_subject_name:
-                    editSubjectName();
-                    break;
-                case R.id.main_btn_edit_subject_color:
-                    editSubjectColor();
-                    break;
-                case R.id.main_btn_subject_delete:
-                    //TODO implement after add removing Todos
-                    break;
-                case R.id.main_btn_subject_left:
-                    mMediator.moveSubjectOrder(true);
-                    break;
-                case R.id.main_btn_subject_right:
-                    mMediator.moveSubjectOrder(false);
-                    break;
-            }
+        if (bNowBusy)
+            return;
+        switch (v.getId()) {
+            case R.id.main_btn_fab:
+                if (checkVaildData()) {
+                    mMediator.clickFloatingActionButton(getBundleFromVisibleLayout());
+                }
+                break;
+            case R.id.main_btn_input_calendar:
+                getDateFromDatePicker();
+                break;
+            case R.id.main_btn_input_subject_color:
+                getColorFromColorDialog();
+                break;
+            case R.id.main_btn_edit_subject_name:
+                editSubjectName();
+                break;
+            case R.id.main_btn_edit_subject_color:
+                editSubjectColor();
+                break;
+            case R.id.main_btn_subject_delete:
+                //TODO implement after add removing Todos
+                break;
+            case R.id.main_btn_subject_left:
+                mMediator.moveSubjectOrder(true);
+                break;
+            case R.id.main_btn_subject_right:
+                mMediator.moveSubjectOrder(false);
+                break;
         }
     }
 
@@ -397,8 +397,13 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
-    public void setViewClickEnable(boolean enable) {
-        bViewClickable = enable;
+    public void setNowBusy(boolean nowBusy) {
+        bNowBusy = nowBusy;
+    }
+
+    @Override
+    public boolean getNowBusy() {
+        return bNowBusy;
     }
 
     @Override
@@ -496,24 +501,25 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     public void setFabThemeWithMoveUp(final String action, final int color) {
         Log.d("TodoStack",
                 "[setFabThemeWithMoveUp] call! action = " + action + " / color = " + color);
+
         Animation animation =
                 new TranslateAnimation(0, 0, 0, layoutFabBar.getTop() - btnFab.getTop());
         animation.setDuration(DURATION_ANIMATION);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                btnFab.setClickable(false);
+                setNowBusy(true);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                btnFab.setClickable(true);
                 RelativeLayout.LayoutParams params =
                         (RelativeLayout.LayoutParams) btnFab.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
                 btnFab.setLayoutParams(params);
                 setFabTheme(action, color);
+                setNowBusy(false);
             }
 
             @Override
@@ -530,18 +536,18 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                btnFab.setClickable(false);
+                setNowBusy(true);
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                btnFab.setClickable(true);
                 RelativeLayout.LayoutParams params =
                         (RelativeLayout.LayoutParams) btnFab.getLayoutParams();
                 params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
                 params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 1);
                 btnFab.setLayoutParams(params);
                 setFabTheme(action, color);
+                setNowBusy(false);
             }
 
             @Override

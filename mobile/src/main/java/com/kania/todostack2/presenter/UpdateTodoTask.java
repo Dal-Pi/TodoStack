@@ -1,11 +1,13 @@
 package com.kania.todostack2.presenter;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackDbHelper;
@@ -17,6 +19,8 @@ import com.kania.todostack2.provider.TodoProvider;
 public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
 
     public static final int TODO_TASK_ADD_TODO = 1;
+
+    private ProgressDialog mProgressDialog;
 
     private Context mContext;
     private TodoProvider mTodoProvider;
@@ -56,6 +60,13 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        mProgressDialog = ProgressDialog.show(mContext, null,
+                mContext.getResources().getString(R.string.dialog_progress_updating));
+    }
+
+    @Override
     protected Boolean doInBackground(Void... params) {
 
         if (mData == null || mTaskType == -1) {
@@ -87,6 +98,8 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
         if (result)
             mCallback.updateFinished();
         else

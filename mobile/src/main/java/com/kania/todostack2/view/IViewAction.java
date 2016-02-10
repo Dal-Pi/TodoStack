@@ -10,7 +10,8 @@ import java.util.ArrayList;
 public interface IViewAction {
     void setActionBarText(String title, int color);
 
-    void setViewClickEnable(boolean enable);
+    void setNowBusy(boolean nowBusy);
+    boolean getNowBusy();
 
     void setAllControllerGone();
     void setInputSubjectVisible();
