@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -40,6 +41,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public static final int NOT_SELECTED_SUBJECT = -1;
 
     public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
+
+    public static final String TODO_DIVIDER = " / ";
     private Context mContext;
     private TodoLayoutInfo mTodolayoutInfo;
 
@@ -74,9 +77,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
         if (provider.getSubjectCount() > 0) {
             refreshTodoLayout(layoutWidth, layoutHeight);
-            setMode(MODE_NO_SELECTION);
+            setMode(MODE_NO_SELECTION, null);
         } else {
-            setMode(MODE_INITIAL_SETUP);
+            setMode(MODE_INITIAL_SETUP, null);
         }
     }
 
@@ -102,7 +105,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
      * @param targetMode intented mode, in this method, mViewMode mean present mode
      */
     @Override
-    public void setMode(int targetMode) {
+    public void setMode(int targetMode, Object info) {
         TodoProvider provider = TodoProvider.getInstance(mContext);
         boolean needAnimation = false;
         switch (targetMode) {
@@ -162,9 +165,24 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
                 break;
-            case MODE_VIEW_TODO_ONELINE:
-            case MODE_VIEW_TODO_TWOLINE:
-            case MODE_VIEW_TODO_THREELINE:
+            case MODE_VIEW_TODO:
+                //TODO 160211 target
+                if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
+                    //mixed subject case
+                } else {
+                    SubjectData sd = provider.getSubjectByOrder(mNowSelectSubjectOrder);
+                    mTodoView.setActionBarText(
+                            res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
+                            sd.color);
+                    needAnimation = !isFabTop();
+                    //TODO set visible view todo layout with spannable text
+                    mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TextViewInfo) info));
+
+                    mTodoView.setFab(res.getString(R.string.todo_done),
+                            sd.color, needAnimation);
+                    mIsFabTop = true;
+                    mTodoView.setGuideText(res.getString(R.string.guide_text_mode_view_todo));
+                }
                 break;
             case MODE_VIEW_SUBJECT:
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
@@ -322,7 +340,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         if (info == null) {
                             info = mTodolayoutInfo.getDateTodoPosition(
                                     subjectdata.order, cmpDiffDays);
-                            info.type = TextViewInfo.TYPE_DATE_TODO;
+                            info.type = TextViewInfo.TYPE_TODO;
                             info.id = td.id + "";
                             if (cmpDiffDays == 0) { //today
                                 info.isToday = true;
@@ -370,7 +388,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private TextView getTaskTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td.todoName, sd.color);
         TextViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
-        info.type = TextViewInfo.TYPE_TASK_TODO;
+        info.type = TextViewInfo.TYPE_TODO;
         info.id = td.id + "";
         tv.setTag(info);
 
@@ -390,7 +408,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private TextView getDelayedTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td.todoName, sd.color);
         TextViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
-        info.type = TextViewInfo.TYPE_DATE_TODO;
+        info.type = TextViewInfo.TYPE_TODO;
         info.id = td.id + "";
         tv.setTag(info);
 
@@ -408,8 +426,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         tv.setText(todoName);
         tv.setTextColor(res.getColor(R.color.color_todo_text));
         tv.setBackgroundColor(subjectColor);
-        //TODO implement onclick
-//        tv.setOnClickListener(this);
+        tv.setOnClickListener(this);
         tv.setOnLongClickListener(this);
 
         return tv;
@@ -438,6 +455,23 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return diffDays;
     }
 
+    private SpannableString getSpannableStringFromTodos(TextViewInfo info) {
+        TodoProvider provider = TodoProvider.getInstance(mContext);
+        String todoString = "";
+        String[] ids = info.id.split(TextViewInfo.DELIMITER_ID);
+
+        for (int i = 0; i < ids.length; ++i) {
+            TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
+            if (i == 0)
+                todoString += td.todoName;
+            else
+                todoString += TODO_DIVIDER + td.todoName;
+        }
+        SpannableString ret = new SpannableString(todoString);
+
+        return ret;
+    }
+
     @Override
     public void clickBackPressSoftButton() {
         if (mViewMode != MODE_INITIAL_SETUP && mViewMode != MODE_NO_SELECTION) {
@@ -446,9 +480,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 return;
             //any mode
             if (TodoProvider.getSubjectCount() > 0) {
-                setMode(MODE_NO_SELECTION);
+                setMode(MODE_NO_SELECTION, null);
             } else {
-                setMode(MODE_INITIAL_SETUP);
+                setMode(MODE_INITIAL_SETUP, null);
             }
         } else {
             mTodoView.finishActivity();
@@ -459,7 +493,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public void clickFloatingActionButton(Bundle bundle) {
         switch (mViewMode) {
             case MODE_INITIAL_SETUP:
-                setMode(MODE_ADD_SUBJECT);
+                setMode(MODE_ADD_SUBJECT, null);
                 break;
             case MODE_NO_SELECTION:
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
@@ -467,11 +501,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         @Override
                         public void onSelectSubject(int order) {
                             mNowSelectSubjectOrder = order;
-                            setMode(MODE_ADD_TODO);
+                            setMode(MODE_ADD_TODO, null);
                         }
                     });
                 } else { //it never used
-                    setMode(MODE_ADD_TODO);
+                    setMode(MODE_ADD_TODO, null);
                 }
                 break;
             case MODE_ADD_TODO:
@@ -489,9 +523,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 // request add subject using asynctask
                 insertSubject(bundle);
                 break;
-            case MODE_VIEW_TODO_ONELINE:
-            case MODE_VIEW_TODO_TWOLINE:
-            case MODE_VIEW_TODO_THREELINE:
+            case MODE_VIEW_TODO:
                 break;
             case MODE_VIEW_SUBJECT:
                 break;
@@ -510,7 +542,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                                 mContext, new LoadingTodoTask.TaskEndCallback() {
                             @Override
                             public void loadFinished() {
-                                setMode(MODE_NO_SELECTION);
+                                setMode(MODE_NO_SELECTION, null);
                             }
                         });
                         refreshTask.execute();
@@ -530,7 +562,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                                 mContext, new LoadingTodoTask.TaskEndCallback() {
                             @Override
                             public void loadFinished() {
-                                setMode(MODE_NO_SELECTION);
+                                setMode(MODE_NO_SELECTION, null);
                             }
                         });
                         refreshTask.execute();
@@ -565,7 +597,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void selectMenuAddSubject() {
-        setMode(MODE_ADD_SUBJECT);
+        setMode(MODE_ADD_SUBJECT, null);
     }
 
     //for debug
@@ -580,12 +612,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 ret = "MODE_ADD_TODO"; break;
             case MODE_ADD_SUBJECT:
                 ret = "MODE_ADD_SUBJECT"; break;
-            case MODE_VIEW_TODO_ONELINE:
-                ret = "MODE_VIEW_TODO_ONELINE"; break;
-            case MODE_VIEW_TODO_TWOLINE:
-                ret = "MODE_VIEW_TODO_TWOLINE"; break;
-            case MODE_VIEW_TODO_THREELINE:
-                ret = "MODE_VIEW_TODO_THREELINE"; break;
+            case MODE_VIEW_TODO:
+                ret = "MODE_VIEW_TODO"; break;
             case MODE_VIEW_SUBJECT:
                 ret = "MODE_VIEW_SUBJECT"; break;
             default:
@@ -608,7 +636,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         Object tag = v.getTag();
         if (tag != null && tag instanceof TextViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
-            setMode(MODE_ADD_TODO);
+            if (((TextViewInfo) tag).type == TextViewInfo.TYPE_SUBJECT) {
+                setMode(MODE_ADD_TODO, null);
+            } else if (((TextViewInfo) tag).type == TextViewInfo.TYPE_TODO) {
+                setMode(MODE_VIEW_TODO, tag);
+            }
         }
     }
 
@@ -619,7 +651,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         Object tag = v.getTag();
         if (tag != null && tag instanceof TextViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
-            setMode(MODE_VIEW_SUBJECT);
+            setMode(MODE_VIEW_SUBJECT, null);
             return true;
         } else {
             return false;
@@ -632,7 +664,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             int type = ((TextViewInfo) tag).type;
             if (type == TextViewInfo.TYPE_SUBJECT) {
                 ret = Integer.parseInt(((TextViewInfo) tag).id);
-            } else if (type == TextViewInfo.TYPE_DATE_TODO || type == TextViewInfo.TYPE_TASK_TODO) {
+            } else if (type == TextViewInfo.TYPE_TODO) {
                 String combinedId = ((TextViewInfo) tag).id;
                 String[] stringIds = combinedId.split(TextViewInfo.DELIMITER_ID);
                 TodoData td = TodoProvider.getInstance(mContext).getTodoById(
@@ -656,7 +688,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     @Override
                     public void loadFinished() {
                         sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT);
+                        setMode(MODE_VIEW_SUBJECT, null);
                     }
                 });
                 refreshTask.execute();
@@ -681,7 +713,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     @Override
                     public void loadFinished() {
                         sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT);
+                        setMode(MODE_VIEW_SUBJECT, null);
                     }
                 });
                 refreshTask.execute();
@@ -710,7 +742,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     @Override
                     public void loadFinished() {
                         sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT);
+                        setMode(MODE_VIEW_SUBJECT, null);
                     }
                 });
                 refreshTask.execute();

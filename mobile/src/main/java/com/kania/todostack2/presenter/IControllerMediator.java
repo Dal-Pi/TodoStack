@@ -13,17 +13,15 @@ public interface IControllerMediator {
     int MODE_NO_SELECTION = 1;
     int MODE_ADD_TODO = 2;
     int MODE_ADD_SUBJECT = 3;
-    int MODE_VIEW_TODO_ONELINE = 4;
-    int MODE_VIEW_TODO_TWOLINE = 5;
-    int MODE_VIEW_TODO_THREELINE = 6;
-    int MODE_VIEW_SUBJECT = 7;
+    int MODE_VIEW_TODO = 4;
+    int MODE_VIEW_SUBJECT = 5;
 
     void setTargetView(IViewAction targetView);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);
     void refreshTodoLayout(int layoutWidth, int layoutHeight);
 
-    void setMode(int targetMode);
+    void setMode(int targetMode, Object info);
     void clickBackPressSoftButton();
     void clickFloatingActionButton(Bundle bundle);
 

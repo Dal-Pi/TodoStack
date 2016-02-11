@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/dialog_padding"
-    android:background="@color/color_white">
-
-    <TextView
-        style="@style/TextViewStyle"
-        android:text="@string/dialog_update_subject_name"
-        android:textColor="@color/color_black"
-        android:textStyle="bold"/>
-
-    <EditText
-        android:id="@+id/dialog_edit_update_subject_name"
-        android:layout_width="match_parent"
-        style="@style/EditViewStyle"
-        android:paddingTop="@dimen/dialog_contents_vertical_padding"
-        android:paddingBottom="@dimen/dialog_contents_vertical_padding"/>
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <android.support.v4.widget.Space
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+        style="@style/DialogStyle"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:text="@string/dialog_update_subject_name"
+            android:textColor="@color/color_black"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/dialog_edit_update_subject_name"
+            android:layout_width="match_parent"
+            style="@style/EditViewStyle"
+            android:paddingTop="@dimen/dialog_contents_vertical_padding"
+            android:paddingBottom="@dimen/dialog_contents_vertical_padding"/>
+
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <Button
-                android:id="@+id/dialog_btn_update_subject_name_edit"
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="@style/ButtonStyle"
-                android:text="@string/edit"/>
-            <Button
-                android:id="@+id/dialog_btn_update_subject_name_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="@style/ButtonStyle"
-                android:text="@string/cancel"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/dialog_btn_update_subject_name_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonStyle"
+                    android:text="@string/edit"/>
+                <Button
+                    android:id="@+id/dialog_btn_update_subject_name_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonStyle"
+                    android:text="@string/cancel"/>
+            </LinearLayout>
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

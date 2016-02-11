@@ -1,5 +1,7 @@
 package com.kania.todostack2.view;
 
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public interface IViewAction {
     void setInputSubjectVisible();
     void setInputTodoVisible(int color);
     void setViewSubjectVisible(int color, boolean leftEnable, boolean RightEnable);
+    void setViewTodoVisible(SpannableString spannableString);
 
     void setFab(String action, int color, boolean needMove);
 

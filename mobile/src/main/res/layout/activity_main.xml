@@ -130,67 +130,28 @@
             <!--[start] MODE_VIEW_TODO-->
             <LinearLayout
                 android:id="@+id/main_layout_todo_viewer_mode"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:gravity="center_vertical|right"
 
-                android:visibility="gone">
+                android:visibility="visible">
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/fab_layout_size">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <Button
-                        android:id="@+id/main_btn_viewer_info_1"
-                        android:layout_width="@dimen/fab_layout_size"
-                        android:layout_height="wrap_content"
-                        style="@style/ButtonStyleInActivity"
-                        android:layout_alignParentEnd="true"
-                        android:text="@string/todo_done" />
                     <TextView
-                        android:id="@+id/main_text_viewer_done_1"
+                        android:id="@+id/main_text_view_todo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/TextButtonStyleInactivity"
-                        android:layout_toStartOf="@id/main_btn_viewer_info_1"
-                        android:text="@string/initial_todo_info" />
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <Button
-                        android:id="@+id/main_btn_viewer_info_2"
-                        android:layout_width="@dimen/fab_layout_size"
-                        android:layout_height="wrap_content"
-                        style="@style/ButtonStyleInActivity"
-                        android:layout_alignParentEnd="true"
-                        android:text="@string/todo_done" />
-                    <TextView
-                        android:id="@+id/main_text_viewer_done_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/TextButtonStyleInactivity"
-                        android:layout_toStartOf="@id/main_btn_viewer_info_2"
-                        android:text="@string/initial_todo_info" />
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <Button
-                        android:id="@+id/main_btn_viewer_info_3_or_more"
-                        android:layout_width="@dimen/fab_layout_size"
-                        android:layout_height="wrap_content"
-                        style="@style/ButtonStyleInActivity"
-                        android:layout_alignParentEnd="true"
-                        android:text="@string/todo_done"
-                        android:backgroundTint="@color/color_normal_state"/>
-                    <TextView
-                        android:id="@+id/main_text_viewer_done_3_or_more"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/TextButtonStyleInactivity"
-                        android:layout_toStartOf="@id/main_btn_viewer_info_3_or_more"
-                        android:text="@string/initial_todo_info" />
-                </RelativeLayout>
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textSize="@dimen/text_size_textview"
+                        android:text="@string/todo_initial_info"
+                        android:textColor="@color/color_gray"
+                        />
+                </ScrollView>
             </LinearLayout>
             <!--[end] MODE_VIEW_TODO-->
 
@@ -201,7 +162,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
 
-                android:visibility="visible">
+                android:visibility="gone">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

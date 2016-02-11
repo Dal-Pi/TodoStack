@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,9 +73,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private Button btnMoveLeft;
     private Button btnMoveRight;
 
-
-
-    private Button btnDone3;
+    private TextView textTodos;
 
     private TodoLayout todoLayout;
 
@@ -133,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         btnMoveRight = (Button) findViewById(R.id.main_btn_subject_right);
         btnMoveRight.setOnClickListener(this);
 
-        btnDone3 = (Button) findViewById(R.id.main_btn_viewer_info_3_or_more);
+        textTodos = (TextView) findViewById(R.id.main_text_view_todo);
 
         todoLayout = (TodoLayout) findViewById(R.id.main_vg_todo_layout);
         todoLayout.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -404,11 +403,21 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
+    public void setViewTodoVisible(SpannableString spannableString) {
+        if (controllerViewTodo.getVisibility() != View.VISIBLE) {
+            setAllControllerGone();
+            controllerViewTodo.setVisibility(View.VISIBLE);
+        }
+        textTodos.setText(spannableString);
+    }
+
+    @Override
     public void setFab(String action, int color, boolean needMove) {
         if (needMove) {
             if (isViewVisible(controllerInputTodo) ||
                     isViewVisible(controllerInputSubject) ||
-                    isViewVisible(controllerViewSubject)) {
+                    isViewVisible(controllerViewSubject) ||
+                    isViewVisible(controllerViewTodo)) {
                 setFabThemeWithMoveUp(action, color);
             }
         } else {

@@ -7,6 +7,7 @@
 
     <string name="adding_text_new_todo">New Todo</string>
     <string name="adding_text_on_new_todo">New Todo on</string>
+    <string name="adding_text_view_todo">Todo on</string>
     <string name="title_text_on_new_subject">New Subject</string>
 
     <string name="fab_create_subject">New\nSubject</string>
@@ -29,7 +30,7 @@
     <string name="subject_delete">Delete Subject</string>
     <string name="subject_view_all_todo">View Todo</string>
 
-    <string name="initial_todo_info">Loading..</string>
+    <string name="todo_initial_info">Loading..</string>
     <string name="todo_done">Done</string>
 
     <string name="edit">Edit</string>
@@ -46,10 +47,11 @@
     <string name="guide_text_mode_input_todo">Input information represents Todo.</string>
     <string name="guide_text_mode_input_subject">Input \"Subject Name\" represents Todo(s).</string>
     <string name="guide_text_mode_view_subject">Select action button for viewing all todo.</string>
+    <string name="guide_text_mode_view_todo">Select each todo text for done todo.</string>
 
     <string name="dialog_progress_updating">Updating...</string>
     <string name="dialog_select_subject_title">Select Subject to add Todo.</string>
-    <string name="dialog_select_subject_tip">Tip. You can skip this step \n    by selecting Subject title \n    on main screen.</string>
+    <string name="dialog_select_subject_tip">Tip. You can skip this step by selecting Subject title on main screen.</string>
     <string name="dialog_select_color_title">Select Subject represent Todo.</string>
     <string name="dialog_update_subject_name">Change Subject name</string>
 

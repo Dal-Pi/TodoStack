@@ -5,8 +5,7 @@ package com.kania.todostack2.view;
  */
 public class TextViewInfo {
     public static final int TYPE_SUBJECT = 1;
-    public static final int TYPE_TASK_TODO = 2;
-    public static final int TYPE_DATE_TODO = 3;
+    public static final int TYPE_TODO = 2;
 
     public static final String DELIMITER_ID = "/";
 

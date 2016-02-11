@@ -33,5 +33,6 @@
     <dimen name="elevation_size">4dp</dimen>
     <dimen name="radius">2dp</dimen>
 
+    <dimen name="dialog_minwidth">300dp</dimen>
     <dimen name="dialog_padding">10dp</dimen>
 </resources>
