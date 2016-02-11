@@ -16,6 +16,8 @@ import com.kania.todostack2.R;
 public class SubjectNameUpdateDialog extends DialogFragment{
     private Callback mCallback;
 
+    private String mOriginName = "";
+
     public interface Callback {
         void onEditName(String newName);
     }
@@ -39,6 +41,10 @@ public class SubjectNameUpdateDialog extends DialogFragment{
         mCallback = callback;
     }
 
+    public void setOriginName(String name) {
+        mOriginName = name;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +59,17 @@ public class SubjectNameUpdateDialog extends DialogFragment{
                 inflater.inflate(R.layout.dialog_update_subject_name, container, false);
         final EditText editName =
                 (EditText) updateNameView.findViewById(R.id.dialog_edit_update_subject_name);
+        editName.setText(mOriginName);
         Button btnEdit =
                 (Button) updateNameView.findViewById(R.id.dialog_btn_update_subject_name_edit);
         btnEdit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mCallback.onEditName(editName.getText().toString());
-                dismiss();
+                String name = editName.getText().toString();
+                if (TodoStackUtil.checkVaildName(getActivity(), name)) {
+                    mCallback.onEditName(name);
+                    dismiss();
+                }
             }
         });
         Button btnCancel =

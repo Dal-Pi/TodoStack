@@ -30,6 +30,7 @@ import com.kania.todostack2.presenter.SubjectColorSelectDialog;
 import com.kania.todostack2.presenter.TodoStackPresenter;
 import com.kania.todostack2.util.SubjectNameUpdateDialog;
 import com.kania.todostack2.util.TodoDatePickerDialog;
+import com.kania.todostack2.util.TodoStackUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -213,86 +214,21 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private boolean checkVaildData() {
         if (isViewVisible(controllerInputTodo)) {
-            if (!checkVaildTodoDate())
+            String year = editYear.getText().toString();
+            String month = editMonth.getText().toString();
+            String day = editDay.getText().toString();
+            if (!TodoStackUtil.checkVaildTodoDate(this, year, month, day))
                 return false;
             String name = editTodoName.getText().toString();
-            if (!checkVaildName(name))
+            if (!TodoStackUtil.checkVaildName(this, name))
                 return false;
         }
         if (isViewVisible(controllerInputSubject)) {
             String name = editSubjectName.getText().toString();
-            if (!checkVaildName(name))
+            if (!TodoStackUtil.checkVaildName(this, name))
                 return false;
         }
         return true;
-    }
-
-    private boolean checkVaildTodoDate() {
-        boolean ret = false;
-        String year = editYear.getText().toString();
-        String month = editMonth.getText().toString();
-        String day = editDay.getText().toString();
-        if("".equals(year) || "".equals(month) || "".equals(day)){
-            Toast.makeText(this, "There is a empty space.", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            int nYearCheck = Integer.parseInt(year);
-            int nMonthCheck = Integer.parseInt(month);
-            int nDateCheck = Integer.parseInt(day);
-
-            if (nYearCheck > 0) {
-                int nRangeDate = -1;
-                switch (nMonthCheck) {
-                    case 1:
-                    case 3:
-                    case 5:
-                    case 7:
-                    case 8:
-                    case 10:
-                    case 12:
-                        nRangeDate = 31;
-                        break;
-                    case 4:
-                    case 6:
-                    case 9:
-                    case 11:
-                        nRangeDate = 30;
-                        break;
-                    case 2:
-                        if( ( (nYearCheck%4 == 0) && (nYearCheck%100 != 0) ) || (nYearCheck%400 == 0) ){
-                            nRangeDate = 29;
-                        }
-                        else{
-                            nRangeDate = 28;
-                        }
-                        break;
-                    default:
-                        Toast.makeText(this, "Do not execute! Input vaild Month(1 ~ 12)", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                if( (nDateCheck > 0) && (nDateCheck <= nRangeDate) ){
-                    ret = true;
-                } else {
-                    Toast.makeText(this, "Do not execute! Input vaild Day(1 ~ last day each month)", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "Do not execute! Input vaild Year.", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        return ret;
-    }
-
-    private boolean checkVaildName(String name) {
-        boolean ret;
-        if (!"".equalsIgnoreCase(name.trim())) {
-            ret = true;
-        } else {
-            ret = false;
-            Toast.makeText(this, "Do not execute! Name is empty.", Toast.LENGTH_SHORT).show();
-        }
-
-        return ret;
     }
 
     private Bundle getBundleFromVisibleLayout() {
@@ -374,6 +310,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                         mMediator.changeSubjectName(name);
                     }
                 });
+        ((SubjectNameUpdateDialog) dialog).setOriginName(toolbarActionBar.getTitle().toString());
         dialog.show(getFragmentManager(), dialogTag);
     }
 
