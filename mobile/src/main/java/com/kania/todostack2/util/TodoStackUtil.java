@@ -3,6 +3,8 @@ package com.kania.todostack2.util;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.kania.todostack2.view.TextViewInfo;
+
 /**
  * Created by user on 2016-02-11.
  */
@@ -10,11 +12,15 @@ public class TodoStackUtil {
 
     public static boolean checkVaildName(Context context, String name) {
         boolean ret;
-        if (!"".equalsIgnoreCase(name.trim())) {
-            ret = true;
-        } else {
-            ret = false;
+        if ("".equalsIgnoreCase(name.trim())) {
             Toast.makeText(context, "Do not execute! Name is empty.", Toast.LENGTH_SHORT).show();
+            ret = false;
+        } else if (name.contains(TextViewInfo.DELIMITER_ID)) {
+            Toast.makeText(context, "Do not execute! Cannot input \"/\" character.",
+                    Toast.LENGTH_SHORT).show();
+            ret = false;
+        } else {
+            ret = true;
         }
 
         return ret;

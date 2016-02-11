@@ -1,4 +1,4 @@
-package com.kania.todostack2.presenter;
+package com.kania.todostack2.util;
 
 import android.app.DialogFragment;
 import android.content.Context;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by user on 2016-02-01.
  */
-public class SelectSubjectDialog extends DialogFragment {
+public class SubjectSelectDialog extends DialogFragment {
 
     private Callback mCallback;
 
@@ -28,8 +28,8 @@ public class SelectSubjectDialog extends DialogFragment {
         void onSelectSubject(int order);
     }
 
-    public SelectSubjectDialog() {
-        setCallback(new SelectSubjectDialog.Callback() {
+    public SubjectSelectDialog() {
+        setCallback(new SubjectSelectDialog.Callback() {
             @Override
             public void onSelectSubject(int order) {
                 //empty callback
@@ -37,8 +37,8 @@ public class SelectSubjectDialog extends DialogFragment {
         });
     }
 
-    public static SelectSubjectDialog newInstance(Callback callback) {
-        SelectSubjectDialog dialog = new SelectSubjectDialog();
+    public static SubjectSelectDialog newInstance(Callback callback) {
+        SubjectSelectDialog dialog = new SubjectSelectDialog();
         dialog.setCallback(callback);
         return dialog;
     }

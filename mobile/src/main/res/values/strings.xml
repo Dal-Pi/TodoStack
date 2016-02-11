@@ -54,6 +54,8 @@
     <string name="dialog_select_subject_tip">Tip. You can skip this step by selecting Subject title on main screen.</string>
     <string name="dialog_select_color_title">Select Subject represent Todo.</string>
     <string name="dialog_update_subject_name">Change Subject name</string>
+    <string name="dialog_select_todo_title">Select Todo to be done</string>
+    <string name="dialog_select_todo_tip">Tip. You can skip this step by selecting Todo name on main screen.</string>
 
 
 </resources>

@@ -7,6 +7,9 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -21,9 +24,13 @@ import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackSettingValues;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.provider.TodoProvider;
+import com.kania.todostack2.util.SubjectSelectDialog;
+import com.kania.todostack2.util.TodoSelectDialog;
 import com.kania.todostack2.view.IViewAction;
 import com.kania.todostack2.view.TextViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
+
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,6 +48,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public static final int NOT_SELECTED_SUBJECT = -1;
 
     public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
+    public static final String TAG_DIALOG_SELECT_TODO = "select_todo";
 
     public static final String TODO_DIVIDER = " / ";
     private Context mContext;
@@ -175,9 +183,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                             res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
                             sd.color);
                     needAnimation = !isFabTop();
+                    mTodoView.setTagOnTodoTextView((TextViewInfo) info);
                     //TODO set visible view todo layout with spannable text
                     mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TextViewInfo) info));
-
                     mTodoView.setFab(res.getString(R.string.todo_done),
                             sd.color, needAnimation);
                     mIsFabTop = true;
@@ -456,9 +464,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     }
 
     private SpannableString getSpannableStringFromTodos(TextViewInfo info) {
-        TodoProvider provider = TodoProvider.getInstance(mContext);
+        final TodoProvider provider = TodoProvider.getInstance(mContext);
         String todoString = "";
         String[] ids = info.id.split(TextViewInfo.DELIMITER_ID);
+//        int[] lengths = new int[ids.length];
+//        ClickableSpan[] clickableSpans = new ClickableSpan[ids.length];
 
         for (int i = 0; i < ids.length; ++i) {
             TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
@@ -468,6 +478,25 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 todoString += TODO_DIVIDER + td.todoName;
         }
         SpannableString ret = new SpannableString(todoString);
+        int pos = 0;
+        for (int i = 0; i < ids.length; ++i) {
+            final TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
+            ret.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    //TODO launch detail info dialog
+                    Toast.makeText(mContext, "tdName = " + td.todoName, Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setColor(provider.getSubjectByOrder(td.subjectOrder).color);
+                    ds.setUnderlineText(false);
+                }
+            }, pos, pos + td.todoName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            pos += td.todoName.length() + TODO_DIVIDER.length();
+        }
+
 
         return ret;
     }
@@ -497,7 +526,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 break;
             case MODE_NO_SELECTION:
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
-                    showSubjectSelectDialog(new SelectSubjectDialog.Callback() {
+                    showSubjectSelectDialog(new SubjectSelectDialog.Callback() {
                         @Override
                         public void onSelectSubject(int order) {
                             mNowSelectSubjectOrder = order;
@@ -524,8 +553,17 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 insertSubject(bundle);
                 break;
             case MODE_VIEW_TODO:
+                showTodoSelectDialog(bundle.getString(TodoStackContract.TodoEntry._ID),
+                        new TodoSelectDialog.Callback() {
+                    @Override
+                    public void onSelectTodo(int id) {
+                        //TODO launch done dialog
+                        Toast.makeText(mContext, "will call showTodoDoneDialog()", Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case MODE_VIEW_SUBJECT:
+                //TODO
                 break;
             default:
                 break;
@@ -622,12 +660,30 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return ret;
     }
 
-    private void showSubjectSelectDialog(SelectSubjectDialog.Callback callback) {
+    private void showSubjectSelectDialog(SubjectSelectDialog.Callback callback) {
         FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
-        DialogFragment dialog = SelectSubjectDialog.newInstance(callback);
+        DialogFragment dialog = SubjectSelectDialog.newInstance(callback);
         dialog.show(ft, TAG_DIALOG_SELECT_SUBJECT);
 
     }
+
+    private void showTodoSelectDialog(String ids, TodoSelectDialog.Callback callback) {
+        //if id has only one id, skip dialog
+        String[] sIds = ids.split(TextViewInfo.DELIMITER_ID);
+        if (sIds.length == 1) {
+            //TODO
+            //showTodoDoneDialog();
+            Toast.makeText(mContext, "will call showTodoDoneDialog()", Toast.LENGTH_SHORT).show();
+        } else {
+            FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
+            DialogFragment dialog = TodoSelectDialog.newInstance(ids, callback);
+            dialog.show(ft, TAG_DIALOG_SELECT_TODO);
+        }
+    }
+
+    private void showTodoDoneDialog() {
+        //TODO
+    };
 
     @Override
     public void onClick(View v) {

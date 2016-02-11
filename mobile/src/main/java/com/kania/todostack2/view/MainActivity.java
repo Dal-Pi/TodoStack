@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.method.MovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         btnMoveRight.setOnClickListener(this);
 
         textTodos = (TextView) findViewById(R.id.main_text_view_todo);
+//        textTodos.setLinksClickable(true);
+        textTodos.setMovementMethod(LinkMovementMethod.getInstance());
 
         todoLayout = (TodoLayout) findViewById(R.id.main_vg_todo_layout);
         todoLayout.getViewTreeObserver().addOnGlobalLayoutListener(
@@ -248,8 +252,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             bundle.putString(TodoStackContract.TodoEntry.TIME_TO,
                     TodoStackContract.TodoEntry.DATEFORMAT_TIME_DEFAULT);
             bundle.putString(TodoStackContract.TodoEntry.LOCATION, "");
-        }
-        if (isViewVisible(controllerInputSubject)) {
+        } else if (isViewVisible(controllerInputSubject)) {
             bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,
                     editSubjectName.getText().toString());
             ColorTag colorTag = (ColorTag) btnSubjectColor.getTag();
@@ -261,6 +264,11 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                         getResources().getColor(R.color.colorAccent));
             }
 
+        } else if (isViewVisible(controllerViewSubject)) {
+            //TODO launch all todo fragment
+        } else if (isViewVisible(controllerViewTodo)) {
+            bundle.putString(TodoStackContract.TodoEntry._ID,
+                    ((TextViewInfo) textTodos.getTag()).id);
         }
         return bundle;
     }
@@ -412,6 +420,13 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
+    public void setTagOnTodoTextView(TextViewInfo info) {
+        if (textTodos != null) {
+            textTodos.setTag(info);
+        }
+    }
+
+    @Override
     public void setFab(String action, int color, boolean needMove) {
         if (needMove) {
             if (isViewVisible(controllerInputTodo) ||
@@ -553,6 +568,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         inputManager.hideSoftInputFromWindow(edit.getWindowToken(),0);
     }
 
+    //TODO change below to using TextViewInfo
     class ColorTag {
         int color;
     }
