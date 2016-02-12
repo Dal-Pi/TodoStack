@@ -242,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             //subject order set on presenter
             String dateString = String.format("%4s%2s%2s", editYear.getText().toString(),
                     editMonth.getText().toString(), editDay.getText().toString());
+            //debug
+            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
             bundle.putString(TodoStackContract.TodoEntry.DATE, dateString);
             bundle.putInt(TodoStackContract.TodoEntry.TYPE,
                     checkTask.isChecked() ?

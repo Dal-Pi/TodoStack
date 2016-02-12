@@ -546,7 +546,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 showTodoSelectDialog(bundle.getString(TodoStackContract.TodoEntry._ID));
                 break;
             case MODE_VIEW_SUBJECT:
-                //TODO
+                //TODO launch fragment
                 break;
             default:
                 break;
@@ -728,7 +728,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         String[] sIds = ids.split(TextViewInfo.DELIMITER_ID);
         if (sIds.length == 1) {
             showTodoDoneDialog(Integer.parseInt(sIds[0]));
-            Toast.makeText(mContext, "will call showTodoDoneDialog()", Toast.LENGTH_SHORT).show();
         } else {
             FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
             DialogFragment dialog = TodoSelectDialog.newInstance(ids,
@@ -759,10 +758,18 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         UpdateTodoTask.TODO_TASK_DELETE_TODO);
                 deleteTodoTask.execute();
             }
-
             @Override
             public void onMoveTodo(int id, int moveType) {
                 //TODO 160212 target
+                UpdateTodoTask moveTodoTask = new UpdateTodoTask(mContext,
+                        new UpdateTodoTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        reloadTodoDataToView(MODE_NO_SELECTION);
+                    }
+                });
+                moveTodoTask.setData(TodoProvider.getInstance(mContext).getTodoById(id), moveType);
+                moveTodoTask.execute();
             }
         });
         dialog.show(ft, TAG_DIALOG_DONE_TODO);

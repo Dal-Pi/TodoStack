@@ -13,6 +13,8 @@ import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackDbHelper;
 import com.kania.todostack2.provider.TodoProvider;
 
+import java.util.Calendar;
+
 /**
  * Created by user on 2016-01-29.
  */
@@ -20,14 +22,15 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
 
     public static final int TODO_TASK_ADD_TODO = 1;
     public static final int TODO_TASK_DELETE_TODO = 2;
-    public static final int TODO_TASK_UPDATE_TODO = 3;
 
-    public static final int TODO_MOVE_OPTION_TOMORROW = 1;
-    public static final int TODO_MOVE_OPTION_NEXT_WEEK = 2;
-    public static final int TODO_MOVE_OPTION_NEXT_MONTH = 3;
-    public static final int TODO_MOVE_OPTION_NEXT_YEAR = 4;
-    public static final int TODO_MOVE_OPTION_TODAY = 5;
-    public static final int TODO_MOVE_OPTION_TASK = 6;
+//    public static final int TODO_TASK_UPDATE_TODO = 3;
+
+    public static final int TODO_MOVE_OPTION_TOMORROW = 4;
+    public static final int TODO_MOVE_OPTION_NEXT_WEEK = 5;
+    public static final int TODO_MOVE_OPTION_NEXT_MONTH = 6;
+    public static final int TODO_MOVE_OPTION_NEXT_YEAR = 7;
+    public static final int TODO_MOVE_OPTION_TODAY = 8;
+    public static final int TODO_MOVE_OPTION_TASK = 9;
 
     private ProgressDialog mProgressDialog;
 
@@ -88,11 +91,17 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
                     addTodo();
                     break;
                 case TODO_TASK_DELETE_TODO:
-                    //TODO
                     deleteTodo();
                     break;
-                case TODO_TASK_UPDATE_TODO:
-                    //TODO
+                case TODO_MOVE_OPTION_TOMORROW:
+                case TODO_MOVE_OPTION_NEXT_WEEK:
+                case TODO_MOVE_OPTION_NEXT_MONTH:
+                case TODO_MOVE_OPTION_NEXT_YEAR:
+                case TODO_MOVE_OPTION_TODAY:
+                    moveTodo();
+                    break;
+                case TODO_MOVE_OPTION_TASK:
+                    moveToTask();
                     break;
                 default:
                     return false;
@@ -125,9 +134,57 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
         cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
         todoStackDb.insert(TodoStackContract.TodoEntry.TABLE_NAME, null, cvTodo);
     }
+
     private void deleteTodo() {
         String selectionDeleteTodo =
                 TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
         todoStackDb.delete(TodoStackContract.TodoEntry.TABLE_NAME, selectionDeleteTodo, null);
+    }
+
+    private void moveTodo() {
+        Calendar calendar = Calendar.getInstance(); //today
+        switch (mTaskType) {
+            case TODO_MOVE_OPTION_TODAY:
+                //do nothing
+                break;
+            case TODO_MOVE_OPTION_TOMORROW:
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                break;
+            case TODO_MOVE_OPTION_NEXT_WEEK:
+                calendar.add(Calendar.WEEK_OF_MONTH, 1);
+                break;
+            case TODO_MOVE_OPTION_NEXT_MONTH:
+                calendar.add(Calendar.MONTH, 1);
+                break;
+            case TODO_MOVE_OPTION_NEXT_YEAR:
+                calendar.add(Calendar.YEAR, 1);
+                break;
+        }
+        String newDateString = String.format("%4s%2s%2s",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
+        ContentValues cvTodo = new ContentValues();
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, newDateString);
+        if (mData.type == TodoData.TODO_DB_TYPE_TASK) {
+            cvTodo.put(TodoStackContract.TodoEntry.TYPE, TodoData.TODO_DB_TYPE_ALLDAY);
+        } // else case : allday or period
+        String selectionMoveTodo =
+                TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
+        todoStackDb.update(TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionMoveTodo, null);
+    }
+
+    private void moveToTask() {
+        ContentValues cvTodo = new ContentValues();
+        Calendar calendar = Calendar.getInstance(); //today
+        String newDateString = String.format("%4s%2s%2s",
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH) + 1,
+                calendar.get(Calendar.DAY_OF_MONTH));
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, newDateString);
+        cvTodo.put(TodoStackContract.TodoEntry.TYPE, TodoData.TODO_DB_TYPE_TASK);
+        String selectionMoveTodo =
+                TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
+        todoStackDb.update(TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionMoveTodo, null);
     }
 }
