@@ -19,6 +19,15 @@ import com.kania.todostack2.provider.TodoProvider;
 public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
 
     public static final int TODO_TASK_ADD_TODO = 1;
+    public static final int TODO_TASK_DELETE_TODO = 2;
+    public static final int TODO_TASK_UPDATE_TODO = 3;
+
+    public static final int TODO_MOVE_OPTION_TOMORROW = 1;
+    public static final int TODO_MOVE_OPTION_NEXT_WEEK = 2;
+    public static final int TODO_MOVE_OPTION_NEXT_MONTH = 3;
+    public static final int TODO_MOVE_OPTION_NEXT_YEAR = 4;
+    public static final int TODO_MOVE_OPTION_TODAY = 5;
+    public static final int TODO_MOVE_OPTION_TASK = 6;
 
     private ProgressDialog mProgressDialog;
 
@@ -76,15 +85,14 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
             todoStackDb = dbHelper.getReadableDatabase();
             switch (mTaskType) {
                 case TODO_TASK_ADD_TODO:
-                    ContentValues cvTodo = new ContentValues();
-                    cvTodo.put(TodoStackContract.TodoEntry.TODO_NAME, mData.todoName);
-                    cvTodo.put(TodoStackContract.TodoEntry.SUBJECT_ORDER, mData.subjectOrder);
-                    cvTodo.put(TodoStackContract.TodoEntry.DATE, mData.date);
-                    cvTodo.put(TodoStackContract.TodoEntry.TYPE, mData.type);
-                    cvTodo.put(TodoStackContract.TodoEntry.TIME_FROM, mData.timeFrom);
-                    cvTodo.put(TodoStackContract.TodoEntry.TIME_TO, mData.timeTo);
-                    cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
-                    todoStackDb.insert(TodoStackContract.TodoEntry.TABLE_NAME, null, cvTodo);
+                    addTodo();
+                    break;
+                case TODO_TASK_DELETE_TODO:
+                    //TODO
+                    deleteTodo();
+                    break;
+                case TODO_TASK_UPDATE_TODO:
+                    //TODO
                     break;
                 default:
                     return false;
@@ -104,5 +112,22 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
             mCallback.updateFinished();
         else
             Log.d("TodoStack", "[onPostExecute] fail to progress todo task");
+    }
+
+    private void addTodo() {
+        ContentValues cvTodo = new ContentValues();
+        cvTodo.put(TodoStackContract.TodoEntry.TODO_NAME, mData.todoName);
+        cvTodo.put(TodoStackContract.TodoEntry.SUBJECT_ORDER, mData.subjectOrder);
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, mData.date);
+        cvTodo.put(TodoStackContract.TodoEntry.TYPE, mData.type);
+        cvTodo.put(TodoStackContract.TodoEntry.TIME_FROM, mData.timeFrom);
+        cvTodo.put(TodoStackContract.TodoEntry.TIME_TO, mData.timeTo);
+        cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
+        todoStackDb.insert(TodoStackContract.TodoEntry.TABLE_NAME, null, cvTodo);
+    }
+    private void deleteTodo() {
+        String selectionDeleteTodo =
+                TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
+        todoStackDb.delete(TodoStackContract.TodoEntry.TABLE_NAME, selectionDeleteTodo, null);
     }
 }

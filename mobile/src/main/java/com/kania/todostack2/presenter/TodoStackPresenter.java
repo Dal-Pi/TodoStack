@@ -24,13 +24,13 @@ import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackSettingValues;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.provider.TodoProvider;
+import com.kania.todostack2.util.SubjectDeleteDialog;
 import com.kania.todostack2.util.SubjectSelectDialog;
+import com.kania.todostack2.util.TodoDoneDialog;
 import com.kania.todostack2.util.TodoSelectDialog;
 import com.kania.todostack2.view.IViewAction;
 import com.kania.todostack2.view.TextViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
-
-import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,7 +48,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public static final int NOT_SELECTED_SUBJECT = -1;
 
     public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
+    public static final String TAG_DIALOG_DELETE_SUBJECT = "delete_subject";
     public static final String TAG_DIALOG_SELECT_TODO = "select_todo";
+    public static final String TAG_DIALOG_DONE_TODO = "done_todo";
 
     public static final String TODO_DIVIDER = " / ";
     private Context mContext;
@@ -85,6 +87,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
         if (provider.getSubjectCount() > 0) {
             refreshTodoLayout(layoutWidth, layoutHeight);
+            sendDataToTodoViewAfterConverting();
             setMode(MODE_NO_SELECTION, null);
         } else {
             setMode(MODE_INITIAL_SETUP, null);
@@ -133,8 +136,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mTodoView.setActionBarText(res.getString(R.string.app_name),
                         res.getColor(R.color.color_normal_state));
                 needAnimation = isFabTop();
-                //set data to TodoLayout
-                sendDataToTodoViewAfterConverting();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_todo),
                         res.getColor(R.color.color_normal_state), needAnimation);
@@ -174,7 +175,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
                 break;
             case MODE_VIEW_TODO:
-                //TODO 160211 target
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
                     //mixed subject case
                 } else {
@@ -184,7 +184,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                             sd.color);
                     needAnimation = !isFabTop();
                     mTodoView.setTagOnTodoTextView((TextViewInfo) info);
-                    //TODO set visible view todo layout with spannable text
                     mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TextViewInfo) info));
                     mTodoView.setFab(res.getString(R.string.todo_done),
                             sd.color, needAnimation);
@@ -444,7 +443,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
      *
      * @param target
      * @param today
-     * @param range -1:delayed, 0:today, 1:ranged, 2:out of ranged
      * @return
      */
     private int campareDate(Calendar target, Calendar today) {
@@ -526,20 +524,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 break;
             case MODE_NO_SELECTION:
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
-                    showSubjectSelectDialog(new SubjectSelectDialog.Callback() {
-                        @Override
-                        public void onSelectSubject(int order) {
-                            mNowSelectSubjectOrder = order;
-                            setMode(MODE_ADD_TODO, null);
-                        }
-                    });
+                    showSubjectSelectDialog();
                 } else { //it never used
                     setMode(MODE_ADD_TODO, null);
                 }
                 break;
             case MODE_ADD_TODO:
-                //request add todo using asynctask
-                //TODO check subject is verified
                 if (mNowSelectSubjectOrder == NOT_SELECTED_SUBJECT) {
                     Toast.makeText(mContext,
                             res.getText(R.string.guide_text_suggest_select_subject),
@@ -553,14 +543,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 insertSubject(bundle);
                 break;
             case MODE_VIEW_TODO:
-                showTodoSelectDialog(bundle.getString(TodoStackContract.TodoEntry._ID),
-                        new TodoSelectDialog.Callback() {
-                    @Override
-                    public void onSelectTodo(int id) {
-                        //TODO launch done dialog
-                        Toast.makeText(mContext, "will call showTodoDoneDialog()", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                showTodoSelectDialog(bundle.getString(TodoStackContract.TodoEntry._ID));
                 break;
             case MODE_VIEW_SUBJECT:
                 //TODO
@@ -576,14 +559,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 new UpdateSubjectTask(mContext, new UpdateSubjectTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        LoadingTodoTask refreshTask = new LoadingTodoTask(
-                                mContext, new LoadingTodoTask.TaskEndCallback() {
-                            @Override
-                            public void loadFinished() {
-                                setMode(MODE_NO_SELECTION, null);
-                            }
-                        });
-                        refreshTask.execute();
+                        reloadTodoDataToView(MODE_NO_SELECTION);
                     }
                 });
         insertSubjectTask.setData(
@@ -596,19 +572,85 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 new UpdateTodoTask(mContext, new UpdateTodoTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        LoadingTodoTask refreshTask = new LoadingTodoTask(
-                                mContext, new LoadingTodoTask.TaskEndCallback() {
-                            @Override
-                            public void loadFinished() {
-                                setMode(MODE_NO_SELECTION, null);
-                            }
-                        });
-                        refreshTask.execute();
+                        reloadTodoDataToView(MODE_NO_SELECTION);
                     }
                 });
         insertTodoTask.setData(
                 makeTodoData(bundle), UpdateTodoTask.TODO_TASK_ADD_TODO);
         insertTodoTask.execute();
+    }
+
+    @Override
+    public void changeSubjectName(String name) {
+        setNowBusy(true);
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        reloadTodoDataToView(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        sd.subjectName = name;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_NAME);
+        updateSubjectTask.execute();
+    }
+
+    @Override
+    public void changeSubjectColor(int color) {
+        setNowBusy(true);
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        reloadTodoDataToView(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        sd.color = color;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_COLOR);
+        updateSubjectTask.execute();
+    }
+
+    @Override
+    public void moveSubjectOrder(final boolean isLeft) {
+        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
+                + "direction = " + (isLeft ? "left" : "right"));
+        setNowBusy(true);
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mNowSelectSubjectOrder += isLeft ? UpdateSubjectTask.DIRECTION_LEFT :
+                                UpdateSubjectTask.DIRECTION_RIGHT;
+                        reloadTodoDataToView(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = TodoProvider.getInstance(mContext).
+                getSubjectByOrder(mNowSelectSubjectOrder);
+        if (isLeft) {
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_LEFT);
+        } else {
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_RIGHT);
+        }
+        updateSubjectTask.execute();
+    }
+
+    @Override
+    public void deleteSubject() {
+        TodoProvider provider = TodoProvider.getInstance(mContext);
+        if (mNowSelectSubjectOrder >= 0
+                && mNowSelectSubjectOrder < (provider.getSubjectCount() - 1)) {
+            Toast.makeText(mContext, res.getString(R.string.toast_waring_not_end_subject),
+                    Toast.LENGTH_LONG).show();
+        } else if (mNowSelectSubjectOrder == (provider.getSubjectCount() - 1)) {
+            showSubjectDeleteDialog();
+        } else {
+            Log.e("TodoStack", "[deleteSubject] Invalid subject number : "
+                    + mNowSelectSubjectOrder);
+        }
     }
 
     private SubjectData makeNewSubjectDataFromBundle(Bundle bundle) {
@@ -638,52 +680,105 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         setMode(MODE_ADD_SUBJECT, null);
     }
 
-    //for debug
-    public String printMode(int mode) {
-        String ret;
-        switch (mode) {
-            case MODE_INITIAL_SETUP:
-                ret = "MODE_INITIAL_SETUP"; break;
-            case MODE_NO_SELECTION:
-                ret = "MODE_NO_SELECTION"; break;
-            case MODE_ADD_TODO:
-                ret = "MODE_ADD_TODO"; break;
-            case MODE_ADD_SUBJECT:
-                ret = "MODE_ADD_SUBJECT"; break;
-            case MODE_VIEW_TODO:
-                ret = "MODE_VIEW_TODO"; break;
-            case MODE_VIEW_SUBJECT:
-                ret = "MODE_VIEW_SUBJECT"; break;
-            default:
-                ret = "UNKNOWN_MODE!!!"; break;
-        }
-        return ret;
-    }
-
-    private void showSubjectSelectDialog(SubjectSelectDialog.Callback callback) {
+    private void showSubjectSelectDialog() {
         FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
-        DialogFragment dialog = SubjectSelectDialog.newInstance(callback);
+        DialogFragment dialog = SubjectSelectDialog.newInstance(
+                new SubjectSelectDialog.Callback() {
+            @Override
+            public void onSelectSubject(int order) {
+                mNowSelectSubjectOrder = order;
+                setMode(MODE_ADD_TODO, null);
+            }
+        });
         dialog.show(ft, TAG_DIALOG_SELECT_SUBJECT);
 
     }
 
-    private void showTodoSelectDialog(String ids, TodoSelectDialog.Callback callback) {
+    private void showSubjectDeleteDialog() {
+        FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
+        DialogFragment dialog = SubjectDeleteDialog.newInstance(mNowSelectSubjectOrder,
+                new SubjectDeleteDialog.Callback() {
+                    @Override
+                    public void onSelectDelete(int order) {
+                        TodoProvider provider = TodoProvider.getInstance(mContext);
+                        if (provider.getTodoCount(mNowSelectSubjectOrder) == 0) {
+                            UpdateSubjectTask deletesubjectTask = new UpdateSubjectTask(mContext,
+                                    new UpdateSubjectTask.TaskEndCallback() {
+                                        @Override
+                                        public void updateFinished() {
+                                            reloadTodoDataToView(MODE_NO_SELECTION);
+                                        }
+                                    });
+                            deletesubjectTask.setData(
+                                    provider.getSubjectByOrder(mNowSelectSubjectOrder),
+                                    UpdateSubjectTask.SUBJECT_TASK_DELETE_SUBJECT);
+                            deletesubjectTask.execute();
+                        } else {
+                            Toast.makeText(mContext,
+                                    res.getString(R.string.toast_waring_remained_todos),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        dialog.show(ft, TAG_DIALOG_DELETE_SUBJECT);
+    }
+
+    private void showTodoSelectDialog(String ids) {
         //if id has only one id, skip dialog
         String[] sIds = ids.split(TextViewInfo.DELIMITER_ID);
         if (sIds.length == 1) {
-            //TODO
-            //showTodoDoneDialog();
+            showTodoDoneDialog(Integer.parseInt(sIds[0]));
             Toast.makeText(mContext, "will call showTodoDoneDialog()", Toast.LENGTH_SHORT).show();
         } else {
             FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
-            DialogFragment dialog = TodoSelectDialog.newInstance(ids, callback);
+            DialogFragment dialog = TodoSelectDialog.newInstance(ids,
+                    new TodoSelectDialog.Callback() {
+                @Override
+                public void onSelectTodo(int id) {
+                    showTodoDoneDialog(id);
+                }
+            });
             dialog.show(ft, TAG_DIALOG_SELECT_TODO);
         }
     }
 
-    private void showTodoDoneDialog() {
-        //TODO
-    };
+    private void showTodoDoneDialog(int todoId) {
+        FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
+        DialogFragment dialog = TodoDoneDialog.newInstance(todoId, new TodoDoneDialog.Callback() {
+            @Override
+            public void onDeleteTodo(int id) {
+                //TODO 160212 target
+                UpdateTodoTask deleteTodoTask = new UpdateTodoTask(mContext,
+                        new UpdateTodoTask.TaskEndCallback() {
+                            @Override
+                            public void updateFinished() {
+                                reloadTodoDataToView(MODE_NO_SELECTION);
+                            }
+                        });
+                deleteTodoTask.setData(TodoProvider.getInstance(mContext).getTodoById(id),
+                        UpdateTodoTask.TODO_TASK_DELETE_TODO);
+                deleteTodoTask.execute();
+            }
+
+            @Override
+            public void onMoveTodo(int id, int moveType) {
+                //TODO 160212 target
+            }
+        });
+        dialog.show(ft, TAG_DIALOG_DONE_TODO);
+    }
+
+    private void reloadTodoDataToView(final int afterMode) {
+        LoadingTodoTask refreshTask = new LoadingTodoTask(
+                mContext, new LoadingTodoTask.TaskEndCallback() {
+            @Override
+            public void loadFinished() {
+                sendDataToTodoViewAfterConverting();
+                setMode(afterMode, null);
+            }
+        });
+        refreshTask.execute();
+    }
 
     @Override
     public void onClick(View v) {
@@ -732,85 +827,25 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return ret;
     }
 
-    @Override
-    public void changeSubjectName(String name) {
-        setNowBusy(true);
-        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
-                new UpdateSubjectTask.TaskEndCallback() {
-            @Override
-            public void updateFinished() {
-                LoadingTodoTask refreshTask = new LoadingTodoTask(
-                        mContext, new LoadingTodoTask.TaskEndCallback() {
-                    @Override
-                    public void loadFinished() {
-                        sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT, null);
-                    }
-                });
-                refreshTask.execute();
-            }
-        });
-        SubjectData sd = TodoProvider.getInstance(mContext).
-                getSubjectByOrder(mNowSelectSubjectOrder);
-        sd.subjectName = name;
-        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_NAME);
-        updateSubjectTask.execute();
-    }
-
-    @Override
-    public void changeSubjectColor(int color) {
-        setNowBusy(true);
-        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
-                new UpdateSubjectTask.TaskEndCallback() {
-            @Override
-            public void updateFinished() {
-                LoadingTodoTask refreshTask = new LoadingTodoTask(
-                        mContext, new LoadingTodoTask.TaskEndCallback() {
-                    @Override
-                    public void loadFinished() {
-                        sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT, null);
-                    }
-                });
-                refreshTask.execute();
-            }
-        });
-        SubjectData sd = TodoProvider.getInstance(mContext).
-                getSubjectByOrder(mNowSelectSubjectOrder);
-        sd.color = color;
-        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_COLOR);
-        updateSubjectTask.execute();
-    }
-
-    @Override
-    public void moveSubjectOrder(final boolean isLeft) {
-        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
-                + "direction = " + (isLeft ? "left" : "right"));
-        setNowBusy(true);
-        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
-                new UpdateSubjectTask.TaskEndCallback() {
-            @Override
-            public void updateFinished() {
-                mNowSelectSubjectOrder += isLeft ? UpdateSubjectTask.DIRECTION_LEFT :
-                        UpdateSubjectTask.DIRECTION_RIGHT;
-                LoadingTodoTask refreshTask = new LoadingTodoTask(
-                        mContext, new LoadingTodoTask.TaskEndCallback() {
-                    @Override
-                    public void loadFinished() {
-                        sendDataToTodoViewAfterConverting();
-                        setMode(MODE_VIEW_SUBJECT, null);
-                    }
-                });
-                refreshTask.execute();
-            }
-        });
-        SubjectData sd = TodoProvider.getInstance(mContext).
-                getSubjectByOrder(mNowSelectSubjectOrder);
-        if (isLeft) {
-            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_LEFT);
-        } else {
-            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_RIGHT);
+    //for debug
+    public String printMode(int mode) {
+        String ret;
+        switch (mode) {
+            case MODE_INITIAL_SETUP:
+                ret = "MODE_INITIAL_SETUP"; break;
+            case MODE_NO_SELECTION:
+                ret = "MODE_NO_SELECTION"; break;
+            case MODE_ADD_TODO:
+                ret = "MODE_ADD_TODO"; break;
+            case MODE_ADD_SUBJECT:
+                ret = "MODE_ADD_SUBJECT"; break;
+            case MODE_VIEW_TODO:
+                ret = "MODE_VIEW_TODO"; break;
+            case MODE_VIEW_SUBJECT:
+                ret = "MODE_VIEW_SUBJECT"; break;
+            default:
+                ret = "UNKNOWN_MODE!!!"; break;
         }
-        updateSubjectTask.execute();
+        return ret;
     }
 }

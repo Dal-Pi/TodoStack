@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                 editSubjectColor();
                 break;
             case R.id.main_btn_subject_delete:
-                //TODO implement after add removing Todos
+                mMediator.deleteSubject();
                 break;
             case R.id.main_btn_subject_left:
                 mMediator.moveSubjectOrder(true);

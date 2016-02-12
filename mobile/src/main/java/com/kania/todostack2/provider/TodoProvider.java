@@ -191,4 +191,14 @@ public class TodoProvider {
     public static int getSubjectCount() {
         return subjectMap.size();
     }
+
+    public static int getTodoCount(int subjectOrder) {
+        int ret = 0;
+        for (TodoData td : todoList) {
+            if (td.subjectOrder == subjectOrder)
+                ret++;
+        }
+
+        return ret;
+    }
 }

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        style="@style/DialogStyle"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:text="@string/dialog_done_todo_title"
+            android:textColor="@color/color_black"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/dialog_done_todo_todoname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            style="@style/TextButtonStyle"
+            android:paddingTop="@dimen/dialog_contents_vertical_padding"
+            android:paddingBottom="@dimen/dialog_contents_vertical_padding"
+            android:textStyle="bold"
+            android:text="@string/todo_initial_info"
+            android:clickable="false"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/dialog_btn_done_todo_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonStyle"
+                    android:text="@string/delete"/>
+                <Button
+                    android:id="@+id/dialog_btn_done_todo_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/ButtonStyle"
+                    android:text="@string/cancel"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            style="@style/TextViewStyle"
+            android:text="@string/dialog_done_todo_option_title"
+            android:textColor="@color/color_black" />
+
+        <TextView
+            android:id="@+id/dialog_done_todo_move_tomorrow"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_tomorrow" />
+        <TextView
+            android:id="@+id/dialog_done_todo_move_next_week"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_next_week" />
+        <TextView
+            android:id="@+id/dialog_done_todo_move_next_month"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_next_month" />
+        <TextView
+            android:id="@+id/dialog_done_todo_move_next_year"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_next_year" />
+        <TextView
+            android:id="@+id/dialog_done_todo_move_today"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_today" />
+        <TextView
+            android:id="@+id/dialog_done_todo_move_task"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_task" />
+
+    </LinearLayout>
+
+</LinearLayout>

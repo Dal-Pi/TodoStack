@@ -56,6 +56,25 @@
     <string name="dialog_update_subject_name">Change Subject name</string>
     <string name="dialog_select_todo_title">Select Todo to be done</string>
     <string name="dialog_select_todo_tip">Tip. You can skip this step by selecting Todo name on main screen.</string>
+    <string name="dialog_delete_subject_title">Delete below subject</string>
+    <string name="dialog_delete_subject_tip">You can delete subject after removing all Todo on this subject.\nReally delete?</string>
+    <string name="dialog_done_todo_title">Delete below todo as be done</string>
+    <string name="dialog_done_todo_option_title">Or, select another move option</string>
+    <string name="dialog_done_todo_option_tomorrow">Move to tomorrow</string>
+    <string name="dialog_done_todo_option_next_week">Move to next week</string>
+    <string name="dialog_done_todo_option_next_month">Move to next month</string>
+    <string name="dialog_done_todo_option_next_year">Move to next year</string>
+    <string name="dialog_done_todo_option_today">Move to today</string>
+    <string name="dialog_done_todo_option_task">Move to Task todo</string>
+    <string name="dialog_done_todo_option_custom">day move from today</string>
 
+    <string name="toast_waring_name_empty">Do not execute! Name is empty.</string>
+    <string name="toast_waring_input_slush">Do not execute! Cannot input "/" character.</string>
+    <string name="toast_waring_date_empty">There is empty space(s).</string>
+    <string name="toast_waring_wrong_year">Do not execute! Input valid Year.</string>
+    <string name="toast_waring_wrong_month">Do not execute! Input valid Month(1 ~ 12)</string>
+    <string name="toast_waring_wrong_day">Do not execute! Input valid Day(1 ~ last day each month)</string>
+    <string name="toast_waring_not_end_subject">Only the last subject can delete.\nMove subject to last using \"MOVE RIGHT\".</string>
+    <string name="toast_waring_remained_todos">Cannot delete subject. There are remained Todos.</string>
 
 </resources>

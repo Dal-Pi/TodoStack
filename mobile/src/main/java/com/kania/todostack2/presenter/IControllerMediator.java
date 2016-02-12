@@ -30,4 +30,5 @@ public interface IControllerMediator {
     void changeSubjectName(String name);
     void changeSubjectColor(int color);
     void moveSubjectOrder(boolean isLeft);
+    void deleteSubject();
 }

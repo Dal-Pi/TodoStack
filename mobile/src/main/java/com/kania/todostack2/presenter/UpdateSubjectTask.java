@@ -23,6 +23,7 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
     public static final int SUBJECT_TASK_MODIFY_COLOR = 3;
     public static final int SUBJECT_TASK_MOVE_LEFT = 4;
     public static final int SUBJECT_TASK_MOVE_RIGHT = 5;
+    public static final int SUBJECT_TASK_DELETE_SUBJECT = 6;
 
     public static final int TEMP_ORDER = -1;
 
@@ -85,34 +86,22 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
             todoStackDb = dbHelper.getReadableDatabase();
             switch (mTaskType) {
                 case SUBJECT_TASK_ADD_SUBJECT:
-                    ContentValues cvAddSub = new ContentValues();
-                    cvAddSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
-                    cvAddSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
-                    cvAddSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
-                    todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvAddSub);
+                    addSubject();
                     break;
                 case SUBJECT_TASK_MODIFY_NAME:
-                    ContentValues cvUpdateSubName = new ContentValues();
-                    cvUpdateSubName.put(TodoStackContract.SubjectEntry.SUBJECT_NAME,
-                            mData.subjectName);
-                    String updateSelectionSubName =
-                            TodoStackContract.SubjectEntry._ID + " LIKE " + mData.id;
-                    todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
-                            cvUpdateSubName, updateSelectionSubName, null);
+                    modifySubjectName();
                     break;
                 case SUBJECT_TASK_MODIFY_COLOR:
-                    ContentValues cvUpdateSubColor = new ContentValues();
-                    cvUpdateSubColor.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
-                    String updateSelectionSubColor =
-                            TodoStackContract.SubjectEntry._ID + " LIKE " + mData.id;
-                    todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
-                            cvUpdateSubColor, updateSelectionSubColor, null);
+                    modifySubjectcolor();
                     break;
                 case SUBJECT_TASK_MOVE_LEFT:
                     moveSubject(true);
                     break;
                 case SUBJECT_TASK_MOVE_RIGHT:
                     moveSubject(false);
+                    break;
+                case SUBJECT_TASK_DELETE_SUBJECT:
+                    deleteSubject();
                     break;
                 default:
                     return false;
@@ -132,6 +121,33 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
             mCallback.updateFinished();
         else
             Log.d("TodoStack", "[onPostExecute] fail to progress subject task");
+    }
+
+    private void addSubject() {
+        ContentValues cvAddSub = new ContentValues();
+        cvAddSub.put(TodoStackContract.SubjectEntry.SUBJECT_NAME, mData.subjectName);
+        cvAddSub.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
+        cvAddSub.put(TodoStackContract.SubjectEntry.ORDER, mData.order);
+        todoStackDb.insert(TodoStackContract.SubjectEntry.TABLE_NAME, null, cvAddSub);
+    }
+
+    private void modifySubjectName() {
+        ContentValues cvUpdateSubName = new ContentValues();
+        cvUpdateSubName.put(TodoStackContract.SubjectEntry.SUBJECT_NAME,
+                mData.subjectName);
+        String updateSelectionSubName =
+                TodoStackContract.SubjectEntry._ID + " LIKE " + mData.id;
+        todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
+                cvUpdateSubName, updateSelectionSubName, null);
+    }
+
+    private void modifySubjectcolor() {
+        ContentValues cvUpdateSubColor = new ContentValues();
+        cvUpdateSubColor.put(TodoStackContract.SubjectEntry.COLOR, mData.color);
+        String updateSelectionSubColor =
+                TodoStackContract.SubjectEntry._ID + " LIKE " + mData.id;
+        todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
+                cvUpdateSubColor, updateSelectionSubColor, null);
     }
 
     private void moveSubject(boolean isLeft) {
@@ -174,5 +190,11 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
                 cvUpdateTodoOrder, updateSelectionTodoMove, null);
         todoStackDb.update(TodoStackContract.SubjectEntry.TABLE_NAME,
                 cvUpdateSubOrder, updateSelectionSubMove, null);
+    }
+
+    private void deleteSubject() {
+        String selectionDeleteSubject =
+                TodoStackContract.SubjectEntry.ORDER + " LIKE " + mData.order;
+        todoStackDb.delete(TodoStackContract.SubjectEntry.TABLE_NAME, selectionDeleteSubject, null);
     }
 }

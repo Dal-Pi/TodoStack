@@ -12,7 +12,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kania.todostack2.R;
-import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.provider.TodoProvider;
 import com.kania.todostack2.view.TextViewInfo;

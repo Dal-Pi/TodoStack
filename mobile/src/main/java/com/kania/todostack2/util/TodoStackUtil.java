@@ -3,6 +3,7 @@ package com.kania.todostack2.util;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.kania.todostack2.R;
 import com.kania.todostack2.view.TextViewInfo;
 
 /**
@@ -13,10 +14,13 @@ public class TodoStackUtil {
     public static boolean checkVaildName(Context context, String name) {
         boolean ret;
         if ("".equalsIgnoreCase(name.trim())) {
-            Toast.makeText(context, "Do not execute! Name is empty.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.toast_waring_name_empty),
+                    Toast.LENGTH_SHORT).show();
             ret = false;
         } else if (name.contains(TextViewInfo.DELIMITER_ID)) {
-            Toast.makeText(context, "Do not execute! Cannot input \"/\" character.",
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.toast_waring_input_slush),
                     Toast.LENGTH_SHORT).show();
             ret = false;
         } else {
@@ -31,7 +35,9 @@ public class TodoStackUtil {
         boolean ret = false;
 
         if("".equals(year) || "".equals(month) || "".equals(day)){
-            Toast.makeText(context, "There is a empty space.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,
+                    context.getResources().getString(R.string.toast_waring_date_empty),
+                    Toast.LENGTH_SHORT).show();
         }
         else{
             int nYearCheck = Integer.parseInt(year);
@@ -67,7 +73,7 @@ public class TodoStackUtil {
                         break;
                     default:
                         Toast.makeText(context,
-                                "Do not execute! Input vaild Month(1 ~ 12)",
+                                context.getResources().getString(R.string.toast_waring_wrong_month),
                                 Toast.LENGTH_SHORT).show();
                         break;
                 }
@@ -75,12 +81,13 @@ public class TodoStackUtil {
                     ret = true;
                 } else {
                     Toast.makeText(context,
-                            "Do not execute! Input vaild Day(1 ~ last day each month)",
+                            context.getResources().getString(R.string.toast_waring_wrong_day),
                             Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(context,
-                        "Do not execute! Input vaild Year.", Toast.LENGTH_SHORT).show();
+                        context.getResources().getString(R.string.toast_waring_wrong_year),
+                        Toast.LENGTH_SHORT).show();
             }
         }
 
