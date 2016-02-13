@@ -23,7 +23,8 @@
             android:paddingBottom="@dimen/dialog_contents_vertical_padding"
             android:textStyle="bold"
             android:text="@string/todo_initial_info"
-            android:clickable="false"/>
+            android:clickable="false"
+            android:singleLine="false"/>
 
         <TextView
             style="@style/TextViewStyle"

@@ -32,6 +32,7 @@
 
     <string name="todo_initial_info">Loading..</string>
     <string name="todo_done">Done</string>
+    <string name="todo_view_more">More...</string>
 
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>

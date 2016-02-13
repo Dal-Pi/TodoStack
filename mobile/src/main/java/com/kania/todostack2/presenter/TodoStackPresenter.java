@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -312,7 +313,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         TextView tv = getTaskTodoTextView(td, subjectdata);
                         sendData.add(tv);
                     } else if (subjectdata.taskCount == settingValues.getVisivleTaskCount()) {
-                        //TODO more option
+                        TextView moreTv = getMoreTaskTextView(subjectdata);
+                        sendData.add(moreTv);
                     } else {
                         continue;
                     }
@@ -334,7 +336,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                             TextView tv = getDelayedTodoTextView(td, subjectdata);
                             sendData.add(tv);
                         } else if (subjectdata.delayedTodoCount == settingValues.getVisivleDelayedCount()) {
-                            //TODO more option
+                            TextView moreTv = getMoreDelayedTextView(subjectdata);
+                            sendData.add(moreTv);
                         } else {
                             continue;
                         }
@@ -422,6 +425,38 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return tv;
     }
 
+    private TextView getMoreTaskTextView(SubjectData sd) {
+        TextView moreTaskTextView = getMoreCommonTextViwe(sd);
+        TextViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
+        info.type = TextViewInfo.TYPE_VIEW_ALL_TASK;
+        info.id = sd.order + "";
+        moreTaskTextView.setTag(info);
+
+        return moreTaskTextView;
+    }
+
+    private TextView getMoreDelayedTextView(SubjectData sd) {
+        TextView moreDelayedTextView = getMoreCommonTextViwe(sd);
+        TextViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
+        info.type = TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO;
+        info.id = sd.order + "";
+        moreDelayedTextView.setTag(info);
+
+        return moreDelayedTextView;
+    }
+
+    private TextView getMoreCommonTextViwe(SubjectData sd) {
+        TextView moreTextView;
+        String moreString = res.getString(R.string.todo_view_more);
+        int moreColor = Color.argb(Color.alpha(sd.color)/2 ,
+                Color.red(sd.color),
+                Color.green(sd.color),
+                Color.blue(sd.color));
+        moreTextView = getCommonTodoTextView(moreString, moreColor);
+
+        return moreTextView;
+    }
+
     private TextView getCommonTodoTextView(String todoName, int subjectColor) {
         TextView tv = new TextView(mContext);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
@@ -482,8 +517,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             ret.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    //TODO launch detail info dialog
-                    Toast.makeText(mContext, "tdName = " + td.todoName, Toast.LENGTH_SHORT).show();
+                    //TODO launch detail info dialog ? temp launch done dialog
+                    showTodoDoneDialog(td.id);
                 }
                 @Override
                 public void updateDrawState(TextPaint ds) {
@@ -746,7 +781,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         DialogFragment dialog = TodoDoneDialog.newInstance(todoId, new TodoDoneDialog.Callback() {
             @Override
             public void onDeleteTodo(int id) {
-                //TODO 160212 target
                 UpdateTodoTask deleteTodoTask = new UpdateTodoTask(mContext,
                         new UpdateTodoTask.TaskEndCallback() {
                             @Override
@@ -758,16 +792,16 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         UpdateTodoTask.TODO_TASK_DELETE_TODO);
                 deleteTodoTask.execute();
             }
+
             @Override
             public void onMoveTodo(int id, int moveType) {
-                //TODO 160212 target
                 UpdateTodoTask moveTodoTask = new UpdateTodoTask(mContext,
                         new UpdateTodoTask.TaskEndCallback() {
-                    @Override
-                    public void updateFinished() {
-                        reloadTodoDataToView(MODE_NO_SELECTION);
-                    }
-                });
+                            @Override
+                            public void updateFinished() {
+                                reloadTodoDataToView(MODE_NO_SELECTION);
+                            }
+                        });
                 moveTodoTask.setData(TodoProvider.getInstance(mContext).getTodoById(id), moveType);
                 moveTodoTask.execute();
             }
@@ -794,10 +828,17 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         Object tag = v.getTag();
         if (tag != null && tag instanceof TextViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
-            if (((TextViewInfo) tag).type == TextViewInfo.TYPE_SUBJECT) {
+            int type = ((TextViewInfo) tag).type;
+            if (type == TextViewInfo.TYPE_SUBJECT) {
                 setMode(MODE_ADD_TODO, null);
-            } else if (((TextViewInfo) tag).type == TextViewInfo.TYPE_TODO) {
+            } else if (type == TextViewInfo.TYPE_TODO) {
                 setMode(MODE_VIEW_TODO, tag);
+            } else if (type == TextViewInfo.TYPE_VIEW_ALL_TASK) {
+                //TODO launch fragment
+                Toast.makeText(mContext, "will be launched frgment", Toast.LENGTH_SHORT).show();
+            } else if (type == TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
+                //TODO launch fragment
+                Toast.makeText(mContext, "will be launched frgment", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -820,7 +861,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         int ret = NOT_SELECTED_SUBJECT;
         if (tag != null && tag instanceof TextViewInfo) {
             int type = ((TextViewInfo) tag).type;
-            if (type == TextViewInfo.TYPE_SUBJECT) {
+            if (type == TextViewInfo.TYPE_SUBJECT
+                    || type == TextViewInfo.TYPE_VIEW_ALL_TASK
+                    || type == TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
                 ret = Integer.parseInt(((TextViewInfo) tag).id);
             } else if (type == TextViewInfo.TYPE_TODO) {
                 String combinedId = ((TextViewInfo) tag).id;
