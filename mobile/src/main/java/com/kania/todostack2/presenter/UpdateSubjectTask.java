@@ -193,6 +193,11 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     private void deleteSubject() {
+        //prevent case when remain todo on subject
+        String selectionDeleteTodosOnSubject =
+                TodoStackContract.TodoEntry.SUBJECT_ORDER + " LIKE " + mData.order;
+        todoStackDb.delete(TodoStackContract.TodoEntry.TABLE_NAME,
+                selectionDeleteTodosOnSubject, null);
         String selectionDeleteSubject =
                 TodoStackContract.SubjectEntry.ORDER + " LIKE " + mData.order;
         todoStackDb.delete(TodoStackContract.SubjectEntry.TABLE_NAME, selectionDeleteSubject, null);

@@ -736,7 +736,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     @Override
                     public void onSelectDelete(int order) {
                         TodoProvider provider = TodoProvider.getInstance(mContext);
-                        if (provider.getTodoCount(mNowSelectSubjectOrder) == 0) {
+                        //TODO because "view all todo" is not implemented, do not count todoCount yet
+                        if (true /*provider.getTodoCount(mNowSelectSubjectOrder) == 0*/) {
                             UpdateSubjectTask deletesubjectTask = new UpdateSubjectTask(mContext,
                                     new UpdateSubjectTask.TaskEndCallback() {
                                         @Override
@@ -835,10 +836,10 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 setMode(MODE_VIEW_TODO, tag);
             } else if (type == TextViewInfo.TYPE_VIEW_ALL_TASK) {
                 //TODO launch fragment
-                Toast.makeText(mContext, "will be launched frgment", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "not implemented yet", Toast.LENGTH_SHORT).show();
             } else if (type == TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
                 //TODO launch fragment
-                Toast.makeText(mContext, "will be launched frgment", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "not implemented yet", Toast.LENGTH_SHORT).show();
             }
         }
     }
