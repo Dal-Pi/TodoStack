@@ -13,6 +13,7 @@
     <dimen name="text_size_button">12dp</dimen>
     <dimen name="text_size_edit">10dp</dimen>
     <dimen name="text_size_text_clickable">16dp</dimen>
+    <dimen name="text_size_widget_item">8dp</dimen>
 
     <dimen name="edit_width_name">150dp</dimen>
     <dimen name="edit_width_year">50dp</dimen>

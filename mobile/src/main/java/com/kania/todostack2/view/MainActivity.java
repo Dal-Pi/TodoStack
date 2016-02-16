@@ -1,6 +1,7 @@
 package com.kania.todostack2.view;
 
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -96,6 +97,12 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         mMediator.setTargetView(this);
 
         initControlView();
+
+        //from widget through cover
+        Intent intent = getIntent();
+        if (intent != null) {
+            mMediator.setTodoIdFromWidget(intent);
+        }
     }
 
     private void initControlView() {
@@ -152,9 +159,16 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        mMediator.setTodoIdFromWidget(intent);
+        mMediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override

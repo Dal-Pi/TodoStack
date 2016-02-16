@@ -12,8 +12,10 @@
     <color name="color_black">#FF000000</color>
     <color name="color_gray">#FF888888</color>
     <color name="color_lightgray">#FFEEEEEE</color>
+    <color name="color_transparent">#00FFFFFF</color>
     <color name="color_normal_state">@color/color_gray</color>
     <color name="color_todo_text">@color/color_white</color>
     <color name="color_subject_background">@color/color_white</color>
     <color name="color_date_text_background">@color/color_white</color>
+
 </resources>

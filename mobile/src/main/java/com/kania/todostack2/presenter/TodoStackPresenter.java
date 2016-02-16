@@ -3,7 +3,10 @@ package com.kania.todostack2.presenter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,11 +27,13 @@ import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackSettingValues;
 import com.kania.todostack2.provider.ColorProvider;
+import com.kania.todostack2.provider.TodoListWidgetProvider;
 import com.kania.todostack2.provider.TodoProvider;
 import com.kania.todostack2.util.SubjectDeleteDialog;
 import com.kania.todostack2.util.SubjectSelectDialog;
 import com.kania.todostack2.util.TodoDoneDialog;
 import com.kania.todostack2.util.TodoSelectDialog;
+import com.kania.todostack2.util.TodoStackUtil;
 import com.kania.todostack2.view.IViewAction;
 import com.kania.todostack2.view.TextViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
@@ -46,14 +51,14 @@ import java.util.Iterator;
  */
 public class TodoStackPresenter implements IControllerMediator, View.OnClickListener,
         View.OnLongClickListener {
-    public static final int NOT_SELECTED_SUBJECT = -1;
+    public final int NOT_SELECTED_SUBJECT = -1;
 
-    public static final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
-    public static final String TAG_DIALOG_DELETE_SUBJECT = "delete_subject";
-    public static final String TAG_DIALOG_SELECT_TODO = "select_todo";
-    public static final String TAG_DIALOG_DONE_TODO = "done_todo";
+    public final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
+    public final String TAG_DIALOG_DELETE_SUBJECT = "delete_subject";
+    public final String TAG_DIALOG_SELECT_TODO = "select_todo";
+    public final String TAG_DIALOG_DONE_TODO = "done_todo";
 
-    public static final String TODO_DIVIDER = " / ";
+    public final String TODO_DIVIDER = " / ";
     private Context mContext;
     private TodoLayoutInfo mTodolayoutInfo;
 
@@ -65,6 +70,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private int mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
     private boolean mIsFabTop = false;
 
+    private String mTodoIdFromWidget;
+
     public TodoStackPresenter(Context context) {
         mContext = context;
         mViewMode = MODE_NO_SELECTION;
@@ -75,6 +82,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     @Override
     public void setTargetView(IViewAction targetView) {
         mTodoView = targetView;
+    }
+
+    @Override
+    public void setTodoIdFromWidget(Intent intent) {
+        mTodoIdFromWidget = intent.getStringExtra(TodoStackContract.TodoEntry._ID);
     }
 
     private void setNowBusy(boolean nowBusy) {
@@ -89,7 +101,16 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         if (provider.getSubjectCount() > 0) {
             refreshTodoLayout(layoutWidth, layoutHeight);
             sendDataToTodoViewAfterConverting();
-            setMode(MODE_NO_SELECTION, null);
+            //[160217] add condition for id from widget
+            if (mTodoIdFromWidget != null && !"".equalsIgnoreCase(mTodoIdFromWidget)) {
+                TextViewInfo infoFromWidget = new TextViewInfo(TextViewInfo.TYPE_TODO,
+                        mTodoIdFromWidget, true);
+                mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
+                setMode(MODE_VIEW_TODO, infoFromWidget);
+                mTodoIdFromWidget = "";
+            } else {
+                setMode(MODE_NO_SELECTION, null);
+            }
         } else {
             setMode(MODE_INITIAL_SETUP, null);
         }
@@ -232,6 +253,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         addSubjectData();
         addTodoData();
         mTodoView.refreshTodoLayout();
+
+        //for widget (import from TodoStack1)
+
+        Intent intent = new Intent();
+        intent.setAction(TodoListWidgetProvider.WIDGET_UPDATE_ACTION);
+        mContext.sendBroadcast(intent);
     }
 
     private void addDateTextData() {
@@ -324,7 +351,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     Calendar targetCalendar = Calendar.getInstance();
                     try {
                         targetCalendar.setTime(sdf.parse(td.date));
-                        cmpDiffDays = campareDate(targetCalendar, calendarToday);
+                        cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
                     } catch (ParseException e) {
                         Log.e("TodoStack", "[addTodoData] parse error!!");
                         e.printStackTrace();
@@ -474,28 +501,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return tv;
     }
 
-    /**
-     *
-     * @param target
-     * @param today
-     * @return
-     */
-    private int campareDate(Calendar target, Calendar today) {
-        int diffDays;
-        target.set(Calendar.HOUR_OF_DAY, 0);
-        target.set(Calendar.MINUTE, 0);
-        target.set(Calendar.SECOND, 0);
-        target.set(Calendar.MILLISECOND, 0);
-        today.set(Calendar.HOUR_OF_DAY, 0);
-        today.set(Calendar.MINUTE, 0);
-        today.set(Calendar.SECOND, 0);
-        today.set(Calendar.MILLISECOND, 0);
-        diffDays = (int) ((target.getTimeInMillis() - today.getTimeInMillis())
-                / (1000 * 60 * 60 * 24));
-
-        return diffDays;
-    }
-
     private SpannableString getSpannableStringFromTodos(TextViewInfo info) {
         final TodoProvider provider = TodoProvider.getInstance(mContext);
         String todoString = "";
@@ -513,7 +518,10 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         SpannableString ret = new SpannableString(todoString);
         int pos = 0;
         for (int i = 0; i < ids.length; ++i) {
+            Log.d("TodoStack", "ids[" + i + "] = " + ids[i]);
             final TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
+            final SubjectData sd = provider.getSubjectByOrder(td.subjectOrder);
+            Log.d("TodoStack", "tdname = " + td.todoName + " / tdsuborder = " + td.subjectOrder);
             ret.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
@@ -523,7 +531,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
-                    ds.setColor(provider.getSubjectByOrder(td.subjectOrder).color);
+                    Log.d("TodoStack", "sd color = " + sd.color);
+                    ds.setColor(sd.color);
                     ds.setUnderlineText(false);
                 }
             }, pos, pos + td.todoName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

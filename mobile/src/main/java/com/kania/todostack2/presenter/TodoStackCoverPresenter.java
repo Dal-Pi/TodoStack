@@ -3,6 +3,8 @@ package com.kania.todostack2.presenter;
 import android.content.Context;
 import android.content.Intent;
 
+import com.kania.todostack2.TodoStackContract;
+import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.view.MainActivity;
 import com.kania.todostack2.view.WholeTodoActivityEx;
 
@@ -15,6 +17,8 @@ public class TodoStackCoverPresenter {
 
     private Context mContext;
     private ProgressFinishCallback mCallback;
+
+    private String todoIdFromWidget;
 
     public interface ProgressFinishCallback {
         void finishProgress();
@@ -36,6 +40,9 @@ public class TodoStackCoverPresenter {
             public void loadFinished() {
                 //TODO save allTextView for next activity
                 Intent intent = new Intent(mContext, MainActivity.class);
+                if (todoIdFromWidget != null && !"".equalsIgnoreCase(todoIdFromWidget)) {
+                    intent.putExtra(TodoStackContract.TodoEntry._ID, todoIdFromWidget);
+                }
                 mContext.startActivity(intent);
                 mCallback.finishProgress();
             }
@@ -53,5 +60,16 @@ public class TodoStackCoverPresenter {
                 public void finishProgress() {}
             };
         }
+    }
+
+    public void setTodoIdFromWidget(Intent intent) {
+        todoIdFromWidget = intent.getStringExtra(TodoStackContract.TodoEntry._ID);
+    }
+
+    public int getCoverColorFromIntent(Intent intent) {
+        int color = intent.getIntExtra(TodoStackContract.SubjectEntry.COLOR,
+                ColorProvider.getInstance().getRandomColor());
+
+        return color;
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval" >
-    <size android:width="@dimen/fab_drawble_size" android:height="@dimen/fab_drawble_size"/>
+    <size android:width="60dip" android:height="60dip"/>
     <solid android:color="@color/color_white"/>
 </shape>

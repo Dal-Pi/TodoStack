@@ -1,5 +1,6 @@
 package com.kania.todostack2.presenter;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.kania.todostack2.view.IViewAction;
@@ -17,6 +18,8 @@ public interface IControllerMediator {
     int MODE_VIEW_SUBJECT = 5;
 
     void setTargetView(IViewAction targetView);
+
+    void setTodoIdFromWidget(Intent intent);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);
     void refreshTodoLayout(int layoutWidth, int layoutHeight);

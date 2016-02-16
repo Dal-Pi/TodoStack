@@ -6,6 +6,8 @@ import android.widget.Toast;
 import com.kania.todostack2.R;
 import com.kania.todostack2.view.TextViewInfo;
 
+import java.util.Calendar;
+
 /**
  * Created by user on 2016-02-11.
  */
@@ -92,5 +94,21 @@ public class TodoStackUtil {
         }
 
         return ret;
+    }
+
+    public static int campareDate(Calendar target, Calendar today) {
+        int diffDays;
+        target.set(Calendar.HOUR_OF_DAY, 0);
+        target.set(Calendar.MINUTE, 0);
+        target.set(Calendar.SECOND, 0);
+        target.set(Calendar.MILLISECOND, 0);
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        diffDays = (int) ((target.getTimeInMillis() - today.getTimeInMillis())
+                / (1000 * 60 * 60 * 24));
+
+        return diffDays;
     }
 }
