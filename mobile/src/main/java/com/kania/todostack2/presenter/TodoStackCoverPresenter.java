@@ -6,7 +6,6 @@ import android.content.Intent;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.provider.ColorProvider;
 import com.kania.todostack2.view.MainActivity;
-import com.kania.todostack2.view.WholeTodoActivityEx;
 
 /**
  * Created by user on 2016-01-13.

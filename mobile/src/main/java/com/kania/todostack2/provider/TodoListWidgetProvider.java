@@ -20,7 +20,7 @@ import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.util.TodoStackUtil;
-import com.kania.todostack2.view.CoverActivity;
+import com.kania.todostack2.view.MainActivity;
 
 //import from TodoStack1
 public class TodoListWidgetProvider extends AppWidgetProvider {
@@ -39,7 +39,7 @@ public class TodoListWidgetProvider extends AppWidgetProvider {
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             rv.setRemoteAdapter(R.id.widget_list, intent);
 
-            Intent clickIntent = new Intent(context, CoverActivity.class);
+            Intent clickIntent = new Intent(context, MainActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, clickIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(R.id.widget_list, pendingIntent);
