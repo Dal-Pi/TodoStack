@@ -3,8 +3,6 @@ package com.kania.todostack2.presenter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -70,7 +68,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private int mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
     private boolean mIsFabTop = false;
 
-    private String mTodoIdFromWidget;
+    private String mTodoIdNowViewing;
 
     public TodoStackPresenter(Context context) {
         mContext = context;
@@ -85,8 +83,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     }
 
     @Override
-    public void setTodoIdFromWidget(Intent intent) {
-        mTodoIdFromWidget = intent.getStringExtra(TodoStackContract.TodoEntry._ID);
+    public void setTodoIdNowViewing(String todoId) {
+        mTodoIdNowViewing = todoId;
     }
 
     private void setNowBusy(boolean nowBusy) {
@@ -95,22 +93,13 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void initTodoLayout(int layoutWidth, int layoutHeight) {
-        Log.d("TodoStack", "[initTodoLayout] width/height = " + layoutWidth + "/" + layoutHeight);
+//        Log.d("TodoStack", "[initTodoLayout] width/height = " + layoutWidth + "/" + layoutHeight);
         TodoProvider provider = TodoProvider.getInstance(mContext);
 
         if (provider.getSubjectCount() > 0) {
             refreshTodoLayout(layoutWidth, layoutHeight);
             sendDataToTodoViewAfterConverting();
-            //[160217] add condition for id from widget
-            if (mTodoIdFromWidget != null && !"".equalsIgnoreCase(mTodoIdFromWidget)) {
-                TextViewInfo infoFromWidget = new TextViewInfo(TextViewInfo.TYPE_TODO,
-                        mTodoIdFromWidget, true);
-                mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
-                setMode(MODE_VIEW_TODO, infoFromWidget);
-                mTodoIdFromWidget = "";
-            } else {
-                setMode(MODE_NO_SELECTION, null);
-            }
+            setModeByOwnInfo();
         } else {
             setMode(MODE_INITIAL_SETUP, null);
         }
@@ -133,6 +122,25 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         }
     }
 
+    @Override
+    public void setModeByOwnInfo() {
+        //[160217] add condition for id from widget
+        if (mTodoIdNowViewing != null && !"".equalsIgnoreCase(mTodoIdNowViewing)) {
+            TextViewInfo infoFromWidget = new TextViewInfo(TextViewInfo.TYPE_TODO,
+                    mTodoIdNowViewing, true);
+            mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
+            setMode(MODE_VIEW_TODO, infoFromWidget);
+        } else {
+            if (mViewMode != MODE_VIEW_TODO) {
+                setMode(mViewMode, null); //initial : MODE_NO_SELECTION(in constructor), newIntent : previous one
+            } else {
+                Log.e("TodoStack", "[setModeByOwnInfo] try to MODE_VIEW_TODO " +
+                        "with null mTodoIdNowViewing!");
+                setMode(MODE_NO_SELECTION, null);
+            }
+        }
+    }
+
     /**
      * refer comment on interface that is step to set mode.
      * @param targetMode intented mode, in this method, mViewMode mean present mode
@@ -141,6 +149,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public void setMode(int targetMode, Object info) {
         TodoProvider provider = TodoProvider.getInstance(mContext);
         boolean needAnimation = false;
+        setTodoIdNowViewing(null);
         switch (targetMode) {
             case MODE_INITIAL_SETUP:
                 mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
@@ -205,6 +214,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                             res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
                             sd.color);
                     needAnimation = !isFabTop();
+                    mTodoIdNowViewing = ((TextViewInfo) info).id;
                     mTodoView.setTagOnTodoTextView((TextViewInfo) info);
                     mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TextViewInfo) info));
                     mTodoView.setFab(res.getString(R.string.todo_done),
@@ -224,10 +234,10 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     boolean leftEnable = !(mNowSelectSubjectOrder <= 0);
                     boolean rightEnable =
                             !(mNowSelectSubjectOrder >= (provider.getSubjectCount() - 1));
-                    Log.d("TodoStack", "[setMode] provider.getSubjectCount() = "
-                            + provider.getSubjectCount());
-                    Log.d("TodoStack", "[setMode] leftEnable = " + leftEnable
-                            + " / rightEnable = " + rightEnable);
+//                    Log.d("TodoStack", "[setMode] provider.getSubjectCount() = "
+//                            + provider.getSubjectCount());
+//                    Log.d("TodoStack", "[setMode] leftEnable = " + leftEnable
+//                            + " / rightEnable = " + rightEnable);
                     mTodoView.setViewSubjectVisible(sd.color, leftEnable, rightEnable);
                     mTodoView.setFab(res.getString(R.string.subject_view_all_todo),
                             sd.color, needAnimation);
@@ -313,7 +323,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             sendData.add(tv);
 
             //debug
-            Log.d("TodoStack", "[addSubjectData] subject id = " + sd.order);
+//            Log.d("TodoStack", "[addSubjectData] subject id = " + sd.order);
         }
         mTodoView.setTextViewsOnTodoLayout(sendData);
     }
@@ -518,10 +528,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         SpannableString ret = new SpannableString(todoString);
         int pos = 0;
         for (int i = 0; i < ids.length; ++i) {
-            Log.d("TodoStack", "ids[" + i + "] = " + ids[i]);
             final TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
             final SubjectData sd = provider.getSubjectByOrder(td.subjectOrder);
-            Log.d("TodoStack", "tdname = " + td.todoName + " / tdsuborder = " + td.subjectOrder);
             ret.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
@@ -531,7 +539,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 @Override
                 public void updateDrawState(TextPaint ds) {
                     super.updateDrawState(ds);
-                    Log.d("TodoStack", "sd color = " + sd.color);
+//                    Log.d("TodoStack", "sd color = " + sd.color);
                     ds.setColor(sd.color);
                     ds.setUnderlineText(false);
                 }
@@ -660,8 +668,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void moveSubjectOrder(final boolean isLeft) {
-        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
-                + "direction = " + (isLeft ? "left" : "right"));
+//        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mNowSelectSubjectOrder
+//                + "direction = " + (isLeft ? "left" : "right"));
         setNowBusy(true);
         UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(mContext,
                 new UpdateSubjectTask.TaskEndCallback() {
@@ -883,7 +891,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 ret = td.subjectOrder;
             }
         }
-        Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
+//        Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
         return ret;
     }
 

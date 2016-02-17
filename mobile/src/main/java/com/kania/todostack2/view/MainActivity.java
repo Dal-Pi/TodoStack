@@ -84,8 +84,11 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private boolean bNowBusy = false;
 
+    private String todoIdFromWidget;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("TodoStack", "[lifecycle][Main] onCreate : " + this.hashCode());
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -99,10 +102,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         initControlView();
 
         //from widget through cover
-        Intent intent = getIntent();
-        if (intent != null) {
-            mMediator.setTodoIdFromWidget(intent);
-        }
+        getTodoIdAndSetToMediator(getIntent());
     }
 
     private void initControlView() {
@@ -160,15 +160,28 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     @Override
     protected void onNewIntent(Intent intent) {
+        Log.i("TodoStack", "[lifecycle][Main] onNewIntent : " + this.hashCode());
         super.onNewIntent(intent);
 
-        mMediator.setTodoIdFromWidget(intent);
-        mMediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+        getTodoIdAndSetToMediator(intent);
+    }
+
+    private void getTodoIdAndSetToMediator(Intent intent) {
+        todoIdFromWidget = intent.getStringExtra(TodoStackContract.TodoEntry._ID);
+        Log.d("TodoStack", "[getTodoIdAndSetToMediator] id from widget = " + todoIdFromWidget);
+
+        if (todoIdFromWidget != null && !"".equalsIgnoreCase(todoIdFromWidget)) {
+            mMediator.setTodoIdNowViewing(todoIdFromWidget);
+            todoIdFromWidget = "";
+        }
     }
 
     @Override
     protected void onResume() {
+        Log.i("TodoStack", "[lifecycle][Main] onResume : " + this.hashCode());
         super.onResume();
+
+        mMediator.setModeByOwnInfo();
     }
 
     @Override
@@ -257,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             String dateString = String.format("%4s%2s%2s", editYear.getText().toString(),
                     editMonth.getText().toString(), editDay.getText().toString());
             //debug
-            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
+//            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
             bundle.putString(TodoStackContract.TodoEntry.DATE, dateString);
             bundle.putInt(TodoStackContract.TodoEntry.TYPE,
                     checkTask.isChecked() ?
@@ -476,8 +489,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     public void setFabThemeWithMoveUp(final String action, final int color) {
-        Log.d("TodoStack",
-                "[setFabThemeWithMoveUp] call! action = " + action + " / color = " + color);
+//        Log.d("TodoStack",
+//                "[setFabThemeWithMoveUp] call! action = " + action + " / color = " + color);
 
         Animation animation =
                 new TranslateAnimation(0, 0, 0, layoutFabBar.getTop() - btnFab.getTop());
@@ -587,5 +600,13 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     //TODO change below to using TextViewInfo
     class ColorTag {
         int color;
+    }
+
+    //for test
+
+    @Override
+    protected void onDestroy() {
+        Log.i("TodoStack", "[lifecycle][Main] onDestroy : " + this.hashCode());
+        super.onDestroy();
     }
 }

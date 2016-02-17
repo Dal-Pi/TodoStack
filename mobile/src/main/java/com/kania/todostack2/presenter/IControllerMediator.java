@@ -19,10 +19,12 @@ public interface IControllerMediator {
 
     void setTargetView(IViewAction targetView);
 
-    void setTodoIdFromWidget(Intent intent);
+    void setTodoIdNowViewing(String todoId);
 
     void initTodoLayout(int layoutWidth, int layoutHeight);
     void refreshTodoLayout(int layoutWidth, int layoutHeight);
+
+    void setModeByOwnInfo();
 
     void setMode(int targetMode, Object info);
     void clickBackPressSoftButton();

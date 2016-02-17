@@ -3,6 +3,7 @@ package com.kania.todostack2.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -23,6 +24,7 @@ public class CoverActivity extends Activity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i("TodoStack", "[lifecycle][Cover] onCreate : " + this.hashCode());
         super.onCreate(savedInstanceState);
 
         mPresenter = new TodoStackCoverPresenter(this,
@@ -61,5 +63,26 @@ public class CoverActivity extends Activity{
         if (llCover == null)
             return;
         llCover.setBackgroundColor(color);
+    }
+
+    //for test
+
+
+    @Override
+    protected void onResume() {
+        Log.i("TodoStack", "[lifecycle][Cover] onResume : " + this.hashCode());
+        super.onResume();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d("TodoStack", "[lifecycle][Cover] onNewIntent : " + this.hashCode());
+        super.onNewIntent(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i("TodoStack", "[lifecycle][Cover] onDestroy : " + this.hashCode());
+        super.onDestroy();
     }
 }

@@ -39,6 +39,8 @@ public class TodoStackCoverPresenter {
             public void loadFinished() {
                 //TODO save allTextView for next activity
                 Intent intent = new Intent(mContext, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 if (todoIdFromWidget != null && !"".equalsIgnoreCase(todoIdFromWidget)) {
                     intent.putExtra(TodoStackContract.TodoEntry._ID, todoIdFromWidget);
                 }
