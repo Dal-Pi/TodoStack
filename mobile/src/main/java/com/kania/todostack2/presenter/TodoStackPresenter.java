@@ -69,6 +69,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private boolean mIsFabTop = false;
 
     private String mTodoIdNowViewing;
+    private DialogFragment mDialogNowViewing;
 
     public TodoStackPresenter(Context context) {
         mContext = context;
@@ -126,6 +127,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     public void setModeByOwnInfo() {
         //[160217] add condition for id from widget
         if (mTodoIdNowViewing != null && !"".equalsIgnoreCase(mTodoIdNowViewing)) {
+            //entering from widget, if previous task showing dialog, become dismiss
+            if(mDialogNowViewing != null && mDialogNowViewing.isVisible()) {
+                mDialogNowViewing.dismiss();
+                mDialogNowViewing = null;
+            }
             TextViewInfo infoFromWidget = new TextViewInfo(TextViewInfo.TYPE_TODO,
                     mTodoIdNowViewing, true);
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
@@ -743,7 +749,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             }
         });
         dialog.show(ft, TAG_DIALOG_SELECT_SUBJECT);
-
+        mDialogNowViewing = dialog;
     }
 
     private void showSubjectDeleteDialog() {
@@ -774,6 +780,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                     }
                 });
         dialog.show(ft, TAG_DIALOG_DELETE_SUBJECT);
+        mDialogNowViewing = dialog;
     }
 
     private void showTodoSelectDialog(String ids) {
@@ -791,6 +798,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 }
             });
             dialog.show(ft, TAG_DIALOG_SELECT_TODO);
+            mDialogNowViewing = dialog;
         }
     }
 
@@ -825,6 +833,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             }
         });
         dialog.show(ft, TAG_DIALOG_DONE_TODO);
+        mDialogNowViewing = dialog;
     }
 
     private void reloadTodoDataToView(final int afterMode) {

@@ -21,7 +21,6 @@ import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.util.TodoStackUtil;
 import com.kania.todostack2.view.CoverActivity;
-import com.kania.todostack2.view.MainActivity;
 
 //import from TodoStack1
 public class TodoListWidgetProvider extends AppWidgetProvider {
