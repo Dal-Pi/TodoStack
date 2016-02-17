@@ -113,12 +113,12 @@ class TodoListFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public int getCount() {
-        return arTodo.size();
+        return arTodo.size() > 0 ? arTodo.size() : 1;
     }
 
     @Override
     public long getItemId(int position) {
-        return (arTodo.size() - position) - 1;
+        return arTodo.size() > 0 ? (arTodo.size() - position) - 1 : 0;
     }
 
     @Override
@@ -128,19 +128,27 @@ class TodoListFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        //for reverse
-        int revPosition = (arTodo.size() - position) - 1;
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-        rv.setTextViewText(R.id.widget_text_todo, arTodo.get(revPosition).todoName);
+        if (arTodo.size() > 0) {
+            //for reverse
+            int revPosition = (arTodo.size() - position) - 1;
+            rv.setTextViewText(R.id.widget_text_todo, arTodo.get(revPosition).todoName);
 
-        SubjectData sd = provider.getSubjectByOrder(arTodo.get(revPosition).subjectOrder);
-        rv.setInt(R.id.widget_img_bg, "setColorFilter", sd.color);
+            SubjectData sd = provider.getSubjectByOrder(arTodo.get(revPosition).subjectOrder);
+            rv.setInt(R.id.widget_img_bg, "setColorFilter", sd.color);
 
-        //for launch activity
-        Intent intent = new Intent();
-        intent.putExtra(TodoStackContract.TodoEntry._ID, arTodo.get(revPosition).id + "");
-        intent.putExtra(TodoStackContract.SubjectEntry.COLOR, sd.color);
-        rv.setOnClickFillInIntent(R.id.widget_item_layout, intent);
+            //for launch activity
+            Intent intent = new Intent();
+            intent.putExtra(TodoStackContract.TodoEntry._ID, arTodo.get(revPosition).id + "");
+            intent.putExtra(TodoStackContract.SubjectEntry.COLOR, sd.color);
+            rv.setOnClickFillInIntent(R.id.widget_item_layout, intent);
+        } else {
+            rv.setTextViewText(R.id.widget_text_todo, mContext.getResources().
+                    getString(R.string.widget_empty));
+            rv.setInt(R.id.widget_img_bg, "setColorFilter", mContext.getResources().
+                    getColor(R.color.color_normal_state));
+            rv.setOnClickFillInIntent(R.id.widget_item_layout, new Intent());
+        }
         return rv;
     }
 

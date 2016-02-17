@@ -78,4 +78,6 @@
     <string name="toast_waring_not_end_subject">Only the last subject can delete.\nMove subject to last using \"MOVE RIGHT\".</string>
     <string name="toast_waring_remained_todos">Cannot delete subject. There are remained Todos.</string>
 
+    <string name="widget_title">Todo</string>
+    <string name="widget_empty">There is no Todo today.</string>
 </resources>
