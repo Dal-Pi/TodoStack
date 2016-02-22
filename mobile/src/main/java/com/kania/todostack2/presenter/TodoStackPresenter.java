@@ -164,18 +164,18 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 needAnimation = isFabTop();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_subject),
-                        res.getColor(R.color.color_normal_state), needAnimation);
+                        res.getColor(R.color.colorAccent), needAnimation);
                 mIsFabTop = false;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_initial_setup));
                 break;
             case MODE_NO_SELECTION:
                 mNowSelectSubjectOrder = NOT_SELECTED_SUBJECT;
                 mTodoView.setActionBarText(res.getString(R.string.app_name),
-                        res.getColor(R.color.color_normal_state));
+                        res.getColor(R.color.colorAccent));
                 needAnimation = isFabTop();
                 mTodoView.setAllControllerGone();
                 mTodoView.setFabToBase(res.getString(R.string.fab_create_todo),
-                        res.getColor(R.color.color_normal_state), needAnimation);
+                        res.getColor(R.color.colorAccent), needAnimation);
                 mIsFabTop = false;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
                 break;
@@ -203,11 +203,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 break;
             case MODE_ADD_SUBJECT:
                 mTodoView.setActionBarText(res.getString(R.string.title_text_on_new_subject),
-                        res.getColor(R.color.colorAccent));
+                        res.getColor(R.color.color_normal_state));
                 needAnimation = !isFabTop();
                 mTodoView.setInputSubjectVisible();
                 mTodoView.setFab(res.getString(R.string.fab_add),
-                        res.getColor(R.color.colorAccent), needAnimation);
+                        res.getColor(R.color.color_normal_state), needAnimation);
                 mIsFabTop = true;
                 mTodoView.setGuideText(res.getString(R.string.guide_text_mode_input_subject));
                 break;
@@ -269,6 +269,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         addSubjectData();
         addTodoData();
         mTodoView.refreshTodoLayout();
+
+        //for navigation drawer
+        sendNavSubjectItem();
 
         //for widget (import from TodoStack1)
 
@@ -555,6 +558,21 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
 
         return ret;
+    }
+
+    private void sendNavSubjectItem() {
+        ArrayList<SubjectData> subjectsWithViewAll = new ArrayList<SubjectData>();
+//        SubjectData subjectViewAll = new SubjectData();
+
+//        subjectViewAll.subjectName = res.getString(R.string.nav_menu_all_todo);
+//        subjectViewAll.color = res.getColor(R.color.colorAccent);
+//        subjectViewAll.order = NOT_SELECTED_SUBJECT;
+//        subjectsWithViewAll.add(subjectViewAll);
+        for (SubjectData sd : TodoProvider.getInstance(mContext).getAllSubject()) {
+            subjectsWithViewAll.add(sd);
+        }
+
+        mTodoView.putSubjectsOnDrawer(subjectsWithViewAll);
     }
 
     @Override
@@ -902,6 +920,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         }
 //        Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
         return ret;
+    }
+
+    @Override
+    public void clickNavigationDrawerItem(int order) {
+        //TODO launch DetailViewLayout
+
     }
 
     //for debug

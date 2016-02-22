@@ -37,4 +37,9 @@
     <dimen name="dialog_minwidth">300dp</dimen>
     <dimen name="dialog_padding">10dp</dimen>
     <dimen name="dialog_textbutton_minheight">25dp</dimen>
+
+    <dimen name="navigation_header_height">120dp</dimen>
+    <dimen name="navigation_item_all_height">60dp</dimen>
+    <dimen name="navigation_subject_title_padding_start">5dp</dimen>
+    <dimen name="navigation_all_padding_start">20dp</dimen>
 </resources>

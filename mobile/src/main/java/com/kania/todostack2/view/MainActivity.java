@@ -1,6 +1,7 @@
 package com.kania.todostack2.view;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -15,22 +16,32 @@ import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
+import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.IControllerMediator;
 import com.kania.todostack2.presenter.SubjectColorSelectDialog;
@@ -50,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         NavigationView.OnNavigationItemSelectedListener{
 
     private final int DURATION_ANIMATION = 500;
+
+    private final int NAV_MENU_ITEM_ID_ALL = -1;
 
     private IControllerMediator mMediator;
 
@@ -94,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mToggle;
 
+    //debug
+    int drawerCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("TodoStack", "[lifecycle][Main] onCreate : " + this.hashCode());
@@ -101,25 +117,49 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
         setContentView(R.layout.activity_main);
 
-        toolbarActionBar = (Toolbar) findViewById(R.id.main_layout_action_bar);
-        setSupportActionBar(toolbarActionBar);
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_drawer);
-        mToggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbarActionBar,
-                R.string.nav_drawer_open, R.string.nav_drawer_close);
-        mDrawerLayout.setDrawerListener(mToggle);
-        mToggle.syncState();
-        mNavigationView = (NavigationView) findViewById(R.id.main_nav_view);
-        mNavigationView.setNavigationItemSelectedListener(this);
-
         mMediator = new TodoStackPresenter(this);
         mMediator.setTargetView(this);
+
+        initDrawer();
 
         initControlView();
 
         //from widget through cover
         getTodoIdAndSetToMediator(getIntent());
+    }
+
+    private void initDrawer() {
+        toolbarActionBar = (Toolbar) findViewById(R.id.main_layout_action_bar);
+        setSupportActionBar(toolbarActionBar);
+
+        mNavigationView = (NavigationView) findViewById(R.id.main_nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_drawer);
+        mToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbarActionBar,
+                R.string.nav_drawer_open, R.string.nav_drawer_close);
+
+        mDrawerLayout.setDrawerListener(mToggle);
+        mToggle.syncState();
+
+    }
+
+    @Override
+    public void putSubjectsOnDrawer(ArrayList<SubjectData> subjects) {
+
+        ListView navList = (ListView) findViewById(R.id.main_nav_sub_list);
+        DrawerSubjectListAdapter adapter = new DrawerSubjectListAdapter(this, subjects);
+        navList.setAdapter(adapter);
+        navList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object tag = view.getTag();
+                if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
+                    int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
+                    mMediator.clickNavigationDrawerItem(order);
+                }
+            }
+        });
     }
 
     private void initControlView() {
@@ -332,6 +372,12 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         int itemId = menuItem.getItemId();
 
         switch (itemId) {
+            case 0:
+                Toast.makeText(MainActivity.this, "all!", Toast.LENGTH_SHORT).show();
+                break;
+            case 200:
+                Toast.makeText(MainActivity.this, "200!", Toast.LENGTH_SHORT).show();
+                break;
         }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -459,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         if (controllerInputSubject.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             controllerInputSubject.setVisibility(View.VISIBLE);
-            btnSubjectColor.setTextColor(getResources().getColor(R.color.colorAccent));
+            btnSubjectColor.setTextColor(getResources().getColor(R.color.color_normal_state));
         }
     }
 
@@ -649,5 +695,53 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     protected void onDestroy() {
         Log.i("TodoStack", "[lifecycle][Main] onDestroy : " + this.hashCode());
         super.onDestroy();
+    }
+
+    class DrawerSubjectListAdapter extends BaseAdapter {
+        Context mContext;
+        ArrayList<SubjectData> mSubjects;
+
+        public DrawerSubjectListAdapter(Context context, ArrayList subjects) {
+            mContext = context;
+            mSubjects = subjects;
+        }
+
+        @Override
+        public int getCount() {
+            return mSubjects.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mSubjects.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                LayoutInflater inflater =
+                        (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+
+            }
+            SubjectData sd = mSubjects.get(position);
+            TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
+            tv.setText(sd.subjectName);
+            tv.setTextColor(sd.color);
+            SelectSubjectListItemHolder holder = new SelectSubjectListItemHolder();
+            holder.order = sd.order;
+            tv.setTag(holder);
+
+            return convertView;
+        }
+
+        class SelectSubjectListItemHolder {
+            int order;
+        }
     }
 }

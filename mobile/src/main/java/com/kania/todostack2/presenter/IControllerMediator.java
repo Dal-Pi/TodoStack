@@ -36,4 +36,6 @@ public interface IControllerMediator {
     void changeSubjectColor(int color);
     void moveSubjectOrder(boolean isLeft);
     void deleteSubject();
+
+    void clickNavigationDrawerItem(int order);
 }

@@ -4,6 +4,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.widget.TextView;
 
+import com.kania.todostack2.data.SubjectData;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ public interface IViewAction {
 
     void setNowBusy(boolean nowBusy);
     boolean getNowBusy();
+
+    void putSubjectsOnDrawer(ArrayList<SubjectData> subjects);
 
     void setAllControllerGone();
     void setInputSubjectVisible();
