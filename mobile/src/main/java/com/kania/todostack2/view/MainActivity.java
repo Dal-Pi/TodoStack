@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.method.MovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +28,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
@@ -43,7 +46,8 @@ import java.util.Calendar;
  * Created by user on 2016-01-14.
  * Activity that present all todos
  */
-public class MainActivity extends AppCompatActivity implements IViewAction, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements IViewAction, View.OnClickListener,
+        NavigationView.OnNavigationItemSelectedListener{
 
     private final int DURATION_ANIMATION = 500;
 
@@ -86,6 +90,10 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     private String todoIdFromWidget;
 
+    private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
+    private ActionBarDrawerToggle mToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i("TodoStack", "[lifecycle][Main] onCreate : " + this.hashCode());
@@ -95,6 +103,15 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
         toolbarActionBar = (Toolbar) findViewById(R.id.main_layout_action_bar);
         setSupportActionBar(toolbarActionBar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.main_drawer);
+        mToggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbarActionBar,
+                R.string.nav_drawer_open, R.string.nav_drawer_close);
+        mDrawerLayout.setDrawerListener(mToggle);
+        mToggle.syncState();
+        mNavigationView = (NavigationView) findViewById(R.id.main_nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         mMediator = new TodoStackPresenter(this);
         mMediator.setTargetView(this);
@@ -156,6 +173,8 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         });
         textGuide = (TextView) findViewById(R.id.main_text_guide_text);
 
+
+
     }
 
     @Override
@@ -187,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_main_overflow, menu);
         return true;
     }
 
@@ -197,6 +216,12 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        Log.d("TodoStack", "[onOptionsItemSelected] called");
+
+        if (mToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
 
         switch (id) {
             case R.id.add_subject:
@@ -303,8 +328,24 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
+    public boolean onNavigationItemSelected(MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
+
+        switch (itemId) {
+        }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        }
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
-        mMediator.clickBackPressSoftButton();
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            mMediator.clickBackPressSoftButton();
+        }
     }
 
     private void getDateFromDatePicker() {

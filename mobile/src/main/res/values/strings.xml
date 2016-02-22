@@ -80,4 +80,10 @@
 
     <string name="widget_title">Todo</string>
     <string name="widget_empty">There is no Todo today.</string>
+
+    <string name="nav_menu_all_todo">All Todo</string>
+    <string name="nav_menu_title_subjects">Subjects</string>
+
+    <string name="nav_drawer_open">Open navigation drawer</string>
+    <string name="nav_drawer_close">Close navigation drawer</string>
 </resources>
