@@ -933,8 +933,19 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     }
 
     @Override
-    public void clickNavigationDrawerItem(int order) {
-        launchDetailTodoListActivity(order);
+    public void clickNavigationDrawerItem(final int order) {
+        if (mViewMode == MODE_VIEW_SUBJECT || mViewMode == MODE_ADD_SUBJECT
+                || mViewMode == MODE_VIEW_TODO || mViewMode == MODE_ADD_TODO) {
+            setMode(MODE_NO_SELECTION, null);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    launchDetailTodoListActivity(order);
+                }
+            }, 500);
+        } else {
+            launchDetailTodoListActivity(order);
+        }
     }
 
     private void launchDetailTodoListActivity(int order) {
