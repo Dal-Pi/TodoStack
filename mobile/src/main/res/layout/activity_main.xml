@@ -39,32 +39,29 @@
                 android:orientation="vertical">
                 <include layout="@layout/header_drawer_main"/>
 
-                <TextView
-                    android:id="@+id/main_nav_sub_all"
+                <ListView
+                    android:id="@+id/main_nav_list_all"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="@dimen/navigation_item_all_height"
-                    android:gravity="center_vertical"
-                    android:background="@color/color_white"
-                    android:paddingLeft="@dimen/navigation_all_padding_start"
-                    android:text="@string/nav_menu_all_todo"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="@dimen/text_size_textview"
-                    android:clickable="false" />
+                    android:divider="@color/color_transparent"
+                    android:dividerHeight="0dp"
+                    android:background="@color/color_white"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingLeft="@dimen/navigation_subject_title_padding_start"
+                    android:background="@color/color_lightgray"
                     android:text="@string/nav_menu_title_subjects"
                     android:clickable="false"
                     android:textColor="@color/color_gray"
                     android:textStyle="bold"/>
 
                 <ListView
-                    android:id="@+id/main_nav_sub_list"
+                    android:id="@+id/main_nav_list_sub"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:divider="@color/color_transparent"
                     android:dividerHeight="0dp"
                     android:background="@color/color_white"/>
             </LinearLayout>

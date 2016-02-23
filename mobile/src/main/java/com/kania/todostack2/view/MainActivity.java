@@ -15,10 +15,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +25,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -35,7 +32,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -146,17 +142,43 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
 
     @Override
     public void putSubjectsOnDrawer(ArrayList<SubjectData> subjects) {
-
-        ListView navList = (ListView) findViewById(R.id.main_nav_sub_list);
-        DrawerSubjectListAdapter adapter = new DrawerSubjectListAdapter(this, subjects);
-        navList.setAdapter(adapter);
-        navList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        ArrayList<SubjectData> ViewAllSubjectList = new ArrayList<SubjectData>();
+        SubjectData allSubject = new SubjectData();
+        allSubject.subjectName = getResources().getString(R.string.nav_menu_all_todo);
+        allSubject.order = NAV_MENU_ITEM_ID_ALL;
+        allSubject.color = getResources().getColor(R.color.colorAccent);
+        ViewAllSubjectList.add(allSubject);
+        ListView viewAllList = (ListView) findViewById(R.id.main_nav_list_all);
+        DrawerSubjectListAdapter viewAllAdapter =
+                new DrawerSubjectListAdapter(this, ViewAllSubjectList);
+        viewAllList.setAdapter(viewAllAdapter);
+        viewAllList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object tag = view.getTag();
                 if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
                     int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
                     mMediator.clickNavigationDrawerItem(order);
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                }
+            }
+        });
+
+        ListView subjectList = (ListView) findViewById(R.id.main_nav_list_sub);
+        DrawerSubjectListAdapter SubjectAdapter = new DrawerSubjectListAdapter(this, subjects);
+        subjectList.setAdapter(SubjectAdapter);
+        subjectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object tag = view.getTag();
+                if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
+                    int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
+                    mMediator.clickNavigationDrawerItem(order);
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
                 }
             }
         });
@@ -701,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
         Context mContext;
         ArrayList<SubjectData> mSubjects;
 
-        public DrawerSubjectListAdapter(Context context, ArrayList subjects) {
+        public DrawerSubjectListAdapter(Context context, ArrayList<SubjectData> subjects) {
             mContext = context;
             mSubjects = subjects;
         }

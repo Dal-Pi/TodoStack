@@ -32,6 +32,7 @@ import com.kania.todostack2.util.SubjectSelectDialog;
 import com.kania.todostack2.util.TodoDoneDialog;
 import com.kania.todostack2.util.TodoSelectDialog;
 import com.kania.todostack2.util.TodoStackUtil;
+import com.kania.todostack2.view.DetailTodoListActivity;
 import com.kania.todostack2.view.IViewAction;
 import com.kania.todostack2.view.TextViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
@@ -925,7 +926,12 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     @Override
     public void clickNavigationDrawerItem(int order) {
         //TODO launch DetailViewLayout
+//        Toast.makeText(mContext, "order = " + order, Toast.LENGTH_SHORT).show();
 
+        Intent detailIntent = new Intent(mContext, DetailTodoListActivity.class);
+        detailIntent.putExtra(TodoStackContract.SubjectEntry.ORDER, order);
+        mContext.startActivity(detailIntent);
+        ((Activity)mContext).overridePendingTransition(R.anim.right_in, R.anim.fade_out);
     }
 
     //for debug

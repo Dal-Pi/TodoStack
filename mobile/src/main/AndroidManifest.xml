@@ -28,6 +28,14 @@
             >
         </activity>
 
+        <activity
+            android:name=".view.DetailTodoListActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"
+            >
+        </activity>
+
         <receiver
             android:name=".provider.TodoListWidgetProvider"
             android:label="TodoStack Widget" >
