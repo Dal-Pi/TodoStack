@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -623,7 +624,15 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 showTodoSelectDialog(bundle.getString(TodoStackContract.TodoEntry._ID));
                 break;
             case MODE_VIEW_SUBJECT:
-                //TODO launch fragment
+                //TODO will remove Handler. It is bad code
+                final int savedNowSelectSubjectOrder = mNowSelectSubjectOrder;
+                setMode(MODE_NO_SELECTION, null);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchDetailTodoListActivity(savedNowSelectSubjectOrder);
+                    }
+                }, 500);
                 break;
             default:
                 break;
@@ -925,13 +934,14 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     @Override
     public void clickNavigationDrawerItem(int order) {
-        //TODO launch DetailViewLayout
-//        Toast.makeText(mContext, "order = " + order, Toast.LENGTH_SHORT).show();
+        launchDetailTodoListActivity(order);
+    }
 
+    private void launchDetailTodoListActivity(int order) {
         Intent detailIntent = new Intent(mContext, DetailTodoListActivity.class);
         detailIntent.putExtra(TodoStackContract.SubjectEntry.ORDER, order);
         mContext.startActivity(detailIntent);
-        ((Activity)mContext).overridePendingTransition(R.anim.right_in, R.anim.fade_out);
+        ((Activity)mContext).overridePendingTransition(R.anim.right_in, R.anim.left_half_out);
     }
 
     //for debug

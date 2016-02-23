@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -158,10 +159,10 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                 Object tag = view.getTag();
                 if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
                     int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
+//                    if (mDrawerLayout != null) {
+//                        mDrawerLayout.closeDrawer(GravityCompat.START);
+//                    }
                     mMediator.clickNavigationDrawerItem(order);
-                    if (mDrawerLayout != null) {
-                        mDrawerLayout.closeDrawer(GravityCompat.START);
-                    }
                 }
             }
         });
@@ -174,11 +175,17 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object tag = view.getTag();
                 if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
-                    int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
-                    mMediator.clickNavigationDrawerItem(order);
+                    final int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
                     if (mDrawerLayout != null) {
                         mDrawerLayout.closeDrawer(GravityCompat.START);
                     }
+                    //TODO will remove Handler. It is bad code
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMediator.clickNavigationDrawerItem(order);
+                        }
+                    }, 300);
                 }
             }
         });
