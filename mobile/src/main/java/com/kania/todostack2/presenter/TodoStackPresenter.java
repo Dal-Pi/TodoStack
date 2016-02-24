@@ -953,7 +953,6 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         Intent detailIntent = new Intent(mContext, DetailTodoListActivity.class);
         detailIntent.putExtra(TodoStackContract.SubjectEntry.ORDER, order);
         detailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        detailIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(detailIntent);
         ((Activity)mContext).overridePendingTransition(R.anim.right_in, R.anim.left_half_out);
     }
