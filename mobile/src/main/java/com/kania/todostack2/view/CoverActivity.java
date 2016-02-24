@@ -32,7 +32,7 @@ public class CoverActivity extends Activity{
                     @Override
                     public void finishProgress() {
                         finish();
-                        overridePendingTransition(R.anim.right_half_in, R.anim.left_out);
+                        overridePendingTransition(R.anim.fade_in, R.anim.left_out);
                     }
                 });
 

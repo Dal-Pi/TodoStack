@@ -1,6 +1,5 @@
 package com.kania.todostack2.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +18,7 @@ import android.view.View;
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.SubjectData;
-import com.kania.todostack2.provider.TodoProvider;
+import com.kania.todostack2.presenter.DetailTodoListPresenter;
 
 /**
  * Created by user on 2016-02-23.
@@ -46,14 +45,27 @@ public class DetailTodoListActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
     private TabLayout mTabLayout;
+
+    private DetailTodoListPresenter mPresent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_todolist);
 
+        mPresent = new DetailTodoListPresenter(this);
+
+        initController();
+
+        Intent fromIntent = getIntent();
+
+        setSubjectInfo(mPresent.getSubjectDataFromOrder(
+                fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER,
+                        DetailTodoListPresenter.SUBJECT_ORDER_ALL)));
+    }
+
+    private void initController() {
         mToolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -69,8 +81,6 @@ public class DetailTodoListActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.detail_tabs);
         mTabLayout.setupWithViewPager(mViewPager);
 
-
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.detail_fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,25 +89,16 @@ public class DetailTodoListActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
-        setSubjectInfo();
-
     }
 
-    private void setSubjectInfo() {//(int color) {
-        //TODO will be called from DetailTodoListPresent
-        Intent fromIntent = getIntent();
-        int subjectOrder = fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER, -1);
-        if (subjectOrder != -1) {
-            SubjectData subject = TodoProvider.getInstance(this).getSubjectByOrder(subjectOrder);
-            if (mToolbar != null) {
-                mToolbar.setTitle(subject.subjectName);
-                mToolbar.setBackgroundColor(subject.color);
-                setSupportActionBar(mToolbar);
-            }
-            if (mTabLayout != null) {
-                mTabLayout.setBackgroundColor(subject.color);
-            }
+    private void setSubjectInfo(SubjectData subject) {
+        if (mToolbar != null) {
+            mToolbar.setTitle(subject.subjectName);
+            mToolbar.setBackgroundColor(subject.color);
+            setSupportActionBar(mToolbar);
+        }
+        if (mTabLayout != null) {
+            mTabLayout.setBackgroundColor(subject.color);
         }
     }
 
