@@ -18,6 +18,7 @@ import android.view.View;
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.SubjectData;
+import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.DetailTodoListPresenter;
 
 /**
@@ -47,6 +48,8 @@ public class DetailTodoListActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
+    private int mSubjectOrder;
+
     private DetailTodoListPresenter mPresent;
 
     @Override
@@ -54,15 +57,16 @@ public class DetailTodoListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_todolist);
 
-        mPresent = new DetailTodoListPresenter(this);
+        Intent fromIntent = getIntent();
+        mSubjectOrder = fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER,
+                DetailTodoListPresenter.SUBJECT_ORDER_ALL);
+
+        mPresent = new DetailTodoListPresenter(this, mSubjectOrder);
 
         initController();
 
-        Intent fromIntent = getIntent();
+        setSubjectInfo(mPresent.getSubjectDataFromOrder(mSubjectOrder));
 
-        setSubjectInfo(mPresent.getSubjectDataFromOrder(
-                fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER,
-                        DetailTodoListPresenter.SUBJECT_ORDER_ALL)));
     }
 
     private void initController() {
@@ -149,7 +153,8 @@ public class DetailTodoListActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return EachTabFragment.newInstance(position);
+            return EachTabFragment.newInstance(position,
+                    mPresent.getTodoList(mSubjectOrder, getPageListType(position)));
         }
 
         @Override
@@ -169,6 +174,18 @@ public class DetailTodoListActivity extends AppCompatActivity {
                     return TAB_TITLE_TASK;
             }
             return null;
+        }
+
+        public int getPageListType(int position) {
+            switch (position) {
+                case 0:
+                    return DetailTodoListPresenter.TODO_TYPE_ALL;
+                case 1:
+                    return TodoData.TODO_DB_TYPE_ALLDAY; //TODO change
+                case 2:
+                    return TodoData.TODO_DB_TYPE_TASK;
+            }
+            return DetailTodoListPresenter.TODO_TYPE_ALL;
         }
     }
 }

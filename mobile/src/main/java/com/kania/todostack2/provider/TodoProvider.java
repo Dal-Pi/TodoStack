@@ -175,7 +175,19 @@ public class TodoProvider {
         for (TodoData todo : todoList){
             allTodoData.add(todo);
         }
+
         return allTodoData;
+    }
+
+    public static ArrayList<TodoData> getTodoList(int subjectOrder) {
+        ArrayList<TodoData> todos = new ArrayList<TodoData>();
+        for (TodoData todo : todoList){
+            if (todo.subjectOrder == subjectOrder) {
+                todos.add(todo);
+            }
+        }
+
+        return todos;
     }
 
     public static SubjectData getSubjectByOrder(int subOrder) {

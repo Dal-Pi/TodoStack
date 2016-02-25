@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:id="@+id/card_item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/detail_card_minheight"
+        android:layout_marginTop="@dimen/detail_card_margin_vertical"
+        android:layout_marginBottom="@dimen/detail_card_margin_vertical"
+        android:layout_marginLeft="@dimen/detail_card_margin_horizontal"
+        android:layout_marginRight="@dimen/detail_card_margin_horizontal"
+        android:padding="@dimen/detail_card_padding"
+        android:orientation="vertical"
+        android:background="@color/color_white"
+        android:elevation="@dimen/detail_card_elevation_size">
+
+        <TextView
+            android:id="@+id/card_item_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/view_min_height"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/detail_card_title_horizontal_padding"
+            android:paddingEnd="@dimen/detail_card_title_horizontal_padding"
+            android:background="@color/color_normal_state"
+            android:textColor="@color/color_white"
+            android:text="@string/todo_initial_info"/>
+
+        <TextView
+            android:id="@+id/card_item_todoname"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="@dimen/detail_card_contents_horizontal_padding"
+            android:paddingEnd="@dimen/detail_card_contents_horizontal_padding"
+            android:background="@color/color_white"
+            android:textColor="@color/color_normal_state"
+            android:text="@string/todo_initial_info"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>
