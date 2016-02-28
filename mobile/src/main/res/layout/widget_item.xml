@@ -11,8 +11,7 @@
         android:layout_marginTop="7dip"
         android:layout_marginBottom="7dip"
         android:scaleType="centerInside"
-        android:src="@drawable/oval_widget_item"
-        android:elevation="@dimen/detail_card_elevation_size"/>
+        android:src="@drawable/oval_widget_item" />
 
     <TextView
         android:id="@+id/widget_text_todo"
