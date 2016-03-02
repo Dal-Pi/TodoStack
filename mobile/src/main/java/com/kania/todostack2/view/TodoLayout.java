@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -20,9 +21,12 @@ import java.util.ArrayList;
  */
 public class TodoLayout extends ViewGroup {
 
-    public static final int RATE_TEXT_SCALE = 9;
+    public static final int RATE_DATE_TEXT_SCALE = 8;
+    public static final int RATE_TODO_TEXT_SCALE = 9;
     private ArrayList<Integer> alSolidPathPos;
     private ArrayList<Integer> alDashPathPos;
+
+    private int mostHighTopPos = 10000; //for solid line (top has minimum window position)
 
     public TodoLayout(Context context) {
         super(context);
@@ -49,46 +53,75 @@ public class TodoLayout extends ViewGroup {
                 setLayoutFromTag((TextView) tv);
             }
         }
+
+        addSolidPathPosArray(mostHighTopPos);
     }
 
     private void setLayoutFromTag(TextView tv) {
-        TextViewInfo pos = (TextViewInfo) tv.getTag();
+        TodoViewInfo pos = (TodoViewInfo) tv.getTag();
         if (pos == null)
             return;
 //        Log.d("TodoStack", "[setLayoutFromTag] l/t/r/b = "
 //                + pos.left + "/" + pos.top + "/" + pos.right + "/" + pos.bottom);
         tv.layout(pos.left, pos.top, pos.right, pos.bottom);
-        tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                ((pos.bottom - pos.top) * RATE_TEXT_SCALE) / 10 );
+        if (pos.type == TodoViewInfo.TYPE_DATE_TEXT) {
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    ((pos.bottom - pos.top) * RATE_DATE_TEXT_SCALE) / 10 );
+        } else {
+            tv.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    ((pos.bottom - pos.top) * RATE_TODO_TEXT_SCALE) / 10 );
+        }
+
+
+        if (pos.type == TodoViewInfo.TYPE_DATE_TEXT) {
+            addDashLinePathArray(pos.top);
+            if (pos.top < mostHighTopPos){
+                mostHighTopPos = pos.top;
+            }
+        }
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void dispatchDraw(Canvas canvas) {
         Paint paint = new Paint();
+
+        int dashLinePaddingTop = TodoLayoutInfo.DATEDIVIDERLINE_HEIGHT / 2 + 1;
+        int solidLinePaddingTop = TodoLayoutInfo.TASKBASELINE_HEIGHT / 2 + 1;
 
         //dash path
         paint.setColor(ColorProvider.getColor(ColorProvider.COLOR_DASH_PATH));
         paint.setStyle(Paint.Style.STROKE);
         paint.setPathEffect(new DashPathEffect(new float[]{2, 5}, 2));
-        paint.setStrokeWidth(TodoLayoutInfo.DATEDIVIDERLINE_HEIGHT);
+        paint.setStrokeWidth(1);
         for (int pos : alDashPathPos) {
-            canvas.drawLine(0, pos, this.getWidth(), pos, paint);
+            if (pos != mostHighTopPos) {
+                Path path = new Path();
+                path.moveTo(0, pos - dashLinePaddingTop);
+                path.lineTo(this.getWidth(), pos - dashLinePaddingTop);
+                canvas.drawPath(path, paint);
+            }
         }
 
         //soild path
+        paint.setColor(ColorProvider.getColor(ColorProvider.COLOR_SOLID_PATH));
         paint.setPathEffect(null);
-        paint.setStrokeWidth(TodoLayoutInfo.TASKBASELINE_HEIGHT);
+        paint.setStrokeWidth(2);
         for (int pos : alSolidPathPos) {
-            canvas.drawLine(0, pos, this.getWidth(), pos, paint);
+            Path path = new Path();
+            path.moveTo(0, pos - solidLinePaddingTop);
+            path.lineTo(this.getWidth(), pos - solidLinePaddingTop);
+            canvas.drawPath(path, paint);
         }
+
+        //draw child above todoview
+        super.dispatchDraw(canvas);
     }
 
-    public void setSolidPathPosArray(ArrayList<Integer> sppa) {
-        alSolidPathPos = sppa;
+    public void addSolidPathPosArray(int line) {
+        alSolidPathPos.add(line);
     }
 
-    public void setDashLinePathArray(ArrayList<Integer> dppa) {
-        alSolidPathPos = dppa;
+    public void addDashLinePathArray(int line) {
+        alDashPathPos.add(line);
     }
 }

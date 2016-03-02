@@ -59,7 +59,10 @@
             style="@style/TextViewStyle"
             android:text="@string/dialog_done_todo_option_title"
             android:textColor="@color/color_black" />
-
+        <TextView
+            android:id="@+id/dialog_done_todo_move_today"
+            style="@style/TextButtonStyleInDialog"
+            android:text="@string/dialog_done_todo_option_today" />
         <TextView
             android:id="@+id/dialog_done_todo_move_tomorrow"
             style="@style/TextButtonStyleInDialog"
@@ -76,10 +79,6 @@
             android:id="@+id/dialog_done_todo_move_next_year"
             style="@style/TextButtonStyleInDialog"
             android:text="@string/dialog_done_todo_option_next_year" />
-        <TextView
-            android:id="@+id/dialog_done_todo_move_today"
-            style="@style/TextButtonStyleInDialog"
-            android:text="@string/dialog_done_todo_option_today" />
         <TextView
             android:id="@+id/dialog_done_todo_move_task"
             style="@style/TextButtonStyleInDialog"

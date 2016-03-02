@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.kania.todostack2.R;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.provider.TodoProvider;
-import com.kania.todostack2.view.TextViewInfo;
+import com.kania.todostack2.view.TodoViewInfo;
 
 import java.util.ArrayList;
 
@@ -68,7 +68,7 @@ public class TodoSelectDialog extends DialogFragment {
         ListView todoListView =
                 (ListView) todoSelectView.findViewById(R.id.dialog_list_select_todo);
         ArrayList<TodoData> todos = new ArrayList<TodoData>();
-        String[] sIds = mIds.split(TextViewInfo.DELIMITER_ID);
+        String[] sIds = mIds.split(TodoViewInfo.DELIMITER_ID);
         for (String sId : sIds) {
             todos.add(TodoProvider.getInstance(getActivity()).getTodoById(Integer.parseInt(sId)));
         }

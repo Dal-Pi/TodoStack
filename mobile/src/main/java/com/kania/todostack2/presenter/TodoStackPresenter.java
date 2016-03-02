@@ -35,7 +35,7 @@ import com.kania.todostack2.util.TodoSelectDialog;
 import com.kania.todostack2.util.TodoStackUtil;
 import com.kania.todostack2.view.DetailTodoListActivity;
 import com.kania.todostack2.view.IViewAction;
-import com.kania.todostack2.view.TextViewInfo;
+import com.kania.todostack2.view.TodoViewInfo;
 import com.kania.todostack2.view.TodoLayoutInfo;
 
 import java.text.ParseException;
@@ -134,7 +134,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 mDialogNowViewing.dismiss();
                 mDialogNowViewing = null;
             }
-            TextViewInfo infoFromWidget = new TextViewInfo(TextViewInfo.TYPE_TODO,
+            TodoViewInfo infoFromWidget = new TodoViewInfo(TodoViewInfo.TYPE_DATE_TODO,
                     mTodoIdNowViewing, true);
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
             setMode(MODE_VIEW_TODO, infoFromWidget);
@@ -222,9 +222,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                             res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
                             sd.color);
                     needAnimation = !isFabTop();
-                    mTodoIdNowViewing = ((TextViewInfo) info).id;
-                    mTodoView.setTagOnTodoTextView((TextViewInfo) info);
-                    mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TextViewInfo) info));
+                    mTodoIdNowViewing = ((TodoViewInfo) info).id;
+                    mTodoView.setTagOnTodoTextView((TodoViewInfo) info);
+                    mTodoView.setViewTodoVisible(getSpannableStringFromTodos((TodoViewInfo) info));
                     mTodoView.setFab(res.getString(R.string.todo_done),
                             sd.color, needAnimation);
                     mIsFabTop = true;
@@ -294,7 +294,9 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             tv.setTextColor(res.getColor(R.color.color_black));
             tv.setGravity(Gravity.CENTER);
             tv.setBackgroundColor(res.getColor(R.color.color_date_text_background));
-            tv.setTag(mTodolayoutInfo.getDateTextPosition(i));
+            TodoViewInfo info = mTodolayoutInfo.getDateTextPosition(i);
+            info.type = TodoViewInfo.TYPE_DATE_TEXT;
+            tv.setTag(info);
 
             sendData.add(tv);
             calendar.add(Calendar.DATE, 1);
@@ -324,8 +326,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             tv.setTextColor(sd.color);
             tv.setBackgroundColor(res.getColor(R.color.color_subject_background));
             tv.setSingleLine();
-            TextViewInfo info = mTodolayoutInfo.getSubjectPosition(sd.order);
-            info.type = TextViewInfo.TYPE_SUBJECT;
+            TodoViewInfo info = mTodolayoutInfo.getSubjectPosition(sd.order);
+            info.type = TodoViewInfo.TYPE_SUBJECT;
             info.id = sd.order + "";
             tv.setTag(info);
             tv.setOnClickListener(this);
@@ -347,80 +349,75 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         TodoStackSettingValues settingValues = TodoStackSettingValues.getInstance(mContext);
 
         //for duplicate date todos
-        HashMap<String, TextViewInfo> dateTodoMap = new HashMap<String, TextViewInfo>();
+        HashMap<String, TodoViewInfo> dateTodoMap = new HashMap<String, TodoViewInfo>();
 
         for(TodoData td : todoData) {
             SubjectData subjectdata = todoProvider.getSubjectByOrder(td.subjectOrder);
-            if (subjectdata == null) {
-                Log.e("TodoStack", "[addTodoData] subjectdata is null!");
-                continue;
+            if (td.type == TodoData.TODO_DB_TYPE_TASK) {
+                subjectdata.taskCount++;
+                if (subjectdata.taskCount < settingValues.getVisivleTaskCount()) {
+                    TextView tv = getTaskTodoTextView(td, subjectdata);
+                    sendData.add(tv);
+                } else if (subjectdata.taskCount == settingValues.getVisivleTaskCount()) {
+                    TextView moreTv = getMoreTaskTextView(subjectdata);
+                    sendData.add(moreTv);
+                } else {
+                    continue;
+                }
+
             } else {
-                if (td.type == TodoData.TODO_DB_TYPE_TASK) {
-                    subjectdata.taskCount++;
-                    if (subjectdata.taskCount < settingValues.getVisivleTaskCount()) {
-                        TextView tv = getTaskTodoTextView(td, subjectdata);
+                int cmpDiffDays = settingValues.getVisivleDateCount() + 1;
+                Calendar targetCalendar = Calendar.getInstance();
+                try {
+                    targetCalendar.setTime(sdf.parse(td.date));
+                    cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
+                } catch (ParseException e) {
+                    Log.e("TodoStack", "[addTodoData] parse error!!");
+                    e.printStackTrace();
+                }
+
+                if (cmpDiffDays < 0) { //delayed
+                    subjectdata.delayedTodoCount++;
+                    if (subjectdata.delayedTodoCount < settingValues.getVisivleDelayedCount()) {
+                        TextView tv = getDelayedTodoTextView(td, subjectdata);
                         sendData.add(tv);
-                    } else if (subjectdata.taskCount == settingValues.getVisivleTaskCount()) {
-                        TextView moreTv = getMoreTaskTextView(subjectdata);
+                    } else if (subjectdata.delayedTodoCount == settingValues.getVisivleDelayedCount()) {
+                        TextView moreTv = getMoreDelayedTextView(subjectdata);
                         sendData.add(moreTv);
                     } else {
                         continue;
                     }
-
-                } else {
-                    int cmpDiffDays = settingValues.getVisivleDateCount() + 1;
-                    Calendar targetCalendar = Calendar.getInstance();
-                    try {
-                        targetCalendar.setTime(sdf.parse(td.date));
-                        cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
-                    } catch (ParseException e) {
-                        Log.e("TodoStack", "[addTodoData] parse error!!");
-                        e.printStackTrace();
-                    }
-
-                    if (cmpDiffDays < 0) { //delayed
-                        subjectdata.delayedTodoCount++;
-                        if (subjectdata.delayedTodoCount < settingValues.getVisivleDelayedCount()) {
-                            TextView tv = getDelayedTodoTextView(td, subjectdata);
-                            sendData.add(tv);
-                        } else if (subjectdata.delayedTodoCount == settingValues.getVisivleDelayedCount()) {
-                            TextView moreTv = getMoreDelayedTextView(subjectdata);
-                            sendData.add(moreTv);
+                }
+                else if (cmpDiffDays >= 0
+                        && cmpDiffDays < settingValues.getVisivleDateCount()) { //ranged
+                    String key = td.date + subjectdata.order;
+                    //first, check if todos on target date exist.
+                    TodoViewInfo info = dateTodoMap.get(key);
+                    if (info == null) {
+                        info = mTodolayoutInfo.getDateTodoPosition(
+                                subjectdata.order, cmpDiffDays);
+                        info.type = TodoViewInfo.TYPE_DATE_TODO;
+                        info.id = td.id + "";
+                        if (cmpDiffDays == 0) { //today
+                            info.isToday = true;
                         } else {
-                            continue;
+                            info.isToday = false;
                         }
-                    }
-                    else if (cmpDiffDays >= 0
-                            && cmpDiffDays < settingValues.getVisivleDateCount()) { //ranged
-                        String key = td.date + subjectdata.order;
-                        //first, check if todos on target date exist.
-                        TextViewInfo info = dateTodoMap.get(key);
-                        if (info == null) {
-                            info = mTodolayoutInfo.getDateTodoPosition(
-                                    subjectdata.order, cmpDiffDays);
-                            info.type = TextViewInfo.TYPE_TODO;
-                            info.id = td.id + "";
-                            if (cmpDiffDays == 0) { //today
-                                info.isToday = true;
-                            } else {
-                                info.isToday = false;
-                            }
-                        } else {
-                            info.id += TextViewInfo.DELIMITER_ID + td.id;
-                        }
-                        dateTodoMap.put(key, info);
                     } else {
-                        continue;
+                        info.id += TodoViewInfo.DELIMITER_ID + td.id;
                     }
+                    dateTodoMap.put(key, info);
+                } else {
+                    continue;
                 }
             }
         }
         //post make textview of date
         Iterator<String> it = dateTodoMap.keySet().iterator();
         while(it.hasNext()) {
-            TextViewInfo combinedInfo = dateTodoMap.get(it.next());
+            TodoViewInfo combinedInfo = dateTodoMap.get(it.next());
             int subjectColor = 0;
-            String ids[] = combinedInfo.id.split(TextViewInfo.DELIMITER_ID);
+            String ids[] = combinedInfo.id.split(TodoViewInfo.DELIMITER_ID);
             String combinedText = "";
             for (int i = 0; i < ids.length; ++i) {
                 if (i == 0) {
@@ -432,7 +429,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         subjectColor = todoProvider.getSubjectByOrder(firstTodoData.subjectOrder).color;
                     }
                 } else {
-                    combinedText += TextViewInfo.DELIMITER_ID +
+                    combinedText += TodoViewInfo.DELIMITER_ID +
                             todoProvider.getTodoById(Integer.parseInt(ids[i])).todoName;
                 }
             }
@@ -445,8 +442,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private TextView getTaskTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td.todoName, sd.color);
-        TextViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
-        info.type = TextViewInfo.TYPE_TODO;
+        TodoViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
+        info.type = TodoViewInfo.TYPE_TASK;
         info.id = td.id + "";
         tv.setTag(info);
 
@@ -465,8 +462,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 //
     private TextView getDelayedTodoTextView(TodoData td, SubjectData sd) {
         TextView tv = getCommonTodoTextView(td.todoName, sd.color);
-        TextViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
-        info.type = TextViewInfo.TYPE_TODO;
+        TodoViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
+        info.type = TodoViewInfo.TYPE_DELAYED_TODO;
         info.id = td.id + "";
         tv.setTag(info);
 
@@ -475,8 +472,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private TextView getMoreTaskTextView(SubjectData sd) {
         TextView moreTaskTextView = getMoreCommonTextViwe(sd);
-        TextViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
-        info.type = TextViewInfo.TYPE_VIEW_ALL_TASK;
+        TodoViewInfo info = mTodolayoutInfo.getTaskTodoPosition(sd.order, sd.taskCount);
+        info.type = TodoViewInfo.TYPE_VIEW_ALL_TASK;
         info.id = sd.order + "";
         moreTaskTextView.setTag(info);
 
@@ -485,8 +482,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private TextView getMoreDelayedTextView(SubjectData sd) {
         TextView moreDelayedTextView = getMoreCommonTextViwe(sd);
-        TextViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
-        info.type = TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO;
+        TodoViewInfo info = mTodolayoutInfo.getDelayedTodoPosition(sd.order, sd.delayedTodoCount);
+        info.type = TodoViewInfo.TYPE_VIEW_ALL_DELAYED_TODO;
         info.id = sd.order + "";
         moreDelayedTextView.setTag(info);
 
@@ -522,10 +519,10 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         return tv;
     }
 
-    private SpannableString getSpannableStringFromTodos(TextViewInfo info) {
+    private SpannableString getSpannableStringFromTodos(TodoViewInfo info) {
         final TodoProvider provider = TodoProvider.getInstance(mContext);
         String todoString = "";
-        String[] ids = info.id.split(TextViewInfo.DELIMITER_ID);
+        String[] ids = info.id.split(TodoViewInfo.DELIMITER_ID);
 //        int[] lengths = new int[ids.length];
 //        ClickableSpan[] clickableSpans = new ClickableSpan[ids.length];
 
@@ -813,7 +810,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private void showTodoSelectDialog(String ids) {
         //if id has only one id, skip dialog
-        String[] sIds = ids.split(TextViewInfo.DELIMITER_ID);
+        String[] sIds = ids.split(TodoViewInfo.DELIMITER_ID);
         if (sIds.length == 1) {
             showTodoDoneDialog(Integer.parseInt(sIds[0]));
         } else {
@@ -881,17 +878,19 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         if (mTodoView.getNowBusy())
             return;
         Object tag = v.getTag();
-        if (tag != null && tag instanceof TextViewInfo) {
+        if (tag != null && tag instanceof TodoViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
-            int type = ((TextViewInfo) tag).type;
-            if (type == TextViewInfo.TYPE_SUBJECT) {
+            int type = ((TodoViewInfo) tag).type;
+            if (type == TodoViewInfo.TYPE_SUBJECT) {
                 setMode(MODE_ADD_TODO, null);
-            } else if (type == TextViewInfo.TYPE_TODO) {
+            } else if (type == TodoViewInfo.TYPE_DELAYED_TODO
+                    || type == TodoViewInfo.TYPE_TASK
+                    || type == TodoViewInfo.TYPE_DATE_TODO) {
                 setMode(MODE_VIEW_TODO, tag);
-            } else if (type == TextViewInfo.TYPE_VIEW_ALL_TASK) {
+            } else if (type == TodoViewInfo.TYPE_VIEW_ALL_TASK) {
                 //TODO launch fragment
                 Toast.makeText(mContext, "not implemented yet", Toast.LENGTH_SHORT).show();
-            } else if (type == TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
+            } else if (type == TodoViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
                 //TODO launch fragment
                 Toast.makeText(mContext, "not implemented yet", Toast.LENGTH_SHORT).show();
             }
@@ -903,7 +902,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         if (mTodoView.getNowBusy())
             return false;
         Object tag = v.getTag();
-        if (tag != null && tag instanceof TextViewInfo) {
+        if (tag != null && tag instanceof TodoViewInfo) {
             mNowSelectSubjectOrder = getSelectedSubjectOrderFromTag(tag);
             setMode(MODE_VIEW_SUBJECT, null);
             return true;
@@ -914,15 +913,17 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private int getSelectedSubjectOrderFromTag(Object tag) {
         int ret = NOT_SELECTED_SUBJECT;
-        if (tag != null && tag instanceof TextViewInfo) {
-            int type = ((TextViewInfo) tag).type;
-            if (type == TextViewInfo.TYPE_SUBJECT
-                    || type == TextViewInfo.TYPE_VIEW_ALL_TASK
-                    || type == TextViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
-                ret = Integer.parseInt(((TextViewInfo) tag).id);
-            } else if (type == TextViewInfo.TYPE_TODO) {
-                String combinedId = ((TextViewInfo) tag).id;
-                String[] stringIds = combinedId.split(TextViewInfo.DELIMITER_ID);
+        if (tag != null && tag instanceof TodoViewInfo) {
+            int type = ((TodoViewInfo) tag).type;
+            if (type == TodoViewInfo.TYPE_SUBJECT
+                    || type == TodoViewInfo.TYPE_VIEW_ALL_TASK
+                    || type == TodoViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
+                ret = Integer.parseInt(((TodoViewInfo) tag).id);
+            } else if (type == TodoViewInfo.TYPE_DELAYED_TODO
+                    || type == TodoViewInfo.TYPE_TASK
+                    || type == TodoViewInfo.TYPE_DATE_TODO) {
+                String combinedId = ((TodoViewInfo) tag).id;
+                String[] stringIds = combinedId.split(TodoViewInfo.DELIMITER_ID);
                 TodoData td = TodoProvider.getInstance(mContext).getTodoById(
                         Integer.parseInt(stringIds[0]));
                 ret = td.subjectOrder;

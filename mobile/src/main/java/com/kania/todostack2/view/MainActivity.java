@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             //TODO launch all todo fragment
         } else if (isViewVisible(controllerViewTodo)) {
             bundle.putString(TodoStackContract.TodoEntry._ID,
-                    ((TextViewInfo) textTodos.getTag()).id);
+                    ((TodoViewInfo) textTodos.getTag()).id);
         }
         return bundle;
     }
@@ -565,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     }
 
     @Override
-    public void setTagOnTodoTextView(TextViewInfo info) {
+    public void setTagOnTodoTextView(TodoViewInfo info) {
         if (textTodos != null) {
             textTodos.setTag(info);
         }

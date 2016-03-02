@@ -4,7 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.kania.todostack2.R;
-import com.kania.todostack2.view.TextViewInfo;
+import com.kania.todostack2.view.TodoViewInfo;
 
 import java.util.Calendar;
 
@@ -20,7 +20,7 @@ public class TodoStackUtil {
                     context.getResources().getString(R.string.toast_waring_name_empty),
                     Toast.LENGTH_SHORT).show();
             ret = false;
-        } else if (name.contains(TextViewInfo.DELIMITER_ID)) {
+        } else if (name.contains(TodoViewInfo.DELIMITER_ID)) {
             Toast.makeText(context,
                     context.getResources().getString(R.string.toast_waring_input_slush),
                     Toast.LENGTH_SHORT).show();
