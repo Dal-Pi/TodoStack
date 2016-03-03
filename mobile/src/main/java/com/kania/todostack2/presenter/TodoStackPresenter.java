@@ -829,7 +829,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
 
     private void showTodoDoneDialog(int todoId) {
         FragmentTransaction ft = ((Activity) mContext).getFragmentManager().beginTransaction();
-        DialogFragment dialog = TodoDoneDialog.newInstance(todoId, new TodoDoneDialog.Callback() {
+        final DialogFragment dialog = TodoDoneDialog.newInstance(todoId, new TodoDoneDialog.Callback() {
             @Override
             public void onDeleteTodo(int id) {
                 UpdateTodoTask deleteTodoTask = new UpdateTodoTask(mContext,
@@ -855,6 +855,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                         });
                 moveTodoTask.setData(TodoProvider.getInstance(mContext).getTodoById(id), moveType);
                 moveTodoTask.execute();
+            }
+
+            @Override
+            public void onCancelSelected() {
+                //do nothing
             }
         });
         dialog.show(ft, TAG_DIALOG_DONE_TODO);

@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mToggle;
 
+    private boolean isTodoLayoutLoaded = false;
     //debug
     int drawerCount = 0;
 
@@ -236,7 +237,9 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
                 new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
+                Log.d("TodoStack", "timing test - onGlobalLayout");
                 todoLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                isTodoLayoutLoaded = true;
                 mMediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
             }
         });
@@ -268,8 +271,10 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
     protected void onResume() {
         Log.i("TodoStack", "[lifecycle][Main] onResume : " + this.hashCode());
         super.onResume();
-
-        mMediator.setModeByOwnInfo();
+        if (isTodoLayoutLoaded) {
+            mMediator.initTodoLayout(todoLayout.getWidth(), todoLayout.getHeight());
+            mMediator.setModeByOwnInfo();
+        }
     }
 
     @Override

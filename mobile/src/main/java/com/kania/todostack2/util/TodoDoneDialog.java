@@ -24,6 +24,7 @@ public class TodoDoneDialog extends DialogFragment {
     public interface Callback {
         void onDeleteTodo(int id);
         void onMoveTodo(int id, int moveType);
+        void onCancelSelected();
     }
 
     public TodoDoneDialog() {
@@ -33,6 +34,9 @@ public class TodoDoneDialog extends DialogFragment {
             }
             @Override
             public void onMoveTodo(int id, int moveType) {//empty callback
+            }
+            @Override
+            public void onCancelSelected() {//empty callback
             }
         });
     }
@@ -87,6 +91,7 @@ public class TodoDoneDialog extends DialogFragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCallback.onCancelSelected();
                 dismiss();
             }
         });

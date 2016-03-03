@@ -2,6 +2,7 @@ package com.kania.todostack2.view;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ public class DetailTodoListAdapter
         public LinearLayout cardLayout;
         public TextView subject;
         public TextView todoName;
+
+        public int id;
         //TODO need more option
 
         public TodoCardHolder(View itemView) {
@@ -64,6 +67,7 @@ public class DetailTodoListAdapter
         holder.subject.setText(sd.subjectName);
         holder.subject.setBackgroundColor(sd.color);
         holder.todoName.setText(td.todoName);
+        holder.id = td.id;
     }
 
     @Override
@@ -75,5 +79,16 @@ public class DetailTodoListAdapter
         }
     }
 
+    public TodoData getItem(int position) {
+        return mTodoList.get(position);
+    }
+
+    public void removeItem(int position) {
+        if (position < mTodoList.size()) {
+            mTodoList.remove(position);
+        } else {
+            Log.e("TodoStack", "[removeItem]invalid position value!");
+        }
+    }
 
 }
