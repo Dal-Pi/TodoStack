@@ -89,7 +89,7 @@ class TodoListFactory implements RemoteViewsService.RemoteViewsFactory {
         provider.initData();
         arTodo = new ArrayList<TodoData>();
 
-        sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATAFORMAT_DATE);
+        sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATEFORMAT_DATE);
     }
 
     public void updateList() {

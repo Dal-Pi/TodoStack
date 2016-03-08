@@ -97,5 +97,19 @@
         <item name="android:clickable">true</item>
         <item name="android:gravity">center</item>
     </style>
+    <style name="TextViewStyleInCard">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/detail_card_margin_horizontal</item>
+        <item name="android:paddingEnd">@dimen/detail_card_margin_horizontal</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textColor">@color/color_gray</item>
+    </style>
+    <style name="SubtitleTextViewStyle" parent="TextViewStyleInCard">
+        <item name="android:textSize">@dimen/detail_card_textsize_subtitle</item>
+    </style>
+    <style name="DescTextViewStyle" parent="TextViewStyleInCard">
+        <item name="android:textSize">@dimen/detail_card_textsize_description</item>
+    </style>
 
 </resources>

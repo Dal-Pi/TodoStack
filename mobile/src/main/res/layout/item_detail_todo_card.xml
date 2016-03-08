@@ -17,29 +17,109 @@
         android:background="@color/color_white"
         android:elevation="@dimen/detail_card_elevation_size">
 
-        <TextView
-            android:id="@+id/card_item_subject"
+        <LinearLayout
+            android:id="@+id/card_item_todoname_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="@dimen/view_min_height"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/detail_card_title_horizontal_padding"
-            android:paddingEnd="@dimen/detail_card_title_horizontal_padding"
-            android:background="@color/color_normal_state"
-            android:textColor="@color/color_white"
-            android:text="@string/todo_initial_info"/>
+            android:orientation="horizontal"
+            android:background="@color/color_normal_state">
+            <TextView
+                android:id="@+id/card_item_todoname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/view_min_height"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/detail_card_title_horizontal_padding"
+                android:paddingEnd="@dimen/detail_card_title_horizontal_padding"
+                android:textColor="@color/color_white"
+                android:text="@string/todo_initial_info"
+                android:textSize="@dimen/detail_card_textsize_title"/>
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/card_item_todoname"
+        <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="@dimen/detail_card_contents_horizontal_padding"
-            android:paddingEnd="@dimen/detail_card_contents_horizontal_padding"
-            android:background="@color/color_white"
-            android:textColor="@color/color_normal_state"
-            android:text="@string/todo_initial_info"
-            />
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/detail_card_paddingBottom">
+
+            <TableRow>
+                <TextView
+                    style="@style/SubtitleTextViewStyle"
+                    android:text="@string/card_desc_subject" />
+                <TextView
+                    android:id="@+id/card_item_subject"
+                    style="@style/SubtitleTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/card_item_due_date_row"
+                android:visibility="visible">
+                <TextView
+                    style="@style/SubtitleTextViewStyle"
+                    android:text="@string/card_desc_due_date" />
+                <TextView
+                    android:id="@+id/card_item_due_date"
+                    style="@style/SubtitleTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/card_item_time_row"
+                android:visibility="visible">
+                <TextView
+                    style="@style/SubtitleTextViewStyle"
+                    android:text="" />
+                <TextView
+                    android:id="@+id/card_item_time"
+                    style="@style/SubtitleTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/card_item_location_row"
+                android:visibility="visible">
+                <TextView
+                    style="@style/SubtitleTextViewStyle"
+                    android:text="@string/card_desc_location" />
+                <TextView
+                    android:id="@+id/card_item_location"
+                    style="@style/SubtitleTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/DescTextViewStyle"
+                    android:text="@string/card_desc_created" />
+                <TextView
+                    android:id="@+id/card_item_created"
+                    style="@style/DescTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    style="@style/DescTextViewStyle"
+                    android:text="@string/card_desc_last_updated" />
+                <TextView
+                    android:id="@+id/card_item_last_updated"
+                    style="@style/DescTextViewStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/todo_initial_info" />
+            </TableRow>
+
+        </TableLayout>
 
     </LinearLayout>
 

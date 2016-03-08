@@ -10,6 +10,7 @@
     <dimen name="text_size_guide">10dp</dimen>
     <dimen name="text_size_textview">16dp</dimen>
     <dimen name="text_size_title">30dp</dimen>
+
     <dimen name="text_size_button">12dp</dimen>
     <dimen name="text_size_edit">10dp</dimen>
     <dimen name="text_size_text_clickable">16dp</dimen>
@@ -46,10 +47,14 @@
     <dimen name="todolist_vertical_padding">5dp</dimen>
 
     <dimen name="detail_card_padding">0dp</dimen>
+    <dimen name="detail_card_paddingBottom">3dp</dimen>
     <dimen name="detail_card_elevation_size">2dp</dimen>
     <dimen name="detail_card_margin_horizontal">5dp</dimen>
     <dimen name="detail_card_margin_vertical">3dp</dimen>
     <dimen name="detail_card_title_horizontal_padding">10dp</dimen>
     <dimen name="detail_card_contents_horizontal_padding">5dp</dimen>
     <dimen name="detail_card_minheight">80dp</dimen>
+    <dimen name="detail_card_textsize_title">16dp</dimen>
+    <dimen name="detail_card_textsize_subtitle">12dp</dimen>
+    <dimen name="detail_card_textsize_description">8dp</dimen>
 </resources>

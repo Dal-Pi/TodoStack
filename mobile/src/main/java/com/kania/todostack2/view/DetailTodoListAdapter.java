@@ -7,13 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.kania.todostack2.R;
+import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.provider.TodoProvider;
+import com.kania.todostack2.util.TodoStackUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -34,18 +39,36 @@ public class DetailTodoListAdapter
     }
 
     public static class TodoCardHolder extends RecyclerView.ViewHolder {
-        public LinearLayout cardLayout;
-        public TextView subject;
-        public TextView todoName;
+        public LinearLayout mCardLayout;
+        public LinearLayout mTodoNameLayout;
+        public TextView mTodoName;
+        public TextView mSubject;
+        public TableRow mDueDateRow;
+        public TextView mDueDate;
+        public TableRow mTimeRow;
+        public TextView mTime;
+        public TableRow mLocationRow;
+        public TextView mLocation;
+        public TextView mCreated;
+        public TextView mLastUpdated;
 
         public int id;
         //TODO need more option
 
         public TodoCardHolder(View itemView) {
             super(itemView);
-            cardLayout = (LinearLayout) itemView.findViewById(R.id.card_item_layout);
-            subject = (TextView) itemView.findViewById(R.id.card_item_subject);
-            todoName = (TextView) itemView.findViewById(R.id.card_item_todoname);
+            mCardLayout = (LinearLayout) itemView.findViewById(R.id.card_item_layout);
+            mTodoNameLayout = (LinearLayout) itemView.findViewById(R.id.card_item_todoname_layout);
+            mTodoName = (TextView) itemView.findViewById(R.id.card_item_todoname);
+            mSubject = (TextView) itemView.findViewById(R.id.card_item_subject);
+            mDueDateRow = (TableRow) itemView.findViewById(R.id.card_item_due_date_row);
+            mDueDate = (TextView) itemView.findViewById(R.id.card_item_due_date);
+            mTimeRow = (TableRow) itemView.findViewById(R.id.card_item_time_row);
+            mTime = (TextView) itemView.findViewById(R.id.card_item_time);
+            mLocationRow = (TableRow) itemView.findViewById(R.id.card_item_location_row);
+            mLocation = (TextView) itemView.findViewById(R.id.card_item_location);
+            mCreated = (TextView) itemView.findViewById(R.id.card_item_created);
+            mLastUpdated = (TextView) itemView.findViewById(R.id.card_item_last_updated);
             //TODO setOnClick
         }
     }
@@ -63,10 +86,45 @@ public class DetailTodoListAdapter
         TodoData td = mTodoList.get(position);
         SubjectData sd = mProvider.getSubjectByOrder(td.subjectOrder);
 
-//        holder.cardLayout.setBackgroundColor(sd.color);
-        holder.subject.setText(sd.subjectName);
-        holder.subject.setBackgroundColor(sd.color);
-        holder.todoName.setText(td.todoName);
+        holder.mTodoNameLayout.setBackgroundColor(sd.color);
+        holder.mTodoName.setText(td.todoName);
+
+        holder.mSubject.setText(sd.subjectName);
+        holder.mSubject.setTextColor(sd.color);
+
+        if (td.type == TodoData.TODO_DB_TYPE_TASK) {
+            //TODO hide row
+//            holder.mDueDate.setText("(it is task)");
+            holder.mDueDateRow.setVisibility(View.GONE);
+            holder.mTimeRow.setVisibility(View.GONE);
+        } else {
+            Calendar targetDate = Calendar.getInstance();
+            targetDate.setTime(TodoStackUtil.getDateFromTodoDate(td.date));
+            holder.mDueDateRow.setVisibility(View.VISIBLE);
+            holder.mDueDate.setText(TodoStackUtil.getFomatedDate(mContext, targetDate.getTime()));
+
+            if ("".equalsIgnoreCase(td.timeFrom)) {
+                //TODO hide row
+//                holder.mTime.setText("(time is empty)");
+                holder.mTimeRow.setVisibility(View.GONE);
+            } else {
+                holder.mTimeRow.setVisibility(View.VISIBLE);
+                holder.mTime.setText(TodoStackUtil.getFomatedTime(
+                        mContext, targetDate.getTime(), td.timeFrom, td.timeTo));
+            }
+        }
+
+        if ("".equalsIgnoreCase(td.location)) {
+            //TODO hide row
+//            holder.mLocation.setText("(location is empty)");
+            holder.mLocationRow.setVisibility(View.GONE);
+        } else {
+            holder.mLocation.setText(td.location);
+        }
+
+        holder.mCreated.setText("(TBD)");
+        holder.mLastUpdated.setText("(TBD)");
+
         holder.id = td.id;
     }
 

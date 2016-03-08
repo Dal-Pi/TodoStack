@@ -88,4 +88,12 @@
     <string name="nav_drawer_close">Close navigation drawer</string>
 
     <string name="detail_all_title">All Subject</string>
+
+    <string name="card_desc_subject">Subject</string>
+    <string name="card_desc_due_date">Due Date</string>
+    <string name="card_desc_time">(will not use)</string>
+    <string name="card_desc_location">Location</string>
+    <string name="card_desc_created">Created</string>
+    <string name="card_desc_last_updated">Last Updated</string>
+
 </resources>

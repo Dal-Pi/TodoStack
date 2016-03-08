@@ -1,12 +1,18 @@
 package com.kania.todostack2.util;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import com.kania.todostack2.R;
+import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.view.TodoViewInfo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by user on 2016-02-11.
@@ -110,5 +116,51 @@ public class TodoStackUtil {
                 / (1000 * 60 * 60 * 24));
 
         return diffDays;
+    }
+
+    public static Date getDateFromTodoDate(String todoDate) {
+        Calendar targetDate = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATEFORMAT_DATE);
+
+        try {
+            targetDate.setTime(sdf.parse(todoDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return targetDate.getTime();
+    }
+
+    public static String getFomatedDate(Context context, Date todoDate) {
+        String ret = "";
+
+        Calendar targetDate = Calendar.getInstance();
+        targetDate.setTime(todoDate);
+
+        ret = DateUtils.formatDateTime(context, targetDate.getTimeInMillis(),
+                DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
+        return ret;
+    }
+
+    public static String getFomatedTime(Context context, Date targetDate,
+                                        String todoStartTime, String todoEndTime) {
+        String ret = "";
+        SimpleDateFormat sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATEFORMAT_TIME);
+        try {
+            Calendar start = Calendar.getInstance();
+            Calendar end = Calendar.getInstance();
+            start.setTime(targetDate);
+            end.setTime(targetDate);
+            start.setTime(sdf.parse(todoStartTime));
+            end.setTime(sdf.parse(todoEndTime));
+
+            ret = DateUtils.formatDateRange(context, start.getTimeInMillis(), end.getTimeInMillis(),
+                    DateUtils.FORMAT_SHOW_TIME);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return ret;
     }
 }

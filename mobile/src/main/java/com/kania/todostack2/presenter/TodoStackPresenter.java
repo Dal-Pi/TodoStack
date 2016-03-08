@@ -344,7 +344,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         ArrayList<TextView> sendData = new ArrayList<TextView>();
         ArrayList<TodoData> todoData = TodoProvider.getInstance(mContext).getAllTodo();
         TodoProvider todoProvider = TodoProvider.getInstance(mContext);
-        SimpleDateFormat sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATAFORMAT_DATE);
+        SimpleDateFormat sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATEFORMAT_DATE);
         Calendar calendarToday = Calendar.getInstance();
         TodoStackSettingValues settingValues = TodoStackSettingValues.getInstance(mContext);
 
