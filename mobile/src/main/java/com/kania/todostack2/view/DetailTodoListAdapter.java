@@ -83,7 +83,7 @@ public class DetailTodoListAdapter
 
     @Override
     public void onBindViewHolder(TodoCardHolder holder, int position) {
-        TodoData td = mTodoList.get(position);
+        TodoData td = mProvider.getTodoById(mTodoList.get(position).id);
         SubjectData sd = mProvider.getSubjectByOrder(td.subjectOrder);
 
         holder.mTodoNameLayout.setBackgroundColor(sd.color);
