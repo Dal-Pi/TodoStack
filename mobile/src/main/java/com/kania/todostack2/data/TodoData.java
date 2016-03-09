@@ -26,6 +26,8 @@ public class TodoData {
     public String timeFrom;
     public String timeTo;
     public String location;
+    public String created;
+    public String lastUpdated;
 
     //from real time
     public int realtimeType;

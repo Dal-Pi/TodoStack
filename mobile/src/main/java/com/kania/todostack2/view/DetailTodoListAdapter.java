@@ -122,8 +122,10 @@ public class DetailTodoListAdapter
             holder.mLocation.setText(td.location);
         }
 
-        holder.mCreated.setText("(TBD)");
-        holder.mLastUpdated.setText("(TBD)");
+        holder.mCreated.setText(TodoStackUtil.getSimpleFomatedDate(mContext,
+                TodoStackUtil.getDateFromTodoDate(td.created)));
+        holder.mLastUpdated.setText(TodoStackUtil.getSimpleFomatedDate(mContext,
+                TodoStackUtil.getDateFromTodoDate(td.lastUpdated)));
 
         holder.id = td.id;
     }

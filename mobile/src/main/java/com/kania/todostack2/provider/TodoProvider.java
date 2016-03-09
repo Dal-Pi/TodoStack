@@ -108,7 +108,9 @@ public class TodoProvider {
                 TodoEntry.TYPE,
                 TodoEntry.TIME_FROM,
                 TodoEntry.TIME_TO,
-                TodoEntry.LOCATION
+                TodoEntry.LOCATION,
+                TodoEntry.CREATED_DATE,
+                TodoEntry.LAST_UPDATED_DATE
         };
         Cursor todoCursor = todoStackDb.query(TodoEntry.TABLE_NAME,
                 projection, null, null, null, null, null);
@@ -140,6 +142,11 @@ public class TodoProvider {
             }
             todo.location = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.LOCATION));
+
+            todo.created = todoCursor.
+                    getString(todoCursor.getColumnIndexOrThrow(TodoEntry.CREATED_DATE));
+            todo.lastUpdated = todoCursor.
+                    getString(todoCursor.getColumnIndexOrThrow(TodoEntry.LAST_UPDATED_DATE));
 
             todoList.add(todo);
             todoMap.put(todo.id, todo);

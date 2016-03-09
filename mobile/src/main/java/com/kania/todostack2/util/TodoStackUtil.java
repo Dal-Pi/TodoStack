@@ -143,6 +143,18 @@ public class TodoStackUtil {
         return ret;
     }
 
+    public static String getSimpleFomatedDate(Context context, Date todoDate) {
+        String ret = "";
+
+        Calendar targetDate = Calendar.getInstance();
+        targetDate.setTime(todoDate);
+
+        ret = DateUtils.formatDateTime(context, targetDate.getTimeInMillis(),
+                DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
+        return ret;
+    }
+
     public static String getFomatedTime(Context context, Date targetDate,
                                         String todoStartTime, String todoEndTime) {
         String ret = "";

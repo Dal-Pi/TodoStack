@@ -308,7 +308,10 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
     private String getFormatedDateTextFromDate(Date date) {
         SimpleDateFormat month = new SimpleDateFormat("M");
         SimpleDateFormat day = new SimpleDateFormat("d");
-        return String.format("%2s-%2s", month.format(date), day.format(date));
+        SimpleDateFormat weekday = new SimpleDateFormat("EEE");
+        return String.format(
+                "%2s-%2s %s", month.format(date), day.format(date), weekday.format(date));
+//        return TodoStackUtil.getSimpleFomatedDate(mContext, date);
     }
     private void addSubjectData() {
         ArrayList<TextView> sendData = new ArrayList<TextView>();
@@ -754,6 +757,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         todo.timeFrom = bundle.getString(TodoStackContract.TodoEntry.TIME_FROM);
         todo.timeTo = bundle.getString(TodoStackContract.TodoEntry.TIME_TO);
         todo.location = bundle.getString(TodoStackContract.TodoEntry.LOCATION);
+        todo.created = todo.date;
+        todo.lastUpdated = todo.date;
 
         return todo;
     }
