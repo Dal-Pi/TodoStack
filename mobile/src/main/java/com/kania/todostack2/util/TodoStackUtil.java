@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
+import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.view.TodoViewInfo;
 
 import java.text.ParseException;
@@ -143,34 +144,32 @@ public class TodoStackUtil {
         return ret;
     }
 
-    public static String getSimpleFomatedDate(Context context, Date todoDate) {
+    public static String getFomatedDateAndTime(Context context, Date todoDate) {
         String ret = "";
 
         Calendar targetDate = Calendar.getInstance();
         targetDate.setTime(todoDate);
 
         ret = DateUtils.formatDateTime(context, targetDate.getTimeInMillis(),
-                DateUtils.FORMAT_SHOW_DATE
-                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY);
+                DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_WEEKDAY
+                        | DateUtils.FORMAT_ABBREV_WEEKDAY);
         return ret;
     }
 
-    public static String getFomatedTime(Context context, Date targetDate,
-                                        String todoStartTime, String todoEndTime) {
+    public static String getFomatedTime(Context context, long todoStartTime, long todoEndTime) {
         String ret = "";
-        SimpleDateFormat sdf = new SimpleDateFormat(TodoStackContract.TodoEntry.DATEFORMAT_TIME);
-        try {
-            Calendar start = Calendar.getInstance();
-            Calendar end = Calendar.getInstance();
-            start.setTime(targetDate);
-            end.setTime(targetDate);
-            start.setTime(sdf.parse(todoStartTime));
-            end.setTime(sdf.parse(todoEndTime));
 
-            ret = DateUtils.formatDateRange(context, start.getTimeInMillis(), end.getTimeInMillis(),
-                    DateUtils.FORMAT_SHOW_TIME);
-        } catch (ParseException e) {
-            e.printStackTrace();
+        if (todoStartTime > TodoData.TIME_NOT_EXIST) {
+            if (todoEndTime > TodoData.TIME_NOT_EXIST) {
+                ret = DateUtils.formatDateRange(context, todoStartTime, todoEndTime,
+                        DateUtils.FORMAT_SHOW_TIME);
+            } else {
+                ret = DateUtils.formatDateRange(context, todoStartTime, todoStartTime,
+                        DateUtils.FORMAT_SHOW_TIME);
+            }
+        } else {
+            ret = "";
         }
 
         return ret;

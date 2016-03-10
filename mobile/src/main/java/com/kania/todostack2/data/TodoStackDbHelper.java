@@ -13,7 +13,7 @@ import static com.kania.todostack2.TodoStackContract.*;
  * Created by user on 2016-01-10.
  */
 public class TodoStackDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "todostack.db";
 
     private static final String TEXT_TYPE = " TEXT";
@@ -34,13 +34,13 @@ public class TodoStackDbHelper extends SQLiteOpenHelper {
                     TodoEntry._ID + " INTEGER PRIMARY KEY," +
                     TodoEntry.TODO_NAME + TEXT_TYPE + COMMA_SEP +
                     TodoEntry.SUBJECT_ORDER + INTEGER_TYPE + COMMA_SEP +
-                    TodoEntry.DATE + TEXT_TYPE + COMMA_SEP +
+                    TodoEntry.DATE + INTEGER_TYPE + COMMA_SEP +
                     TodoEntry.TYPE + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.TIME_FROM + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.TIME_TO + TEXT_TYPE + COMMA_SEP +
+                    TodoEntry.TIME_FROM + INTEGER_TYPE + COMMA_SEP +
+                    TodoEntry.TIME_TO + INTEGER_TYPE + COMMA_SEP +
                     TodoEntry.LOCATION + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.CREATED_DATE + TEXT_TYPE + COMMA_SEP +
-                    TodoEntry.LAST_UPDATED_DATE + TEXT_TYPE +
+                    TodoEntry.CREATED_DATE + INTEGER_TYPE + COMMA_SEP +
+                    TodoEntry.LAST_UPDATED_DATE + INTEGER_TYPE +
                     " )";
 
     private static final String SQL_DELETE_SUBJECT_ENTRIES =

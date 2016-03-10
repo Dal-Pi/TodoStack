@@ -371,13 +371,8 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
             } else {
                 int cmpDiffDays = settingValues.getVisivleDateCount() + 1;
                 Calendar targetCalendar = Calendar.getInstance();
-                try {
-                    targetCalendar.setTime(sdf.parse(td.date));
-                    cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
-                } catch (ParseException e) {
-                    Log.e("TodoStack", "[addTodoData] parse error!!");
-                    e.printStackTrace();
-                }
+                targetCalendar.setTime(new Date(td.date));
+                cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
 
                 if (cmpDiffDays < 0) { //delayed
                     subjectdata.delayedTodoCount++;
@@ -393,7 +388,7 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
                 }
                 else if (cmpDiffDays >= 0
                         && cmpDiffDays < settingValues.getVisivleDateCount()) { //ranged
-                    String key = td.date + subjectdata.order;
+                    String key = "" + subjectdata.order + td.date;
                     //first, check if todos on target date exist.
                     TodoViewInfo info = dateTodoMap.get(key);
                     if (info == null) {
@@ -752,13 +747,11 @@ public class TodoStackPresenter implements IControllerMediator, View.OnClickList
         TodoData todo = new TodoData();
         todo.todoName = bundle.getString(TodoStackContract.TodoEntry.TODO_NAME);
         todo.subjectOrder = mNowSelectSubjectOrder;
-        todo.date = bundle.getString(TodoStackContract.TodoEntry.DATE);
+        todo.date = bundle.getLong(TodoStackContract.TodoEntry.DATE);
         todo.type = bundle.getInt(TodoStackContract.TodoEntry.TYPE);
-        todo.timeFrom = bundle.getString(TodoStackContract.TodoEntry.TIME_FROM);
-        todo.timeTo = bundle.getString(TodoStackContract.TodoEntry.TIME_TO);
+        todo.timeFrom = bundle.getLong(TodoStackContract.TodoEntry.TIME_FROM);
+        todo.timeTo = bundle.getLong(TodoStackContract.TodoEntry.TIME_TO);
         todo.location = bundle.getString(TodoStackContract.TodoEntry.LOCATION);
-        todo.created = todo.date;
-        todo.lastUpdated = todo.date;
 
         return todo;
     }

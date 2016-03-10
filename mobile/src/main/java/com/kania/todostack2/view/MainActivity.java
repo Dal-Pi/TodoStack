@@ -366,19 +366,23 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             bundle.putString(TodoStackContract.TodoEntry.TODO_NAME,
                     editTodoName.getText().toString());
             //subject order set on presenter
-            String dateString = String.format("%4s%2s%2s", editYear.getText().toString(),
-                    editMonth.getText().toString(), editDay.getText().toString());
+            Calendar date = Calendar.getInstance();
+            date.set(Calendar.HOUR_OF_DAY, 0);
+            date.set(Calendar.MINUTE, 0);
+            date.set(Calendar.SECOND, 0);
+            date.set(Calendar.MILLISECOND, 0);
+            date.set(Calendar.YEAR, Integer.parseInt(editYear.getText().toString()));
+            date.set(Calendar.MONTH, Integer.parseInt(editMonth.getText().toString()));
+            date.set(Calendar.DATE, Integer.parseInt(editDay.getText().toString()));
             //debug
 //            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
-            bundle.putString(TodoStackContract.TodoEntry.DATE, dateString);
+            bundle.putLong(TodoStackContract.TodoEntry.DATE, date.getTimeInMillis());
             bundle.putInt(TodoStackContract.TodoEntry.TYPE,
                     checkTask.isChecked() ?
                             TodoData.TODO_DB_TYPE_TASK : TodoData.TODO_DB_TYPE_ALLDAY);
             //fast input case input 00:00
-            bundle.putString(TodoStackContract.TodoEntry.TIME_FROM,
-                    TodoStackContract.TodoEntry.DATEFORMAT_TIME_DEFAULT);
-            bundle.putString(TodoStackContract.TodoEntry.TIME_TO,
-                    TodoStackContract.TodoEntry.DATEFORMAT_TIME_DEFAULT);
+            bundle.putLong(TodoStackContract.TodoEntry.TIME_FROM, TodoData.TIME_NOT_EXIST);
+            bundle.putLong(TodoStackContract.TodoEntry.TIME_TO, TodoData.TIME_NOT_EXIST);
             bundle.putString(TodoStackContract.TodoEntry.LOCATION, "");
         } else if (isViewVisible(controllerInputSubject)) {
             bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,

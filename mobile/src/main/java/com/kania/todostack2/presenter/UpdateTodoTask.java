@@ -132,9 +132,11 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
         cvTodo.put(TodoStackContract.TodoEntry.TIME_FROM, mData.timeFrom);
         cvTodo.put(TodoStackContract.TodoEntry.TIME_TO, mData.timeTo);
         cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
-        String timeStamp = getUpdatedDateString();
-        cvTodo.put(TodoStackContract.TodoEntry.CREATED_DATE, timeStamp);
-        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, timeStamp);
+//        String timeStamp = getUpdatedDateString();
+
+        long nowDate = getUpdatedDateMils();
+        cvTodo.put(TodoStackContract.TodoEntry.CREATED_DATE, nowDate);
+        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, nowDate);
         todoStackDb.insert(TodoStackContract.TodoEntry.TABLE_NAME, null, cvTodo);
     }
 
@@ -146,6 +148,11 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
 
     private void moveTodo() {
         Calendar calendar = Calendar.getInstance(); //today
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
         switch (mTaskType) {
             case TODO_MOVE_OPTION_TODAY:
                 //do nothing
@@ -163,31 +170,23 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
                 calendar.add(Calendar.YEAR, 1);
                 break;
         }
-        String newDateString = String.format("%4s%2s%2s",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH));
         ContentValues cvTodo = new ContentValues();
-        cvTodo.put(TodoStackContract.TodoEntry.DATE, newDateString);
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, calendar.getTimeInMillis());
         if (mData.type == TodoData.TODO_DB_TYPE_TASK) {
             cvTodo.put(TodoStackContract.TodoEntry.TYPE, TodoData.TODO_DB_TYPE_ALLDAY);
         } // else case : allday or period
-        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, getUpdatedDateString());
+        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, getUpdatedDateMils());
         String selectionMoveTodo =
                 TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
+
         todoStackDb.update(TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionMoveTodo, null);
     }
 
     private void moveToTask() {
         ContentValues cvTodo = new ContentValues();
-        Calendar calendar = Calendar.getInstance(); //today
-        String newDateString = String.format("%4s%2s%2s",
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH) + 1,
-                calendar.get(Calendar.DAY_OF_MONTH));
-        cvTodo.put(TodoStackContract.TodoEntry.DATE, newDateString);
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, getUpdatedDateMils());
         cvTodo.put(TodoStackContract.TodoEntry.TYPE, TodoData.TODO_DB_TYPE_TASK);
-        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, getUpdatedDateString());
+        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, getUpdatedDateMils());
         String selectionMoveTodo =
                 TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
         todoStackDb.update(TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionMoveTodo, null);
@@ -200,5 +199,10 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
                 today.get(Calendar.MONTH) + 1,
                 today.get(Calendar.DAY_OF_MONTH));
         return updateString;
+    }
+
+    private long getUpdatedDateMils() {
+        Calendar now = Calendar.getInstance();
+        return now.getTimeInMillis();
     }
 }

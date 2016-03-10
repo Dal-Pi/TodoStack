@@ -17,17 +17,19 @@ public class TodoData {
     public static final int TODO_REALTIME_TYPE_DATE = 2;
     public static final int TODO_REALTIME_TYPE_DELAYED = 3;
 
+    public static final int TIME_NOT_EXIST = -1;
+
     //from DB
     public int id;
     public String todoName;
     public int subjectOrder;
-    public String date;
+    public long date;
     public int type;
-    public String timeFrom;
-    public String timeTo;
+    public long timeFrom;
+    public long timeTo;
     public String location;
-    public String created;
-    public String lastUpdated;
+    public long created;
+    public long lastUpdated;
 
     //from real time
     public int realtimeType;

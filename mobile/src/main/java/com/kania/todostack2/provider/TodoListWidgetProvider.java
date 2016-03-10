@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -98,15 +99,10 @@ class TodoListFactory implements RemoteViewsService.RemoteViewsFactory {
         provider.initData();
         for (TodoData td : provider.getAllTodo()) {
             Calendar targetCalendar = Calendar.getInstance();
-            try {
-                targetCalendar.setTime(sdf.parse(td.date));
-                int cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
-                if (cmpDiffDays == 0 && td.type != TodoData.TODO_DB_TYPE_TASK) {
-                    arTodo.add(td);
-                }
-            } catch (ParseException e) {
-                Log.e("TodoStack", "[updateList] parse error!!");
-                e.printStackTrace();
+            targetCalendar.setTime(new Date(td.date));
+            int cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
+            if (cmpDiffDays == 0 && td.type != TodoData.TODO_DB_TYPE_TASK) {
+                arTodo.add(td);
             }
         }
     }

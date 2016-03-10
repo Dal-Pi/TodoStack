@@ -8,10 +8,12 @@ import android.util.Log;
 import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.data.TodoStackDbHelper;
+import com.kania.todostack2.util.TodoStackUtil;
 
 import static com.kania.todostack2.TodoStackContract.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -21,7 +23,7 @@ public class TodoProvider {
 
     public static TodoProvider instance;
 
-    private static Context context;
+    private static Context mContext;
 
     private static TodoStackDbHelper dbHelper;
     private static SQLiteDatabase todoStackDb;
@@ -33,7 +35,7 @@ public class TodoProvider {
     private static ArrayList<TodoData> todoList;
 
     private TodoProvider(Context context) {
-        this.context = context;
+        mContext = context;
 
         subjectMap = new HashMap<Integer, SubjectData>();
         subjectList = new ArrayList<SubjectData>();
@@ -42,7 +44,7 @@ public class TodoProvider {
     }
 
     public static void initData() {
-        dbHelper = new TodoStackDbHelper(context);
+        dbHelper = new TodoStackDbHelper(mContext);
         todoStackDb = dbHelper.getReadableDatabase();
 
         getSubjectFromDb();
@@ -124,29 +126,19 @@ public class TodoProvider {
             todo.subjectOrder = todoCursor.
                     getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.SUBJECT_ORDER));
             todo.date = todoCursor.
-                    getString(todoCursor.getColumnIndexOrThrow(TodoEntry.DATE));
+                    getLong(todoCursor.getColumnIndexOrThrow(TodoEntry.DATE));
             todo.type = todoCursor.
                     getInt(todoCursor.getColumnIndexOrThrow(TodoEntry.TYPE));
-            switch (todo.type) {
-                case TodoData.TODO_DB_TYPE_PERIOD:
-                    todo.timeFrom = todoCursor.
-                            getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_FROM));
-                    todo.timeTo = todoCursor.
-                            getString(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_TO));
-                    break;
-                case TodoData.TODO_DB_TYPE_ALLDAY:
-                case TodoData.TODO_DB_TYPE_TASK:
-                    todo.timeFrom = "";
-                    todo.timeTo = "";
-                    break;
-            }
+            todo.timeFrom = todoCursor.
+                    getLong(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_FROM));
+            todo.timeTo = todoCursor.
+                    getLong(todoCursor.getColumnIndexOrThrow(TodoEntry.TIME_TO));
             todo.location = todoCursor.
                     getString(todoCursor.getColumnIndexOrThrow(TodoEntry.LOCATION));
-
-            todo.created = todoCursor.
-                    getString(todoCursor.getColumnIndexOrThrow(TodoEntry.CREATED_DATE));
-            todo.lastUpdated = todoCursor.
-                    getString(todoCursor.getColumnIndexOrThrow(TodoEntry.LAST_UPDATED_DATE));
+            todo.created = todoCursor.getLong(
+                    todoCursor.getColumnIndexOrThrow(TodoEntry.CREATED_DATE));
+            todo.lastUpdated = todoCursor.getLong(
+                    todoCursor.getColumnIndexOrThrow(TodoEntry.LAST_UPDATED_DATE));
 
             todoList.add(todo);
             todoMap.put(todo.id, todo);

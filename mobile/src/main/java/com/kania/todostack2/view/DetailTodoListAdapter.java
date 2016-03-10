@@ -19,6 +19,7 @@ import com.kania.todostack2.util.TodoStackUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -98,19 +99,17 @@ public class DetailTodoListAdapter
             holder.mDueDateRow.setVisibility(View.GONE);
             holder.mTimeRow.setVisibility(View.GONE);
         } else {
-            Calendar targetDate = Calendar.getInstance();
-            targetDate.setTime(TodoStackUtil.getDateFromTodoDate(td.date));
             holder.mDueDateRow.setVisibility(View.VISIBLE);
-            holder.mDueDate.setText(TodoStackUtil.getFomatedDate(mContext, targetDate.getTime()));
+            holder.mDueDate.setText(TodoStackUtil.getFomatedDate(mContext, new Date(td.date)));
 
-            if ("".equalsIgnoreCase(td.timeFrom)) {
+            if (td.timeFrom <= TodoData.TIME_NOT_EXIST) {
                 //TODO hide row
 //                holder.mTime.setText("(time is empty)");
                 holder.mTimeRow.setVisibility(View.GONE);
             } else {
                 holder.mTimeRow.setVisibility(View.VISIBLE);
                 holder.mTime.setText(TodoStackUtil.getFomatedTime(
-                        mContext, targetDate.getTime(), td.timeFrom, td.timeTo));
+                        mContext, td.timeFrom, td.timeTo));
             }
         }
 
@@ -122,10 +121,10 @@ public class DetailTodoListAdapter
             holder.mLocation.setText(td.location);
         }
 
-        holder.mCreated.setText(TodoStackUtil.getSimpleFomatedDate(mContext,
-                TodoStackUtil.getDateFromTodoDate(td.created)));
-        holder.mLastUpdated.setText(TodoStackUtil.getSimpleFomatedDate(mContext,
-                TodoStackUtil.getDateFromTodoDate(td.lastUpdated)));
+        holder.mCreated.setText(TodoStackUtil.getFomatedDateAndTime(
+                mContext, new Date(td.created)));
+        holder.mLastUpdated.setText(TodoStackUtil.getFomatedDateAndTime(
+                mContext, new Date(td.lastUpdated)));
 
         holder.id = td.id;
     }
