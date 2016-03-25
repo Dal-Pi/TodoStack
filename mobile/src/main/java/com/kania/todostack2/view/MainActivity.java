@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements IViewAction, View
             date.set(Calendar.SECOND, 0);
             date.set(Calendar.MILLISECOND, 0);
             date.set(Calendar.YEAR, Integer.parseInt(editYear.getText().toString()));
-            date.set(Calendar.MONTH, Integer.parseInt(editMonth.getText().toString()));
+            date.set(Calendar.MONTH, Integer.parseInt(editMonth.getText().toString()) - 1);
             date.set(Calendar.DATE, Integer.parseInt(editDay.getText().toString()));
             //debug
 //            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
