@@ -10,12 +10,12 @@ import com.kania.todostack2.view.IViewAction;
  */
 public interface IControllerMediator {
 
-    int MODE_INITIAL_SETUP = 0;
-    int MODE_NO_SELECTION = 1;
-    int MODE_ADD_TODO = 2;
-    int MODE_ADD_SUBJECT = 3;
-    int MODE_VIEW_TODO = 4;
-    int MODE_VIEW_SUBJECT = 5;
+    int _MODE_INITIAL_SETUP = 0;
+    int _MODE_NO_SELECTION = 1;
+    int _MODE_ADD_TODO = 2;
+    int _MODE_ADD_SUBJECT = 3;
+    int _MODE_VIEW_TODO = 4;
+    int _MODE_VIEW_SUBJECT = 5;
 
     void setTargetView(IViewAction targetView);
 

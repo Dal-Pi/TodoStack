@@ -32,7 +32,7 @@
     <dimen name="dialog_contents_vertical_padding">20dp</dimen>
 
     <dimen name="navigation_oval_size">20dp</dimen>
-    <dimen name="elevation_size">4dp</dimen>
+    <dimen name="elevation_size">1dp</dimen>
     <dimen name="radius">2dp</dimen>
 
     <dimen name="dialog_minwidth">300dp</dimen>
@@ -57,4 +57,8 @@
     <dimen name="detail_card_textsize_title">16dp</dimen>
     <dimen name="detail_card_textsize_subtitle">12dp</dimen>
     <dimen name="detail_card_textsize_description">8dp</dimen>
+
+    <!-- simplify -->
+    <dimen name="ButtonTextSize">@android:style/TextAppearance.Medium</dimen>
+
 </resources>
