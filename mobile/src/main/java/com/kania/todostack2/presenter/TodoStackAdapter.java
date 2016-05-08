@@ -32,6 +32,9 @@ import java.util.Iterator;
  * Created by user on 2016-05-07.
  */
 public class TodoStackAdapter {
+
+    public final String SUBJECT_ADD_PREFIX = "+";
+
     private Context mContext;
     private Resources mRes;
     private TodoProvider mProvider;
@@ -129,7 +132,7 @@ public class TodoStackAdapter {
 
             TextView tv = new TextView(mContext);
             tv.setIncludeFontPadding(false);
-            tv.setText(sd.subjectName);
+            tv.setText(SUBJECT_ADD_PREFIX + sd.subjectName);
             tv.setTextColor(sd.color);
             tv.setBackgroundColor(mRes.getColor(R.color.color_subject_background));
             tv.setSingleLine();

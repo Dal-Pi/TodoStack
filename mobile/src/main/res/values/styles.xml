@@ -123,6 +123,7 @@
         parent="@android:style/Widget.Material.Button.Borderless.Colored">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:minWidth">0dp</item>
     </style>
 
     <style name="DialogTextButton" parent="@android:style/Widget.Material.TextView">
