@@ -1,6 +1,5 @@
 package com.kania.todostack2.provider;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,7 +11,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -100,7 +98,7 @@ class TodoListFactory implements RemoteViewsService.RemoteViewsFactory {
         for (TodoData td : provider.getAllTodo()) {
             Calendar targetCalendar = Calendar.getInstance();
             targetCalendar.setTime(new Date(td.date));
-            int cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
+            int cmpDiffDays = TodoStackUtil.compareDate(targetCalendar, calendarToday);
             if (cmpDiffDays == 0 && td.type != TodoData.TODO_DB_TYPE_TASK) {
                 arTodo.add(td);
             }

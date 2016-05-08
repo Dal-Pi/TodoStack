@@ -2,6 +2,8 @@ package com.kania.todostack2.view;
 
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -115,7 +118,9 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
     public final String TAG_DIALOG_SELECT_TODO = "select_todo";
     public final String TAG_DIALOG_DONE_TODO = "done_todo";
 
-    public final String TODO_DIVIDER = " / ";
+    public final String TODO_DIVIDER = TodoViewInfo.DELIMITER_ID;
+
+    public final int NOTIFICATION_ID = 1;
 
     //TODO need to sperate another class
     private int mSelectedSubjectOrder = -1;
@@ -370,6 +375,11 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         Log.i("TodoStack", "[lifecycle][Main] onResume : " + this.hashCode());
         super.onResume();
 
+        //notification
+        NotificationManager notificationManager =
+                (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancel(NOTIFICATION_ID);
+
         //TODO at first time, is called with mTodoLayout's size is 0x0
         refresh();
     }
@@ -546,30 +556,26 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
             setActionBarText(res.getString(R.string.app_name),
                     res.getColor(R.color.colorAccent));
             setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
-        }
-        else if (mode == MODE_ADD_TODO) {
+        } else if (mode == MODE_ADD_TODO) {
             SubjectData sd = getSelectedSubjectData();
             setInputTodoVisible();
             setActionBarText(
                     res.getString(R.string.adding_text_on_new_todo) + " " + sd.subjectName,
                     sd.color);
             setGuideText(res.getString(R.string.guide_text_mode_input_todo));
-        }
-        else if (mode == MODE_ADD_SUBJECT) {
+        } else if (mode == MODE_ADD_SUBJECT) {
             setInputSubjectVisible();
             setActionBarText(res.getString(R.string.title_text_on_new_subject),
                     res.getColor(R.color.color_normal_state));
             setGuideText(res.getString(R.string.guide_text_mode_input_subject));
-        }
-        else if (mode == MODE_VIEW_TODO) {
+        } else if (mode == MODE_VIEW_TODO) {
             SubjectData sd = getSelectedSubjectData();
             setViewTodoVisible();
             setActionBarText(
                     res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
                     sd.color);
             setGuideText(res.getString(R.string.guide_text_mode_view_todo));
-        }
-        else if (mode == MODE_VIEW_SUBJECT) {
+        } else if (mode == MODE_VIEW_SUBJECT) {
             SubjectData sd = getSelectedSubjectData();
             setViewSubjectVisible();
             setActionBarText(sd.subjectName, sd.color);
@@ -710,8 +716,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                         new UpdateTodoTask.TaskEndCallback() {
                             @Override
                             public void updateFinished() {
-                                mTodoLayoutAdapter.notifyDataSetChanged();
                                 changeMode(MODE_NO_SELECTION);
+                                refresh();
                             }
                         });
                 deleteTodoTask.setData(TodoProvider.getInstance(context).getTodoById(id),
@@ -725,8 +731,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                         new UpdateTodoTask.TaskEndCallback() {
                             @Override
                             public void updateFinished() {
-                                mTodoLayoutAdapter.notifyDataSetChanged();
                                 changeMode(MODE_NO_SELECTION);
+                                refresh();
                             }
                         });
                 moveTodoTask.setData(TodoProvider.
@@ -811,8 +817,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 new UpdateTodoTask(getActivityContext(), new UpdateTodoTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        mTodoLayoutAdapter.notifyDataSetChanged();
                         changeMode(MODE_NO_SELECTION);
+                        refresh();
                     }
                 });
         insertTodoTask.setData(makeTodoData(), UpdateTodoTask.TODO_TASK_ADD_TODO);
@@ -859,8 +865,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 new UpdateSubjectTask(getActivityContext(), new UpdateSubjectTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        mTodoLayoutAdapter.notifyDataSetChanged();
                         changeMode(MODE_NO_SELECTION);
+                        refresh();
                     }
                 });
         insertSubjectTask.setData(
@@ -895,8 +901,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 new UpdateSubjectTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        mTodoLayoutAdapter.notifyDataSetChanged();
                         changeMode(MODE_VIEW_SUBJECT);
+                        refresh();
                     }
                 });
         SubjectData sd = getSelectedSubjectData();
@@ -922,8 +928,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 new UpdateSubjectTask.TaskEndCallback() {
                     @Override
                     public void updateFinished() {
-                        mTodoLayoutAdapter.notifyDataSetChanged();
                         changeMode(MODE_VIEW_SUBJECT);
+                        refresh();
                     }
                 });
         SubjectData sd = getSelectedSubjectData();
@@ -959,8 +965,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                                             new UpdateSubjectTask.TaskEndCallback() {
                                                 @Override
                                                 public void updateFinished() {
-                                                    mTodoLayoutAdapter.notifyDataSetChanged();
                                                     changeMode(MODE_NO_SELECTION);
+                                                    refresh();
                                                 }
                                             });
                             deletesubjectTask.setData(
@@ -987,8 +993,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                     public void updateFinished() {
                         mSelectedSubjectOrder += isLeft ? UpdateSubjectTask.DIRECTION_LEFT :
                                 UpdateSubjectTask.DIRECTION_RIGHT;
-                        mTodoLayoutAdapter.notifyDataSetChanged();
                         changeMode(MODE_VIEW_SUBJECT);
+                        refresh();
                     }
                 });
         SubjectData sd = getSelectedSubjectData();
@@ -1019,6 +1025,38 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         }
     }
 
+    @Override
+    protected void onStop() {
+        //notification start
+        Calendar today = Calendar.getInstance();
+        ArrayList<TodoData> todayTodos = TodoProvider.getInstance(getApplicationContext())
+                .getTodosByDate(today.getTime());
+//        String todayTodoIds = "";
+//        for (int i = 0; i < todayTodos.size(); ++i) {
+//            if (i == 0) {
+//                todayTodoIds += todayTodos.get(i).id;
+//            } else {
+//                todayTodoIds += TODO_DIVIDER + todayTodos.get(i).id;
+//            }
+//        }
+        String contentText = String.format(getResources().getString(R.string.noti_text),
+                todayTodos.size());
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_format_list_bulleted_white_24dp)
+                .setContentTitle(getResources().getString(R.string.cover_title))
+                .setContentText(contentText)
+                .setAutoCancel(true);
+        Intent notiIntent = new Intent(this, CoverActivity.class);
+        PendingIntent notiPendingIntent = PendingIntent.getActivity(this, 0, notiIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(notiPendingIntent);
+        NotificationManager notificationManager =
+                (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+        //notification end
+        super.onStop();
+    }
 
 
     //for test

@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="cover_title">Todo Stack</string>
-    <string name="cover_subtitle">For Simplicity</string>
+    <string name="cover_subtitle">Simple Scheduler</string>
 
     <string name="adding_text_new_todo">New Todo</string>
     <string name="adding_text_on_new_todo">New Todo on</string>
@@ -95,5 +95,8 @@
     <string name="card_desc_location">Location</string>
     <string name="card_desc_created">Created</string>
     <string name="card_desc_last_updated">Last Updated</string>
+
+    <string name="noti_title">Todo Stack</string>
+    <string name="noti_text">%d Todo on today</string>
 
 </resources>

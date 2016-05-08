@@ -8,8 +8,8 @@ android {
         applicationId "com.kania.todostack2"
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 20010001
-        versionName "2.1.1"
+        versionCode 20010002
+        versionName "2.1.2"
     }
     buildTypes {
         release {

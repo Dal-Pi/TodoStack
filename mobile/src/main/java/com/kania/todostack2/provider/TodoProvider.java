@@ -13,6 +13,7 @@ import com.kania.todostack2.util.TodoStackUtil;
 import static com.kania.todostack2.TodoStackContract.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -211,6 +212,20 @@ public class TodoProvider {
                 ret++;
         }
 
+        return ret;
+    }
+
+    public ArrayList<TodoData> getTodosByDate(Date date) {
+        ArrayList<TodoData> ret = new ArrayList<TodoData>();
+        Calendar todoDate = Calendar.getInstance();
+        Calendar target = Calendar.getInstance();
+        target.setTime(date);
+        for (TodoData td : todoList) {
+            todoDate.setTime(new Date(td.date));
+            if (TodoStackUtil.compareDate(target, todoDate) == 0) {
+                ret.add(td);
+            }
+        }
         return ret;
     }
 }

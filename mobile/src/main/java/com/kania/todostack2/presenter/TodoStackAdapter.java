@@ -174,7 +174,7 @@ public class TodoStackAdapter {
                 int cmpDiffDays = mSettings.getVisivleDateCount() + 1;
                 Calendar targetCalendar = Calendar.getInstance();
                 targetCalendar.setTime(new Date(td.date));
-                cmpDiffDays = TodoStackUtil.campareDate(targetCalendar, calendarToday);
+                cmpDiffDays = TodoStackUtil.compareDate(targetCalendar, calendarToday);
 
                 if (cmpDiffDays < 0) { //delayed
                     subjectdata.delayedTodoCount++;
