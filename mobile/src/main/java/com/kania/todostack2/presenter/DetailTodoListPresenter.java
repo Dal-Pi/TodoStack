@@ -19,6 +19,9 @@ public class DetailTodoListPresenter {
     public static final int SUBJECT_ORDER_ALL = -1;
 
     public static final int TODO_TYPE_ALL = -1;
+    public static final int TODO_TYPE_ALLDAY = TodoData.TODO_DB_TYPE_ALLDAY;
+    public static final int TODO_TYPE_PERIOD = TodoData.TODO_DB_TYPE_PERIOD;
+    public static final int TODO_TYPE_TASK = TodoData.TODO_DB_TYPE_TASK;
 
     private Context mContext;
     private TodoProvider mProvider;
@@ -78,10 +81,10 @@ public class DetailTodoListPresenter {
         switch (todoType) {
             case TODO_TYPE_ALL:
                 return mAllTodoList;
-            case TodoData.TODO_DB_TYPE_ALLDAY:
-            case TodoData.TODO_DB_TYPE_PERIOD:
+            case TODO_TYPE_ALLDAY:
+            case TODO_TYPE_PERIOD:
                 return mDateTodoList;
-            case TodoData.TODO_DB_TYPE_TASK:
+            case TODO_TYPE_TASK:
                 return mTaskTodoList;
             default:
                 Log.w("TodoStack", "[getTodoList] unknown type!");

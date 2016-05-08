@@ -1,4 +1,4 @@
-package com.kania.todostack2.data;
+package com.kania.todostack2.provider;
 
 import android.content.Context;
 import android.util.Log;
@@ -13,7 +13,7 @@ public class TodoStackSettingValues {
 
     public static TodoStackSettingValues instance;
 
-    private static Context mContext;
+    private Context mContext;
 
     private TodoStackSettingValues() {
 
@@ -30,15 +30,15 @@ public class TodoStackSettingValues {
         return instance;
     }
 
-    public static int getVisivleTaskCount() {
+    public int getVisivleTaskCount() {
         //TODO this is stub
         return DEFAULT_VISIBLE_TASK_COUNT;
     }
-    public static int getVisivleDateCount() {
+    public int getVisivleDateCount() {
         //TODO this is stub
         return DEFAULT_VISIBLE_DATE_COUNT;
     }
-    public static int getVisivleDelayedCount() {
+    public int getVisivleDelayedCount() {
         //TODO this is stub
         return DEFAULT_VISIBLE_DELAYED_COUNT;
     }

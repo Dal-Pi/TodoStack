@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kania.todostack2.provider.ColorProvider;
+import com.kania.todostack2.provider.TodoLayoutInfoProvider;
 
 import java.util.ArrayList;
 
@@ -30,17 +31,22 @@ public class TodoLayout extends ViewGroup {
 
     public TodoLayout(Context context) {
         super(context);
-        initArrays();
+        initGuidelineInfo();
     }
 
     public TodoLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initArrays();
+        initGuidelineInfo();
     }
 
-    private void initArrays() {
-        alSolidPathPos = new ArrayList<Integer>();
-        alDashPathPos = new ArrayList<Integer>();
+    private void initGuidelineInfo() {
+        mostHighTopPos = 10000;
+        if (alSolidPathPos == null)
+            alSolidPathPos = new ArrayList<Integer>();
+        if (alDashPathPos == null)
+            alDashPathPos = new ArrayList<Integer>();
+        alSolidPathPos.clear();
+        alDashPathPos.clear();
     }
 
     @Override
@@ -85,8 +91,8 @@ public class TodoLayout extends ViewGroup {
     protected void dispatchDraw(Canvas canvas) {
         Paint paint = new Paint();
 
-        int dashLinePaddingTop = TodoLayoutInfo.DATEDIVIDERLINE_HEIGHT / 2 + 1;
-        int solidLinePaddingTop = TodoLayoutInfo.TASKBASELINE_HEIGHT / 2 + 1;
+        int dashLinePaddingTop = TodoLayoutInfoProvider.DATEDIVIDERLINE_HEIGHT / 2 + 1;
+        int solidLinePaddingTop = TodoLayoutInfoProvider.TASKBASELINE_HEIGHT / 2 + 1;
 
         //dash path
         paint.setColor(ColorProvider.getColor(ColorProvider.COLOR_DASH_PATH));
@@ -113,6 +119,7 @@ public class TodoLayout extends ViewGroup {
             canvas.drawPath(path, paint);
         }
 
+        initGuidelineInfo();
         //draw child above todoview
         super.dispatchDraw(canvas);
     }

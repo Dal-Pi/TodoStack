@@ -33,7 +33,6 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
     private ProgressDialog mProgressDialog;
 
     private Context mContext;
-    private TodoProvider mTodoProvider;
     private TaskEndCallback mCallback;
 
     private TodoStackDbHelper dbHelper;
@@ -107,6 +106,7 @@ public class UpdateSubjectTask extends AsyncTask<Void, Void, Boolean> {
                     return false;
             }
             todoStackDb.close();
+            TodoProvider.getInstance(mContext.getApplicationContext()).initData();
         }
 
         return true;

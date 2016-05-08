@@ -24,9 +24,9 @@
     <string name="is_task">Task?</string>
 
     <string name="subject_name">Subject Name</string>
-    <string name="subject_edit_name">Edit Name</string>
-    <string name="subject_move_left">Move Left</string>
-    <string name="subject_move_right">Move Right</string>
+    <string name="subject_edit_name">Edit</string>
+    <string name="subject_move_left">&lt;</string>
+    <string name="subject_move_right">&gt;</string>
     <string name="subject_delete">Delete Subject</string>
     <string name="subject_view_all_todo">View Todo</string>
 
@@ -71,7 +71,7 @@
 
     <string name="toast_waring_name_empty">Do not execute! Name is empty.</string>
     <string name="toast_waring_input_slush">Do not execute! Cannot input "/" character.</string>
-    <string name="toast_waring_date_empty">There is empty space(s).</string>
+    <string name="toast_waring_date_empty">Invalid Date format.</string>
     <string name="toast_waring_wrong_year">Do not execute! Input valid Year.</string>
     <string name="toast_waring_wrong_month">Do not execute! Input valid Month(1 ~ 12)</string>
     <string name="toast_waring_wrong_day">Do not execute! Input valid Day(1 ~ last day each month)</string>

@@ -1,9 +1,11 @@
-package com.kania.todostack2.view;
+package com.kania.todostack2.provider;
+
+import com.kania.todostack2.view.TodoViewInfo;
 
 /**
  * Created by user on 2016-01-20.
  */
-public class TodoLayoutInfo {
+public class TodoLayoutInfoProvider {
 
     //percent of layout
     public static final int PERCENT_DATEWIDTH = 10;
@@ -46,11 +48,11 @@ public class TodoLayoutInfo {
     public int subjectTop;
     public int delayedTodoTop;
 
-    private TodoLayoutInfo() {
+    private TodoLayoutInfoProvider() {
         //block default constructor
     }
-    public TodoLayoutInfo(int layoutWidth, int layoutHeight,
-                          int subjectCount, int taskCount, int dateTodoCount, int delayedTodoCount) {
+    public TodoLayoutInfoProvider(int layoutWidth, int layoutHeight,
+                                  int subjectCount, int taskCount, int dateTodoCount, int delayedTodoCount) {
         this.layoutWidth = layoutWidth;
         this.layoutHeight = layoutHeight;
         this.subjectCount = subjectCount;

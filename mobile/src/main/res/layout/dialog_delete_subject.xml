@@ -8,7 +8,7 @@
         android:orientation="vertical">
 
         <TextView
-            style="@style/TextViewStyle"
+            style="@style/DialogTextViewTitle"
             android:text="@string/dialog_delete_subject_title"
             android:textColor="@color/color_black"
             android:textStyle="bold"/>
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            style="@style/TextButtonStyle"
+            style="@style/DialogTextViewTitle"
             android:paddingTop="@dimen/dialog_contents_vertical_padding"
             android:paddingBottom="@dimen/dialog_contents_vertical_padding"
             android:textStyle="bold"
@@ -27,7 +27,7 @@
             android:singleLine="false"/>
 
         <TextView
-            style="@style/TextViewStyle"
+            style="@style/DialogTextViewSummary"
             android:text="@string/dialog_delete_subject_tip"
             android:textColor="@color/color_black" />
 
@@ -43,20 +43,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/dialog_btn_delete_subject_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    style="@style/ButtonStyle"
-                    android:text="@string/delete"/>
+
                 <Button
                     android:id="@+id/dialog_btn_delete_subject_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    style="@style/ButtonStyle"
+                    style="@style/DialogButton"
                     android:text="@string/cancel"/>
+
+                <Button
+                    android:id="@+id/dialog_btn_delete_subject_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/DialogButton"
+                    android:text="@string/delete"/>
+
             </LinearLayout>
         </LinearLayout>
 

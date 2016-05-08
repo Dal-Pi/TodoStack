@@ -23,16 +23,25 @@ public class TodoProvider {
 
     public static TodoProvider instance;
 
-    private static Context mContext;
+    private Context mContext;
 
-    private static TodoStackDbHelper dbHelper;
-    private static SQLiteDatabase todoStackDb;
+    private TodoStackDbHelper dbHelper;
+    private SQLiteDatabase todoStackDb;
 
-    private static HashMap<Integer, SubjectData> subjectMap;
-    private static HashMap<Integer, TodoData> todoMap;
+    private HashMap<Integer, SubjectData> subjectMap;
+    private HashMap<Integer, TodoData> todoMap;
 
-    private static ArrayList<SubjectData> subjectList;
-    private static ArrayList<TodoData> todoList;
+    private ArrayList<SubjectData> subjectList;
+    private ArrayList<TodoData> todoList;
+
+    public static TodoProvider getInstance(Context applicationContext) {
+        if (instance == null) {
+            Log.d("TodoStack", "In case of creation TodoProvider");
+            instance = new TodoProvider(applicationContext);
+            instance.initData();
+        }
+        return instance;
+    }
 
     private TodoProvider(Context context) {
         mContext = context;
@@ -43,7 +52,7 @@ public class TodoProvider {
         todoList = new ArrayList<TodoData>();
     }
 
-    public static void initData() {
+    public void initData() {
         dbHelper = new TodoStackDbHelper(mContext);
         todoStackDb = dbHelper.getReadableDatabase();
 
@@ -53,7 +62,7 @@ public class TodoProvider {
         todoStackDb.close();
     }
 
-    private static void getSubjectFromDb() {
+    private void getSubjectFromDb() {
         if (subjectMap == null)
             subjectMap = new HashMap<Integer, SubjectData>();
         if (subjectList == null)
@@ -83,7 +92,7 @@ public class TodoProvider {
                         getInt(subjectCursor.getColumnIndexOrThrow(SubjectEntry.COLOR));
                 subject.color = color;
             } catch (IllegalArgumentException e) {
-                Log.e("TodoStck", "error on getting color from Subject DB");
+                Log.e("TodoStack", "error on getting color from Subject DB");
                 subject.color = ColorProvider.getDefaultColor();
             }
             subject.order = subjectCursor.
@@ -94,7 +103,7 @@ public class TodoProvider {
         }
     }
 
-    private static void getTodoFromDb() {
+    private void getTodoFromDb() {
         if (todoMap == null)
             todoMap = new HashMap<Integer, TodoData>();
         if (todoList == null)
@@ -145,15 +154,7 @@ public class TodoProvider {
         }
     }
 
-    public static TodoProvider getInstance(Context applicationContext) {
-        if (instance == null) {
-            Log.d("TodoStack", "In case of creation TodoProvider");
-            instance = new TodoProvider(applicationContext);
-        }
-        return instance;
-    }
-
-    public static ArrayList<SubjectData> getAllSubject() {
+    public ArrayList<SubjectData> getAllSubject() {
         ArrayList<SubjectData> allSubjectData = new ArrayList<SubjectData>();
 //        Iterator<Integer> it = subjectMap.keySet().iterator();
 //        while(it.hasNext()) {
@@ -165,7 +166,7 @@ public class TodoProvider {
         return allSubjectData;
     }
 
-    public static ArrayList<TodoData> getAllTodo() {
+    public ArrayList<TodoData> getAllTodo() {
         ArrayList<TodoData> allTodoData = new ArrayList<TodoData>();
 //        Iterator<Integer> it = todoMap.keySet().iterator();
 //        while(it.hasNext()) {
@@ -178,7 +179,7 @@ public class TodoProvider {
         return allTodoData;
     }
 
-    public static ArrayList<TodoData> getTodoList(int subjectOrder) {
+    public ArrayList<TodoData> getTodoList(int subjectOrder) {
         ArrayList<TodoData> todos = new ArrayList<TodoData>();
         for (TodoData todo : todoList){
             if (todo.subjectOrder == subjectOrder) {
@@ -189,21 +190,21 @@ public class TodoProvider {
         return todos;
     }
 
-    public static SubjectData getSubjectByOrder(int subOrder) {
+    public SubjectData getSubjectByOrder(int subOrder) {
 //        Log.d("TodoStack", "[getSubjectByOrder] subOrder = " + subOrder);
         return subjectMap.get(subOrder);
     }
 
-    public static TodoData getTodoById(int todoId) {
+    public TodoData getTodoById(int todoId) {
 //        Log.d("TodoStack", "[getTodoById] subId = " + todoId);
         return todoMap.get(todoId);
     }
 
-    public static int getSubjectCount() {
+    public int getSubjectCount() {
         return subjectMap.size();
     }
 
-    public static int getTodoCount(int subjectOrder) {
+    public int getTodoCount(int subjectOrder) {
         int ret = 0;
         for (TodoData td : todoList) {
             if (td.subjectOrder == subjectOrder)

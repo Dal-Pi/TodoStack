@@ -8,7 +8,7 @@
         android:orientation="vertical">
 
         <TextView
-            style="@style/TextViewStyle"
+            style="@style/DialogTextViewTitle"
             android:text="@string/dialog_select_todo_title"
             android:textColor="@color/color_black"
             android:textStyle="bold"/>
@@ -35,7 +35,7 @@
                     android:id="@+id/dialog_btn_select_todo_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/ButtonStyle"
+                    style="@style/DialogButton"
                     android:text="@string/cancel"/>
             </LinearLayout>
         </LinearLayout>

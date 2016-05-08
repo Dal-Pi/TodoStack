@@ -1,12 +1,10 @@
 package com.kania.todostack2.view;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -28,8 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -38,7 +34,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,28 +41,33 @@ import com.kania.todostack2.R;
 import com.kania.todostack2.TodoStackContract;
 import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
-import com.kania.todostack2.presenter.IControllerMediator;
+import com.kania.todostack2.presenter.DetailTodoListPresenter;
 import com.kania.todostack2.presenter.SubjectColorSelectDialog;
+import com.kania.todostack2.presenter.TodoStackAdapter;
+import com.kania.todostack2.presenter.UpdateSubjectTask;
 import com.kania.todostack2.presenter.UpdateTodoTask;
 import com.kania.todostack2.provider.TodoProvider;
+import com.kania.todostack2.util.SubjectDeleteDialog;
 import com.kania.todostack2.util.SubjectNameUpdateDialog;
 import com.kania.todostack2.util.SubjectSelectDialog;
 import com.kania.todostack2.util.TodoDatePickerDialog;
 import com.kania.todostack2.util.TodoDoneDialog;
+import com.kania.todostack2.util.TodoSelectDialog;
 import com.kania.todostack2.util.TodoStackUtil;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by user on 2016-01-14.
  * Activity that present all todos
  */
 public class MainActivity extends AppCompatActivity implements ITodoLayoutMediator,
-        View.OnClickListener,
+        View.OnClickListener, View.OnLongClickListener,
         NavigationView.OnNavigationItemSelectedListener {
 
-    private final int DURATION_ANIMATION = 500;
+    private final int DURATION_ANIMATION = 300;
 
     private final int NAV_MENU_ITEM_ID_ALL = -1;
 
@@ -84,9 +84,11 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
     private CheckBox mCheckTask;
     private EditText mEditTodoName;
     private Button mBtnCalendar;
+    private Button mBtnAddTodo;
 
     private EditText mEditSubjectName;
     private Button mBtnSubjectColor;
+    private Button mBtnAddSubject;
 
     private Button mBtnChangeSubjectName;
     private Button mBtnChangeSubjectcolor;
@@ -95,20 +97,17 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
     private Button mBtnMoveRight;
 
     private TextView mTextTodos;
+    private Button mBtnDoneTodos;
 
     private TodoLayout mTodoLayout;
 
     private TextView mTextGuide;
-
-    private boolean mNowBusy = false;
 
     private String mTodoIdFromWidget;
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     private ActionBarDrawerToggle mToggle;
-
-    private boolean mIsTodoLayoutLoaded = false;
 
     //[20160503] simplify
     public final String TAG_DIALOG_SELECT_SUBJECT = "select_subject";
@@ -118,9 +117,16 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
     public final String TODO_DIVIDER = " / ";
 
+    //TODO need to sperate another class
     private int mSelectedSubjectOrder = -1;
+    private String mSelectedTodoIds = "";
+    private int mSelectedSubjectColor = 0;
+    private Date mSelectedTodoDate = null;
+
     private int mMode = MODE_NO_SELECTION;
     private DialogFragment mDialogNowViewing;
+
+    private TodoStackAdapter mTodoLayoutAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,15 +135,25 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
         setContentView(R.layout.activity_main);
 
-//        mMediator = new TodoStackPresenter(this);
-//        mMediator.setTargetView(this);
-
         initDrawer();
 
         initControlView();
 
         //from widget through cover
-        getTodoIdAndSetToMediator(getIntent());
+        getTodoIdAndSet(getIntent());
+    }
+
+    public Context getActivityContext() {
+        return this;
+    }
+
+    public SubjectData getSelectedSubjectData() {
+        return TodoProvider.getInstance(getApplicationContext()).
+                getSubjectByOrder(mSelectedSubjectOrder);
+    }
+
+    public boolean isViewVisible(View view) {
+        return view.getVisibility() == View.VISIBLE;
     }
 
     private void initDrawer() {
@@ -156,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
     }
 
-    @Override
     public void putSubjectsOnDrawer(ArrayList<SubjectData> subjects) {
         ArrayList<SubjectData> ViewAllSubjectList = new ArrayList<SubjectData>();
         SubjectData allSubject = new SubjectData();
@@ -173,11 +188,16 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object tag = view.getTag();
                 if (tag instanceof DrawerSubjectListAdapter.SelectSubjectListItemHolder) {
-                    int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
-//                    if (mDrawerLayout != null) {
-//                        mDrawerLayout.closeDrawer(GravityCompat.START);
-//                    }
-                    mMediator.clickNavigationDrawerItem(order);
+                    final int order = ((DrawerSubjectListAdapter.SelectSubjectListItemHolder) tag).order;
+                    if (mDrawerLayout != null) {
+                        mDrawerLayout.closeDrawer(GravityCompat.START);
+                    }
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            launchDetailTodoListActivity(order, -1);
+                        }
+                    }, DURATION_ANIMATION);
                 }
             }
         });
@@ -194,63 +214,94 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                     if (mDrawerLayout != null) {
                         mDrawerLayout.closeDrawer(GravityCompat.START);
                     }
-                    //TODO will remove Handler. It is bad code
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mMediator.clickNavigationDrawerItem(order);
+                            launchDetailTodoListActivity(order, -1);
                         }
-                    }, 300);
+                    }, DURATION_ANIMATION);
                 }
             }
         });
     }
 
+    /**
+     *
+     * @param order
+     * @param todoType TodoData type, default -1
+     */
+    private void launchDetailTodoListActivity(int order, int todoType) {
+        //init controllviews
+        changeMode(MODE_NO_SELECTION);
+
+        Intent detailIntent = new Intent(this, DetailTodoListActivity.class);
+        int startType = DetailTodoListPresenter.TODO_TYPE_ALL;
+        detailIntent.putExtra(TodoStackContract.SubjectEntry.ORDER, order);
+        switch (todoType) {
+            case TodoData.TODO_DB_TYPE_ALLDAY:
+            case TodoData.TODO_DB_TYPE_PERIOD:
+                startType = DetailTodoListPresenter.TODO_TYPE_ALLDAY;
+                break;
+            case TodoData.TODO_DB_TYPE_TASK:
+                startType = DetailTodoListPresenter.TODO_TYPE_TASK;
+                break;
+        }
+        detailIntent.putExtra(DetailTodoListActivity.START_PAGE, startType);
+        detailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(detailIntent);
+        overridePendingTransition(R.anim.right_in, R.anim.left_half_out);
+    }
+
     private void initControlView() {
-        btnFab = (FloatingActionButton) findViewById(R.id.main_btn_fab);
+        btnFab = (FloatingActionButton)findViewById(R.id.main_btn_fab);
         btnFab.setOnClickListener(this);
 
-        mControllerInputTodo = (LinearLayout) findViewById(R.id.main_layout_todo_input_mode);
-        mControllerInputSubject = (LinearLayout) findViewById(R.id.main_layout_subject_input_mode);
-        mControllerViewTodo = (LinearLayout) findViewById(R.id.main_layout_todo_viewer_mode);
-        mControllerViewSubject = (LinearLayout) findViewById(R.id.main_layout_subject_viewer_mode);
+        mControllerInputTodo = (LinearLayout)findViewById(R.id.main_layout_todo_input_mode);
+        mControllerInputSubject = (LinearLayout)findViewById(R.id.main_layout_subject_input_mode);
+        mControllerViewTodo = (LinearLayout)findViewById(R.id.main_layout_todo_viewer_mode);
+        mControllerViewSubject = (LinearLayout)findViewById(R.id.main_layout_subject_viewer_mode);
 
-        mCheckTask = (CheckBox) findViewById(R.id.main_cb_input_task);
-        mEditTodoName = (EditText) findViewById(R.id.main_edit_input_todo_name);
-        mBtnCalendar = (Button) findViewById(R.id.main_btn_input_calendar);
+        mCheckTask = (CheckBox)findViewById(R.id.main_cb_input_task);
+        mEditTodoName = (EditText)findViewById(R.id.main_edit_input_todo_name);
+        mBtnCalendar = (Button)findViewById(R.id.main_btn_input_calendar);
         mBtnCalendar.setOnClickListener(this);
+        mBtnAddTodo = (Button)findViewById(R.id.main_btn_input_todo_add);
+        mBtnAddTodo.setOnClickListener(this);
 
-        mEditSubjectName = (EditText) findViewById(R.id.main_edit_input_subject_name);
-        mBtnSubjectColor = (Button) findViewById(R.id.main_btn_input_subject_color);
+        mEditSubjectName = (EditText)findViewById(R.id.main_edit_input_subject_name);
+        mBtnSubjectColor = (Button)findViewById(R.id.main_btn_input_subject_color);
         mBtnSubjectColor.setOnClickListener(this);
+        mBtnAddSubject = (Button)findViewById(R.id.main_btn_subject_add);
+        mBtnAddSubject.setOnClickListener(this);
 
-        mBtnChangeSubjectName = (Button) findViewById(R.id.main_btn_edit_subject_name);
+        mBtnChangeSubjectName = (Button)findViewById(R.id.main_btn_edit_subject_name);
         mBtnChangeSubjectName.setOnClickListener(this);
-        mBtnChangeSubjectcolor = (Button) findViewById(R.id.main_btn_edit_subject_color);
+        mBtnChangeSubjectcolor = (Button)findViewById(R.id.main_btn_edit_subject_color);
         mBtnChangeSubjectcolor.setOnClickListener(this);
-        mBtnDeleteSubject = (Button) findViewById(R.id.main_btn_subject_delete);
+        mBtnDeleteSubject = (Button)findViewById(R.id.main_btn_subject_delete);
         mBtnDeleteSubject.setOnClickListener(this);
-        mBtnMoveLeft = (Button) findViewById(R.id.main_btn_subject_left);
+        mBtnMoveLeft = (Button)findViewById(R.id.main_btn_subject_left);
         mBtnMoveLeft.setOnClickListener(this);
-        mBtnMoveRight = (Button) findViewById(R.id.main_btn_subject_right);
+        mBtnMoveRight = (Button)findViewById(R.id.main_btn_subject_right);
         mBtnMoveRight.setOnClickListener(this);
 
-        mTextTodos = (TextView) findViewById(R.id.main_text_view_todo);
+        mTextTodos = (TextView)findViewById(R.id.main_text_view_todo);
 //        mTextTodos.setLinksClickable(true);
         mTextTodos.setMovementMethod(LinkMovementMethod.getInstance());
+        mBtnDoneTodos = (Button)findViewById(R.id.main_btn_view_todo_done);
+        mBtnDoneTodos.setOnClickListener(this);
 
-        mTodoLayout = (TodoLayout) findViewById(R.id.main_vg_todo_layout);
+        mTodoLayout = (TodoLayout)findViewById(R.id.main_vg_todo_layout);
         mTodoLayout.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 Log.d("TodoStack", "timing test - onGlobalLayout");
                 mTodoLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                mIsTodoLayoutLoaded = true;
-                mMediator.initTodoLayout(mTodoLayout.getWidth(), mTodoLayout.getHeight());
+                refresh();
             }
         });
-        mTextGuide = (TextView) findViewById(R.id.main_text_guide_text);
+        mTextGuide = (TextView)findViewById(R.id.main_text_guide_text);
 
 
 
@@ -261,27 +312,23 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         Log.i("TodoStack", "[lifecycle][Main] onNewIntent : " + this.hashCode());
         super.onNewIntent(intent);
 
-        getTodoIdAndSetToMediator(intent);
+        getTodoIdAndSet(intent);
     }
 
-    private void getTodoIdAndSetToMediator(Intent intent) {
+    private void getTodoIdAndSet(Intent intent) {
         mTodoIdFromWidget = intent.getStringExtra(TodoStackContract.TodoEntry._ID);
-        Log.d("TodoStack", "[getTodoIdAndSetToMediator] id from widget = " + mTodoIdFromWidget);
+        Log.d("TodoStack", "[getTodoIdAndSet] id from widget = " + mTodoIdFromWidget);
 
-        if (mTodoIdFromWidget != null && !"".equalsIgnoreCase(mTodoIdFromWidget)) {
-            mMediator.setTodoIdNowViewing(mTodoIdFromWidget);
-            mTodoIdFromWidget = "";
-        }
+//        if (mTodoIdFromWidget != null && !"".equalsIgnoreCase(mTodoIdFromWidget)) {
+//            setTodoIdNowViewing(mTodoIdFromWidget);
+//            mTodoIdFromWidget = "";
+//        }
     }
 
-    @Override
-    protected void onResume() {
-        Log.i("TodoStack", "[lifecycle][Main] onResume : " + this.hashCode());
-        super.onResume();
-        if (mIsTodoLayoutLoaded) {
-            mMediator.initTodoLayout(mTodoLayout.getWidth(), mTodoLayout.getHeight());
-            mMediator.setModeByOwnInfo();
-        }
+    public void setTodoIdNowViewing(String todoId) {
+        mSelectedTodoIds = todoId;
+        TodoViewInfo infoFromWidget = new TodoViewInfo(TodoViewInfo.TYPE_DATE_TODO, mSelectedTodoIds, true);
+        mSelectedSubjectOrder = getSelectedSubjectOrderFromTag(infoFromWidget);
     }
 
     @Override
@@ -291,6 +338,9 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         return true;
     }
 
+
+
+    //simplify [start]
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -306,52 +356,145 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
         switch (id) {
             case R.id.add_subject:
-                mMediator.selectMenuAddSubject();
+                changeMode(MODE_ADD_SUBJECT);
                 break;
             case R.id.action_settings:
+                //TODO go settings
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    //simplify [start]
+    @Override
+    protected void onResume() {
+        Log.i("TodoStack", "[lifecycle][Main] onResume : " + this.hashCode());
+        super.onResume();
+
+        //TODO at first time, is called with mTodoLayout's size is 0x0
+        refresh();
+    }
+
+    private void refresh() {
+        //from widget intent
+        if (mMode == MODE_NO_SELECTION) {
+            if (mTodoIdFromWidget != null && !"".equalsIgnoreCase(mTodoIdFromWidget)) {
+                setTodoIdNowViewing(mTodoIdFromWidget);
+                mTodoIdFromWidget = "";
+                mMode = MODE_VIEW_TODO;
+            }
+        }
+
+        if (mTodoLayoutAdapter == null) {
+            mTodoLayoutAdapter = new TodoStackAdapter(this, mTodoLayout, this, this);
+        } else {
+            mTodoLayoutAdapter.resetLayoutSize(mTodoLayout.getWidth(), mTodoLayout.getHeight());
+        }
+        mTodoLayoutAdapter.notifyDataSetChanged();
+        changeMode(mMode);
+        //to navigation drawer
+        putSubjectsOnDrawer(TodoProvider.getInstance(getApplicationContext()).getAllSubject());
+    }
+
     @Override
     public void onClick(View v) {
-        if (mNowBusy)
-            return;
-        switch (v.getId()) {
-            case R.id.main_btn_fab:
-//                if (checkVaildData()) {
-//                    mMediator.clickFloatingActionButton(getBundleFromVisibleLayout());
-//                }
-                changeModeByDataIsEmpty();
-                break;
-            case R.id.main_btn_input_calendar:
-                getDateFromDatePicker();
-                break;
-            case R.id.main_btn_input_subject_color:
-                getColorFromColorDialog();
-                break;
-            case R.id.main_btn_edit_subject_name:
-                editSubjectName();
-                break;
-            case R.id.main_btn_edit_subject_color:
-                editSubjectColor();
-                break;
-            case R.id.main_btn_subject_delete:
-                mMediator.deleteSubject();
-                break;
-            case R.id.main_btn_subject_left:
-                mMediator.moveSubjectOrder(true);
-                break;
-            case R.id.main_btn_subject_right:
-                mMediator.moveSubjectOrder(false);
-                break;
+        Object tag = v.getTag();
+        if (tag == null) { //normal buttons in Activity
+            switch (v.getId()) {
+                case R.id.main_btn_fab:
+                    changeModeByDataIsEmpty();
+                    break;
+                case R.id.main_btn_input_calendar:
+                    getDateFromDatePicker();
+                    break;
+                case R.id.main_btn_input_todo_add:
+                    if (checkVaildData()) {
+                        insertTodo();
+                    }
+                    break;
+                case R.id.main_btn_input_subject_color:
+                    getColorFromColorDialog();
+                    break;
+                case R.id.main_btn_subject_add:
+                    if (checkVaildData()) {
+                        insertSubject();
+                    }
+                    break;
+                case R.id.main_btn_edit_subject_name:
+                    editSubjectName();
+                    break;
+                case R.id.main_btn_edit_subject_color:
+                    editSubjectColor();
+                    break;
+                case R.id.main_btn_subject_delete:
+                    deleteSubject();
+                    break;
+                case R.id.main_btn_subject_left:
+                    moveSubjectOrder(true);
+                    break;
+                case R.id.main_btn_subject_right:
+                    moveSubjectOrder(false);
+                    break;
+                case R.id.main_btn_view_todo_done:
+                    showTodoSelectDialog();
+                    break;
+            }
+        } else { // todoLayout view click
+            if (tag != null && tag instanceof TodoViewInfo) {
+                mSelectedSubjectOrder = getSelectedSubjectOrderFromTag(tag);
+                mSelectedTodoIds = ((TodoViewInfo) tag).id;
+                int type = ((TodoViewInfo) tag).type;
+                if (type == TodoViewInfo.TYPE_SUBJECT) {
+                    changeMode(MODE_ADD_TODO);
+                } else if (type == TodoViewInfo.TYPE_DELAYED_TODO
+                        || type == TodoViewInfo.TYPE_TASK
+                        || type == TodoViewInfo.TYPE_DATE_TODO) {
+                    changeMode(MODE_VIEW_TODO);
+                } else if (type == TodoViewInfo.TYPE_VIEW_ALL_TASK) {
+                    launchDetailTodoListActivity(mSelectedSubjectOrder, TodoData.TODO_DB_TYPE_TASK);
+                } else if (type == TodoViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
+                    launchDetailTodoListActivity(mSelectedSubjectOrder,
+                            TodoData.TODO_DB_TYPE_ALLDAY);
+                }
+            }
+        }
+    }
+
+    private int getSelectedSubjectOrderFromTag(Object tag) {
+        int ret = -1;
+        if (tag != null && tag instanceof TodoViewInfo) {
+            int type = ((TodoViewInfo) tag).type;
+            if (type == TodoViewInfo.TYPE_SUBJECT
+                    || type == TodoViewInfo.TYPE_VIEW_ALL_TASK
+                    || type == TodoViewInfo.TYPE_VIEW_ALL_DELAYED_TODO) {
+                ret = Integer.parseInt(((TodoViewInfo) tag).id);
+            } else if (type == TodoViewInfo.TYPE_DELAYED_TODO
+                    || type == TodoViewInfo.TYPE_TASK
+                    || type == TodoViewInfo.TYPE_DATE_TODO) {
+                String combinedId = ((TodoViewInfo) tag).id;
+                String[] stringIds = combinedId.split(TodoViewInfo.DELIMITER_ID);
+                TodoData td = TodoProvider.getInstance(getApplicationContext()).getTodoById(
+                        Integer.parseInt(stringIds[0]));
+                ret = td.subjectOrder;
+            }
+        }
+//        Log.d("TodoStack", "[getSelectedSubjectOrderFromTag] ret = " + ret);
+        return ret;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        Object tag = v.getTag();
+        if (tag != null && tag instanceof TodoViewInfo) {
+            mSelectedSubjectOrder = getSelectedSubjectOrderFromTag(tag);
+            changeMode(MODE_VIEW_SUBJECT);
+            return true;
+        } else {
+            return false;
         }
     }
 
     public void changeModeByDataIsEmpty() {
-        if (TodoProvider.getSubjectCount() == 0) {
+        if (TodoProvider.getInstance(getApplicationContext()).getSubjectCount() == 0) {
             changeMode(MODE_ADD_SUBJECT);
         } else {
             showSubjectSelectDialog();
@@ -372,24 +515,67 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         mDialogNowViewing = dialog;
     }
 
+    public void setActionBarText(String title, int color) {
+        toolbarActionBar.setTitle(title);
+        toolbarActionBar.setTitleTextColor(color);
+        setSupportActionBar(toolbarActionBar);
+    }
+
+    public void setGuideText(String guideText) {
+        setGuideText(guideText, getResources().getColor(R.color.color_normal_state));
+    }
+
+    public void setGuideText(String guideText, int color) {
+        mTextGuide.setText(guideText);
+        mTextGuide.setTextColor(color);
+    }
+
+    private void hideInputMethod(EditText edit) {
+        InputMethodManager inputManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(edit.getWindowToken(),0);
+    }
+
     @Override
     public void changeMode(int mode) {
-        switch (mode) {
-            case MODE_NO_SELECTION:
-                setAllControllerGone();
-                break;
-            case MODE_ADD_TODO:
-                setInputTodoVisible();
-                break;
-            case MODE_ADD_SUBJECT:
-                setInputSubjectVisible();
-                break;
-            case MODE_VIEW_TODO:
-                setViewSubjectVisible();
-                break;
-            case MODE_VIEW_SUBJECT:
-                break;
+        Resources res = getResources();
+        if (mode == MODE_NO_SELECTION) {
+            //init saved values
+            mSelectedSubjectOrder = -1;
+            mSelectedTodoIds = "";
+            setAllControllerGone();
+            setActionBarText(res.getString(R.string.app_name),
+                    res.getColor(R.color.colorAccent));
+            setGuideText(res.getString(R.string.guide_text_suggest_select_subject));
         }
+        else if (mode == MODE_ADD_TODO) {
+            SubjectData sd = getSelectedSubjectData();
+            setInputTodoVisible();
+            setActionBarText(
+                    res.getString(R.string.adding_text_on_new_todo) + " " + sd.subjectName,
+                    sd.color);
+            setGuideText(res.getString(R.string.guide_text_mode_input_todo));
+        }
+        else if (mode == MODE_ADD_SUBJECT) {
+            setInputSubjectVisible();
+            setActionBarText(res.getString(R.string.title_text_on_new_subject),
+                    res.getColor(R.color.color_normal_state));
+            setGuideText(res.getString(R.string.guide_text_mode_input_subject));
+        }
+        else if (mode == MODE_VIEW_TODO) {
+            SubjectData sd = getSelectedSubjectData();
+            setViewTodoVisible();
+            setActionBarText(
+                    res.getString(R.string.adding_text_view_todo) + " " + sd.subjectName,
+                    sd.color);
+            setGuideText(res.getString(R.string.guide_text_mode_view_todo));
+        }
+        else if (mode == MODE_VIEW_SUBJECT) {
+            SubjectData sd = getSelectedSubjectData();
+            setViewSubjectVisible();
+            setActionBarText(sd.subjectName, sd.color);
+            setGuideText(res.getString(R.string.guide_text_mode_view_subject));
+        }
+
         mMode = mode;
     }
 
@@ -409,29 +595,42 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
     }
 
     public void setInputTodoVisible() {
-        int subjectColor = TodoProvider.getInstance(this).
-                getSubjectByOrder(mSelectedSubjectOrder).color;
+        int subjectColor = getSelectedSubjectData().color;
         if (mControllerInputTodo.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             mControllerInputTodo.setVisibility(View.VISIBLE);
             //present today
             Calendar calendar = Calendar.getInstance();
+            mSelectedTodoDate = calendar.getTime();
+
             mBtnCalendar.setText(TodoStackUtil.getFomatedDateSimple(this, calendar.getTime()));
         }
-        mBtnCalendar.setTextColor(subjectColor);
         mCheckTask.setTextColor(subjectColor);
+        mEditTodoName.setTextColor(subjectColor);
+        mBtnCalendar.setTextColor(subjectColor);
+        mBtnAddTodo.setTextColor(subjectColor);
     }
 
     public void setInputSubjectVisible() {
         if (mControllerInputSubject.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             mControllerInputSubject.setVisibility(View.VISIBLE);
-            mBtnSubjectColor.setTextColor(getResources().getColor(R.color.color_normal_state));
         }
+        mSelectedSubjectColor = getResources().getColor(R.color.color_normal_state);
+        setInputSubjectLayoutColor();
+    }
+
+    public void setInputSubjectLayoutColor() {
+        mBtnSubjectColor.setTextColor(mSelectedSubjectColor);
+        mEditSubjectName.setTextColor(mSelectedSubjectColor);
+        mBtnAddSubject.setTextColor(mSelectedSubjectColor);
     }
 
     public void setViewSubjectVisible() {
-        TodoProvider todoProvider = TodoProvider.getInstance(this);
+        if (mSelectedSubjectOrder < 0)
+            return;
+
+        TodoProvider todoProvider = TodoProvider.getInstance(getApplicationContext());
         int subjectCount = todoProvider.getSubjectCount();
         int subjectColor = todoProvider.getSubjectByOrder(mSelectedSubjectOrder).color;
         boolean leftEnable = !(mSelectedSubjectOrder <= 0);
@@ -444,39 +643,42 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         mBtnChangeSubjectcolor.setTextColor(subjectColor);
         mBtnDeleteSubject.setTextColor(subjectColor);
         mBtnMoveLeft.setEnabled(leftEnable);
-        mBtnMoveLeft.setTextColor(
-                leftEnable ? subjectColor : getResources().getColor(R.color.color_lightgray));
+        mBtnMoveLeft.setTextColor(subjectColor);
         mBtnMoveRight.setEnabled(rightEnable);
-        mBtnMoveRight.setTextColor(
-                rightEnable ? subjectColor : getResources().getColor(R.color.color_lightgray));
+        mBtnMoveRight.setTextColor(subjectColor);
     }
 
-    public void setViewTodoVisible(SpannableString spannableString) {
+    public void setViewTodoVisible() {
+        int subjectColor = getSelectedSubjectData().color;
+        if ("".equalsIgnoreCase(mSelectedTodoIds))
+            return;
+
         if (mControllerViewTodo.getVisibility() != View.VISIBLE) {
             setAllControllerGone();
             mControllerViewTodo.setVisibility(View.VISIBLE);
         }
-        mTextTodos.setText(spannableString);
+        //TODO need to change color following todos
+        mBtnDoneTodos.setTextColor(subjectColor);
+
+        mTextTodos.setText(getSpannableStringFromTodos(mSelectedTodoIds));
     }
 
-    private SpannableString getSpannableStringFromTodos(ArrayList<Integer> todoIds) {
-        final TodoProvider provider = TodoProvider.getInstance(this);
+    private SpannableString getSpannableStringFromTodos(String todoIds) {
+        final TodoProvider provider = TodoProvider.getInstance(getApplicationContext());
         String todoString = "";
-//        String[] ids = info.id.split(TodoViewInfo.DELIMITER_ID);
-//        int[] lengths = new int[ids.length];
-//        ClickableSpan[] clickableSpans = new ClickableSpan[ids.length];
+        String[] ids = todoIds.split(TodoViewInfo.DELIMITER_ID);
 
-        for (Integer id : todoIds) {
-            TodoData td = provider.getTodoById(id);
-            if (todoIds.size() == 1)
+        for (int i = 0; i < ids.length; ++i) {
+            TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
+            if (i == 0)
                 todoString += td.todoName;
             else
                 todoString += TODO_DIVIDER + td.todoName;
         }
         SpannableString ret = new SpannableString(todoString);
         int pos = 0;
-        for (Integer id : todoIds) {
-            final TodoData td = provider.getTodoById(id);
+        for (int i = 0; i < ids.length; ++i) {
+            final TodoData td = provider.getTodoById(Integer.parseInt(ids[i]));
             final SubjectData sd = provider.getSubjectByOrder(td.subjectOrder);
             ret.setSpan(new ClickableSpan() {
                 @Override
@@ -494,7 +696,6 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
             }, pos, pos + td.todoName.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             pos += td.todoName.length() + TODO_DIVIDER.length();
         }
-
         return ret;
     }
 
@@ -505,12 +706,12 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
             @Override
             public void onDeleteTodo(int id) {
                 Context context = getApplicationContext();
-                UpdateTodoTask deleteTodoTask = new UpdateTodoTask(context,
+                UpdateTodoTask deleteTodoTask = new UpdateTodoTask(getActivityContext(),
                         new UpdateTodoTask.TaskEndCallback() {
                             @Override
                             public void updateFinished() {
-                                //TODO restartLoader needed
-//                                reloadTodoDataToView(_MODE_NO_SELECTION);
+                                mTodoLayoutAdapter.notifyDataSetChanged();
+                                changeMode(MODE_NO_SELECTION);
                             }
                         });
                 deleteTodoTask.setData(TodoProvider.getInstance(context).getTodoById(id),
@@ -520,16 +721,16 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
             @Override
             public void onMoveTodo(int id, int moveType) {
-                Context context = getApplicationContext();
-                UpdateTodoTask moveTodoTask = new UpdateTodoTask(context,
+                UpdateTodoTask moveTodoTask = new UpdateTodoTask(getActivityContext(),
                         new UpdateTodoTask.TaskEndCallback() {
                             @Override
                             public void updateFinished() {
-                                //TODO restartLoader needed
-//                                reloadTodoDataToView(_MODE_NO_SELECTION);
+                                mTodoLayoutAdapter.notifyDataSetChanged();
+                                changeMode(MODE_NO_SELECTION);
                             }
                         });
-                moveTodoTask.setData(TodoProvider.getInstance(context).getTodoById(id), moveType);
+                moveTodoTask.setData(TodoProvider.
+                        getInstance(getApplicationContext()).getTodoById(id), moveType);
                 moveTodoTask.execute();
             }
 
@@ -546,11 +747,8 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
     private boolean checkVaildData() {
         if (isViewVisible(mControllerInputTodo)) {
-//            String year = editYear.getText().toString();
-//            String month = editMonth.getText().toString();
-//            String day = editDay.getText().toString();
-//            if (!TodoStackUtil.checkVaildTodoDate(this, year, month, day))
-//                return false;
+            if (!TodoStackUtil.checkVaildTodoDate(this, mSelectedTodoDate))
+                return false;
             String name = mEditTodoName.getText().toString();
             if (!TodoStackUtil.checkVaildName(this, name))
                 return false;
@@ -561,51 +759,6 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 return false;
         }
         return true;
-    }
-
-    private Bundle getBundleFromVisibleLayout() {
-        Bundle bundle = new Bundle();
-        if (isViewVisible(mControllerInputTodo)) {
-            bundle.putString(TodoStackContract.TodoEntry.TODO_NAME,
-                    mEditTodoName.getText().toString());
-            //subject order set on presenter
-            Calendar date = Calendar.getInstance();
-            date.set(Calendar.HOUR_OF_DAY, 0);
-            date.set(Calendar.MINUTE, 0);
-            date.set(Calendar.SECOND, 0);
-            date.set(Calendar.MILLISECOND, 0);
-//            date.set(Calendar.YEAR, Integer.parseInt(editYear.getText().toString()));
-//            date.set(Calendar.MONTH, Integer.parseInt(editMonth.getText().toString()) - 1);
-//            date.set(Calendar.DATE, Integer.parseInt(editDay.getText().toString()));
-            //debug
-//            Log.d("TodoStack", "[getBundleFromVisibleLayout] dateString = " + dateString);
-            bundle.putLong(TodoStackContract.TodoEntry.DATE, date.getTimeInMillis());
-            bundle.putInt(TodoStackContract.TodoEntry.TYPE,
-                    mCheckTask.isChecked() ?
-                            TodoData.TODO_DB_TYPE_TASK : TodoData.TODO_DB_TYPE_ALLDAY);
-            //fast input case input 00:00
-            bundle.putLong(TodoStackContract.TodoEntry.TIME_FROM, TodoData.TIME_NOT_EXIST);
-            bundle.putLong(TodoStackContract.TodoEntry.TIME_TO, TodoData.TIME_NOT_EXIST);
-            bundle.putString(TodoStackContract.TodoEntry.LOCATION, "");
-        } else if (isViewVisible(mControllerInputSubject)) {
-            bundle.putString(TodoStackContract.SubjectEntry.SUBJECT_NAME,
-                    mEditSubjectName.getText().toString());
-            ColorTag colorTag = (ColorTag) mBtnSubjectColor.getTag();
-            if (colorTag != null) {
-                bundle.putInt(TodoStackContract.SubjectEntry.COLOR, colorTag.color);
-                mBtnSubjectColor.setTag(null);
-            } else {
-                bundle.putInt(TodoStackContract.SubjectEntry.COLOR,
-                        getResources().getColor(R.color.colorAccent));
-            }
-
-        } else if (isViewVisible(mControllerViewSubject)) {
-            //TODO launch all todo fragment
-        } else if (isViewVisible(mControllerViewTodo)) {
-            bundle.putString(TodoStackContract.TodoEntry._ID,
-                    ((TodoViewInfo) mTextTodos.getTag()).id);
-        }
-        return bundle;
     }
 
     @Override
@@ -631,7 +784,11 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            mMediator.clickBackPressSoftButton();
+            if (mMode != MODE_NO_SELECTION) {
+                changeMode(MODE_NO_SELECTION);
+            } else {
+                finish();
+            }
         }
     }
 
@@ -640,13 +797,48 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         DialogFragment dialog =
                 TodoDatePickerDialog.newInstance(new TodoDatePickerDialog.Callback() {
                     @Override
-                    public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
-                        editYear.setText("" + year);
-                        editMonth.setText("" + monthOfYear);
-                        editDay.setText("" + dayOfMonth);
+                    public void onDateSet(Date date) {
+                        mSelectedTodoDate = date;
+                        mBtnCalendar.setText(TodoStackUtil.
+                                getFomatedDateSimple(getApplicationContext(), mSelectedTodoDate));
                     }
                 });
         dialog.show(getFragmentManager(), dialogTag);
+    }
+
+    private void insertTodo() {
+        UpdateTodoTask insertTodoTask =
+                new UpdateTodoTask(getActivityContext(), new UpdateTodoTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mTodoLayoutAdapter.notifyDataSetChanged();
+                        changeMode(MODE_NO_SELECTION);
+                    }
+                });
+        insertTodoTask.setData(makeTodoData(), UpdateTodoTask.TODO_TASK_ADD_TODO);
+        insertTodoTask.execute();
+    }
+
+    private TodoData makeTodoData() {
+        TodoData todo = new TodoData();
+
+        Calendar targetDate = Calendar.getInstance();
+        targetDate.setTime(mSelectedTodoDate);
+        targetDate.set(Calendar.HOUR_OF_DAY, 0);
+        targetDate.set(Calendar.MINUTE, 0);
+        targetDate.set(Calendar.SECOND, 0);
+        targetDate.set(Calendar.MILLISECOND, 0);
+
+        todo.todoName = mEditTodoName.getText().toString();
+        todo.subjectOrder = mSelectedSubjectOrder;
+        todo.date = targetDate.getTimeInMillis();
+        todo.type = mCheckTask.isChecked() ?
+                TodoData.TODO_DB_TYPE_TASK : TodoData.TODO_DB_TYPE_ALLDAY;
+        todo.timeFrom = TodoData.TIME_NOT_EXIST;
+        todo.timeTo = TodoData.TIME_NOT_EXIST;
+        todo.location = "";
+
+        return todo;
     }
 
     private void getColorFromColorDialog() {
@@ -655,14 +847,34 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 SubjectColorSelectDialog.newInstance(new SubjectColorSelectDialog.Callback() {
                     @Override
                     public void onSelectColor(int color) {
-                        mBtnSubjectColor.setTextColor(color);
-                        ColorTag colorTag = new ColorTag();
-                        colorTag.color = color;
-                        mBtnSubjectColor.setTag(colorTag);
-                        setFabTheme(null, color);
+                        mSelectedSubjectColor = color;
+                        setInputSubjectLayoutColor();
                     }
                 });
         dialog.show(getFragmentManager(), dialogTag);
+    }
+
+    private void insertSubject() {
+        UpdateSubjectTask insertSubjectTask =
+                new UpdateSubjectTask(getActivityContext(), new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mTodoLayoutAdapter.notifyDataSetChanged();
+                        changeMode(MODE_NO_SELECTION);
+                    }
+                });
+        insertSubjectTask.setData(
+                makeNewSubjectData(), UpdateSubjectTask.SUBJECT_TASK_ADD_SUBJECT);
+        insertSubjectTask.execute();
+    }
+
+    private SubjectData makeNewSubjectData() {
+        SubjectData subject = new SubjectData();
+        subject.subjectName = mEditSubjectName.getText().toString();
+        subject.color = mSelectedSubjectColor;
+        subject.order = TodoProvider.getInstance(getApplicationContext()).getSubjectCount();
+
+        return subject;
     }
 
     private void editSubjectName() {
@@ -671,11 +883,26 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 SubjectNameUpdateDialog.newInstance(new SubjectNameUpdateDialog.Callback() {
                     @Override
                     public void onEditName(String name) {
-                        mMediator.changeSubjectName(name);
+                        changeSubjectName(name);
                     }
                 });
         ((SubjectNameUpdateDialog) dialog).setOriginName(toolbarActionBar.getTitle().toString());
         dialog.show(getFragmentManager(), dialogTag);
+    }
+
+    public void changeSubjectName(String name) {
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(getActivityContext(),
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mTodoLayoutAdapter.notifyDataSetChanged();
+                        changeMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = getSelectedSubjectData();
+        sd.subjectName = name;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_NAME);
+        updateSubjectTask.execute();
     }
 
     private void editSubjectColor() {
@@ -684,185 +911,115 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
                 SubjectColorSelectDialog.newInstance(new SubjectColorSelectDialog.Callback() {
                     @Override
                     public void onSelectColor(int color) {
-                        mMediator.changeSubjectColor(color);
+                        changeSubjectColor(color);
                     }
                 });
         dialog.show(getFragmentManager(), dialogTag);
     }
 
-    @Override
-    public void setActionBarText(String title, int color) {
-        toolbarActionBar.setTitle(title);
-        toolbarActionBar.setTitleTextColor(color);
-        setSupportActionBar(toolbarActionBar);
+    public void changeSubjectColor(int color) {
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(getActivityContext(),
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mTodoLayoutAdapter.notifyDataSetChanged();
+                        changeMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = getSelectedSubjectData();
+        sd.color = color;
+        updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MODIFY_COLOR);
+        updateSubjectTask.execute();
     }
 
-    @Override
-    public void setNowBusy(boolean nowBusy) {
-        mNowBusy = nowBusy;
-    }
-
-    @Override
-    public boolean getNowBusy() {
-        return mNowBusy;
-    }
-
-
-
-    @Override
-    public void setTagOnTodoTextView(TodoViewInfo info) {
-        if (mTextTodos != null) {
-            mTextTodos.setTag(info);
-        }
-    }
-
-    @Override
-    public void setFab(String action, int color, boolean needMove) {
-        if (needMove) {
-            if (isViewVisible(mControllerInputTodo) ||
-                    isViewVisible(mControllerInputSubject) ||
-                    isViewVisible(mControllerViewSubject) ||
-                    isViewVisible(mControllerViewTodo)) {
-                setFabThemeWithMoveUp(action, color);
-            }
+    public void deleteSubject() {
+        TodoProvider provider = TodoProvider.getInstance(getApplicationContext());
+        if (mSelectedSubjectOrder >= 0
+                && mSelectedSubjectOrder < (provider.getSubjectCount() - 1)) {
+            Toast.makeText(this, getResources().getString(R.string.toast_waring_not_end_subject),
+                    Toast.LENGTH_LONG).show();
+        } else if (mSelectedSubjectOrder == (provider.getSubjectCount() - 1)) {
+            showSubjectDeleteDialog();
         } else {
-            setFabTheme(action, color);
+            Log.e("TodoStack", "[deleteSubject] Invalid subject number : "
+                    + mSelectedSubjectOrder);
         }
     }
 
-    @Override
-    public void setFabToBase(String action, int color, boolean needMove) {
-        if (needMove) {
-            setFabThemeWithMoveDown(action, color);
+    private void showSubjectDeleteDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        DialogFragment dialog = SubjectDeleteDialog.newInstance(mSelectedSubjectOrder,
+                new SubjectDeleteDialog.Callback() {
+                    @Override
+                    public void onSelectDelete(int order) {
+                        TodoProvider provider = TodoProvider.getInstance(getApplicationContext());
+                        if (provider.getTodoCount(mSelectedSubjectOrder) == 0) {
+                            UpdateSubjectTask deletesubjectTask =
+                                    new UpdateSubjectTask(getActivityContext(),
+                                            new UpdateSubjectTask.TaskEndCallback() {
+                                                @Override
+                                                public void updateFinished() {
+                                                    mTodoLayoutAdapter.notifyDataSetChanged();
+                                                    changeMode(MODE_NO_SELECTION);
+                                                }
+                                            });
+                            deletesubjectTask.setData(
+                                    provider.getSubjectByOrder(mSelectedSubjectOrder),
+                                    UpdateSubjectTask.SUBJECT_TASK_DELETE_SUBJECT);
+                            deletesubjectTask.execute();
+                        } else {
+                            Toast.makeText(getActivityContext(),
+                                    getResources().getString(R.string.toast_waring_remained_todos),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        dialog.show(ft, TAG_DIALOG_DELETE_SUBJECT);
+        mDialogNowViewing = dialog;
+    }
+
+    public void moveSubjectOrder(final boolean isLeft) {
+        Log.d("TodoStack", "[moveSubjectOrder] target order = " + mSelectedSubjectOrder
+                + "direction = " + (isLeft ? "left" : "right"));
+        UpdateSubjectTask updateSubjectTask = new UpdateSubjectTask(getActivityContext(),
+                new UpdateSubjectTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        mSelectedSubjectOrder += isLeft ? UpdateSubjectTask.DIRECTION_LEFT :
+                                UpdateSubjectTask.DIRECTION_RIGHT;
+                        mTodoLayoutAdapter.notifyDataSetChanged();
+                        changeMode(MODE_VIEW_SUBJECT);
+                    }
+                });
+        SubjectData sd = getSelectedSubjectData();
+        if (isLeft) {
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_LEFT);
         } else {
-            setFabTheme(action, color);
+            updateSubjectTask.setData(sd, UpdateSubjectTask.SUBJECT_TASK_MOVE_RIGHT);
+        }
+        updateSubjectTask.execute();
+    }
+
+    private void showTodoSelectDialog() {
+        //if id has only one id, skip dialog
+        String[] sIds = mSelectedTodoIds.split(TodoViewInfo.DELIMITER_ID);
+        if (sIds.length == 1) {
+            showTodoDoneDialog(Integer.parseInt(sIds[0]));
+        } else {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            DialogFragment dialog = TodoSelectDialog.newInstance(mSelectedTodoIds,
+                    new TodoSelectDialog.Callback() {
+                        @Override
+                        public void onSelectTodo(int id) {
+                            showTodoDoneDialog(id);
+                        }
+                    });
+            dialog.show(ft, TAG_DIALOG_SELECT_TODO);
+            mDialogNowViewing = dialog;
         }
     }
 
-    public void setFabTheme(String action, int color) {
-        if (action != null) {
-        }
-        Drawable bgButton = btnFab.getBackground();
-        if (bgButton != null) {
-            bgButton.mutate().setColorFilter(color, PorterDuff.Mode.SRC_IN);
-        }
-    }
 
-    public void setFabThemeWithMoveUp(final String action, final int color) {
-//        Log.d("TodoStack",
-//                "[setFabThemeWithMoveUp] call! action = " + action + " / color = " + color);
-
-        Animation animation =
-                new TranslateAnimation(0, 0, 0, layoutFabBar.getTop() - btnFab.getTop());
-        animation.setDuration(DURATION_ANIMATION);
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                setNowBusy(true);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                RelativeLayout.LayoutParams params =
-                        (RelativeLayout.LayoutParams) btnFab.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 0);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 1);
-                btnFab.setLayoutParams(params);
-                setFabTheme(action, color);
-                setNowBusy(false);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        btnFab.startAnimation(animation);
-    }
-
-    public void setFabThemeWithMoveDown(final String action, final int color) {
-        Animation animation =
-                new TranslateAnimation(0, 0, 0, layoutFabBar.getBottom() - btnFab.getBottom());
-        animation.setDuration(DURATION_ANIMATION);
-        animation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                setNowBusy(true);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                RelativeLayout.LayoutParams params =
-                        (RelativeLayout.LayoutParams) btnFab.getLayoutParams();
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, 1);
-                btnFab.setLayoutParams(params);
-                setFabTheme(action, color);
-                setNowBusy(false);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        btnFab.startAnimation(animation);
-    }
-
-
-    public boolean isViewVisible(View view) {
-        return view.getVisibility() == View.VISIBLE;
-    }
-
-    @Override
-    public void clearTodoLayout() {
-        mTodoLayout.removeAllViews();
-        //TODO need to be improve logic
-        mMediator.refreshTodoLayout(mTodoLayout.getWidth(), mTodoLayout.getHeight());
-    }
-
-    @Override
-    public void setTextViewsOnTodoLayout(ArrayList<TextView> alTextView) {
-        for (TextView tv : alTextView) {
-            mTodoLayout.addView(tv);
-        }
-    }
-
-    @Override
-    public void setTextViewOnTodoLayout(TextView textView) {
-        mTodoLayout.addView(textView);
-    }
-
-    @Override
-    public void refreshTodoLayout() {
-        mTodoLayout.invalidate();
-    }
-
-    @Override
-    public void setGuideText(String guideText) {
-        setGuideText(guideText, getResources().getColor(R.color.color_normal_state));
-    }
-
-    @Override
-    public void setGuideText(String guideText, int color) {
-        mTextGuide.setText(guideText);
-        mTextGuide.setTextColor(color);
-    }
-
-    @Override
-    public void finishActivity() {
-        finish();
-    }
-
-    private void hideInputMethod(EditText edit) {
-        InputMethodManager inputManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(edit.getWindowToken(),0);
-    }
-
-
-
-    //TODO change below to using TextViewInfo
-    class ColorTag {
-        int color;
-    }
 
     //for test
 

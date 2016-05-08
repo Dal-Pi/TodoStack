@@ -60,7 +60,7 @@ public class TodoDoneDialog extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NO_TITLE, 0);
-//        setCancelable(false);
+        setCancelable(false);
     }
 
     @Override

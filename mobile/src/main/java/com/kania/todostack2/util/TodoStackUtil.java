@@ -40,65 +40,67 @@ public class TodoStackUtil {
     }
 
     public static boolean checkVaildTodoDate(
-            Context context, String year, String month, String day) {
+            Context context, Date date) {
         boolean ret = false;
 
-        if("".equals(year) || "".equals(month) || "".equals(day)){
+        if(date != null){
+            ret = true;
+        } else {
             Toast.makeText(context,
                     context.getResources().getString(R.string.toast_waring_date_empty),
                     Toast.LENGTH_SHORT).show();
         }
-        else{
-            int nYearCheck = Integer.parseInt(year);
-            int nMonthCheck = Integer.parseInt(month);
-            int nDateCheck = Integer.parseInt(day);
-
-            if (nYearCheck > 0) {
-                int nRangeDate = -1;
-                switch (nMonthCheck) {
-                    case 1:
-                    case 3:
-                    case 5:
-                    case 7:
-                    case 8:
-                    case 10:
-                    case 12:
-                        nRangeDate = 31;
-                        break;
-                    case 4:
-                    case 6:
-                    case 9:
-                    case 11:
-                        nRangeDate = 30;
-                        break;
-                    case 2:
-                        if( ( (nYearCheck%4 == 0) && (nYearCheck%100 != 0) )
-                                || (nYearCheck%400 == 0) ){
-                            nRangeDate = 29;
-                        }
-                        else{
-                            nRangeDate = 28;
-                        }
-                        break;
-                    default:
-                        Toast.makeText(context,
-                                context.getResources().getString(R.string.toast_waring_wrong_month),
-                                Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                if( (nDateCheck > 0) && (nDateCheck <= nRangeDate) ){
-                    ret = true;
-                } else {
-                    Toast.makeText(context,
-                            context.getResources().getString(R.string.toast_waring_wrong_day),
-                            Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(context,
-                        context.getResources().getString(R.string.toast_waring_wrong_year),
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
+//        else{
+//            int nYearCheck = Integer.parseInt(year);
+//            int nMonthCheck = Integer.parseInt(month);
+//            int nDateCheck = Integer.parseInt(day);
+//
+//            if (nYearCheck > 0) {
+//                int nRangeDate = -1;
+//                switch (nMonthCheck) {
+//                    case 1:
+//                    case 3:
+//                    case 5:
+//                    case 7:
+//                    case 8:
+//                    case 10:
+//                    case 12:
+//                        nRangeDate = 31;
+//                        break;
+//                    case 4:
+//                    case 6:
+//                    case 9:
+//                    case 11:
+//                        nRangeDate = 30;
+//                        break;
+//                    case 2:
+//                        if( ( (nYearCheck%4 == 0) && (nYearCheck%100 != 0) )
+//                                || (nYearCheck%400 == 0) ){
+//                            nRangeDate = 29;
+//                        }
+//                        else{
+//                            nRangeDate = 28;
+//                        }
+//                        break;
+//                    default:
+//                        Toast.makeText(context,
+//                                context.getResources().getString(R.string.toast_waring_wrong_month),
+//                                Toast.LENGTH_SHORT).show();
+//                        break;
+//                }
+//                if( (nDateCheck > 0) && (nDateCheck <= nRangeDate) ){
+//                    ret = true;
+//                } else {
+//                    Toast.makeText(context,
+//                            context.getResources().getString(R.string.toast_waring_wrong_day),
+//                            Toast.LENGTH_SHORT).show();
+//                }
+//            } else {
+//                Toast.makeText(context,
+//                        context.getResources().getString(R.string.toast_waring_wrong_year),
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        }
 
         return ret;
     }
@@ -152,6 +154,19 @@ public class TodoStackUtil {
 
         ret = DateUtils.formatDateTime(context, targetDate.getTimeInMillis(),
                 DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY
+                        | DateUtils.FORMAT_NUMERIC_DATE);
+        return ret;
+    }
+
+    public static String getFomatedDateWithoutYear(Context context, Date todoDate) {
+        String ret = "";
+
+        Calendar targetDate = Calendar.getInstance();
+        targetDate.setTime(todoDate);
+
+        ret = DateUtils.formatDateTime(context, targetDate.getTimeInMillis(),
+                DateUtils.FORMAT_SHOW_DATE
                         | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY
                         | DateUtils.FORMAT_NUMERIC_DATE);
         return ret;

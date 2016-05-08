@@ -112,15 +112,46 @@
         <item name="android:textSize">@dimen/detail_card_textsize_description</item>
     </style>
 
-    <style name="MyButton"
+    <style name="ControllView"
         parent="@android:style/Widget.Material.Button.Borderless.Colored">
         <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:minWidth">0dp</item>
+    </style>
+
+    <style name="DialogButton"
+        parent="@android:style/Widget.Material.Button.Borderless.Colored">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DialogTextButton" parent="@android:style/Widget.Material.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
+
+    <style name="DialogTextView" parent="@android:style/Widget.Material.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="DialogTextViewTitle" parent="DialogTextView">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="DialogTextViewSummary" parent="DialogTextView">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
     <style name="MyCheckBox">
     </style>
 
-    <style name="MyTextStyle">
-        <item name="android:textAppearance">@android:style/TextAppearance.Medium</item>
-    </style>
 </resources>

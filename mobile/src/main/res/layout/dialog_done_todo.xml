@@ -8,7 +8,7 @@
         android:orientation="vertical">
 
         <TextView
-            style="@style/TextViewStyle"
+            style="@style/DialogTextViewTitle"
             android:text="@string/dialog_done_todo_title"
             android:textColor="@color/color_black"
             android:textStyle="bold"/>
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            style="@style/TextButtonStyle"
+            style="@style/DialogTextViewTitle"
             android:paddingTop="@dimen/dialog_contents_vertical_padding"
             android:paddingBottom="@dimen/dialog_contents_vertical_padding"
             android:textStyle="bold"
@@ -30,58 +30,63 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
             <android.support.v4.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"/>
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
-                <Button
-                    android:id="@+id/dialog_btn_done_todo_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    style="@style/ButtonStyle"
-                    android:text="@string/delete"/>
+
                 <Button
                     android:id="@+id/dialog_btn_done_todo_cancel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    style="@style/ButtonStyle"
+                    style="@style/DialogButton"
                     android:text="@string/cancel"/>
+
+                <Button
+                    android:id="@+id/dialog_btn_done_todo_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/DialogButton"
+                    android:text="@string/delete"/>
+
             </LinearLayout>
         </LinearLayout>
 
         <TextView
-            style="@style/TextViewStyle"
+            style="@style/DialogTextViewSummary"
             android:text="@string/dialog_done_todo_option_title"
             android:textColor="@color/color_black" />
         <TextView
             android:id="@+id/dialog_done_todo_move_today"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_today" />
         <TextView
             android:id="@+id/dialog_done_todo_move_tomorrow"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_tomorrow" />
         <TextView
             android:id="@+id/dialog_done_todo_move_next_week"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_next_week" />
         <TextView
             android:id="@+id/dialog_done_todo_move_next_month"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_next_month" />
         <TextView
             android:id="@+id/dialog_done_todo_move_next_year"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_next_year" />
         <TextView
             android:id="@+id/dialog_done_todo_move_task"
-            style="@style/TextButtonStyleInDialog"
+            style="@style/DialogTextButton"
             android:text="@string/dialog_done_todo_option_task" />
 
     </LinearLayout>

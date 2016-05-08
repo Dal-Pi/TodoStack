@@ -26,6 +26,8 @@ import com.kania.todostack2.presenter.DetailTodoListPresenter;
  */
 public class DetailTodoListActivity extends AppCompatActivity {
 
+    public static final String START_PAGE = "start_page";
+
     public static final String TAB_TITLE_ALL = "All";
     public static final String TAB_TITLE_DATE = "Todo";
     public static final String TAB_TITLE_TASK = "Task";
@@ -49,6 +51,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
 
     private int mSubjectOrder;
+    private int mStartPage;
 
     private DetailTodoListPresenter mPresent;
 
@@ -60,6 +63,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
         Intent fromIntent = getIntent();
         mSubjectOrder = fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER,
                 DetailTodoListPresenter.SUBJECT_ORDER_ALL);
+        mStartPage = fromIntent.getIntExtra(START_PAGE, DetailTodoListPresenter.TODO_TYPE_ALL);
 
         mPresent = new DetailTodoListPresenter(this, mSubjectOrder);
 
@@ -81,6 +85,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getPositionByType(mStartPage));
 
         mTabLayout = (TabLayout) findViewById(R.id.detail_tabs);
         mTabLayout.setupWithViewPager(mViewPager);
@@ -181,11 +186,23 @@ public class DetailTodoListActivity extends AppCompatActivity {
                 case 0:
                     return DetailTodoListPresenter.TODO_TYPE_ALL;
                 case 1:
-                    return TodoData.TODO_DB_TYPE_ALLDAY; //TODO change
+                    return DetailTodoListPresenter.TODO_TYPE_ALLDAY;
                 case 2:
-                    return TodoData.TODO_DB_TYPE_TASK;
+                    return DetailTodoListPresenter.TODO_TYPE_TASK;
             }
             return DetailTodoListPresenter.TODO_TYPE_ALL;
+        }
+
+        public int getPositionByType(int type) {
+            switch (type) {
+                case DetailTodoListPresenter.TODO_TYPE_ALL:
+                    return 0;
+                case DetailTodoListPresenter.TODO_TYPE_ALLDAY:
+                    return 1;
+                case DetailTodoListPresenter.TODO_TYPE_TASK:
+                    return 2;
+            }
+            return 0;
         }
     }
 }

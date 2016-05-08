@@ -70,7 +70,8 @@ public class TodoSelectDialog extends DialogFragment {
         ArrayList<TodoData> todos = new ArrayList<TodoData>();
         String[] sIds = mIds.split(TodoViewInfo.DELIMITER_ID);
         for (String sId : sIds) {
-            todos.add(TodoProvider.getInstance(getActivity()).getTodoById(Integer.parseInt(sId)));
+            todos.add(TodoProvider.getInstance(getActivity().getApplicationContext())
+                    .getTodoById(Integer.parseInt(sId)));
         }
         TodoTextButtonAdapter adapter = new TodoTextButtonAdapter(getActivity(), todos);
         todoListView.setAdapter(adapter);

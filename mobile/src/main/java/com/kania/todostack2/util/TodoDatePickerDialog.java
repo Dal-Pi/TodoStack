@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by user on 2015-11-10.
@@ -17,14 +18,14 @@ public class TodoDatePickerDialog extends DialogFragment
     private Callback mCallback;
 
     public interface Callback {
-        void onDateSet(int year, int monthOfYear, int dayOfMonth);
+        void onDateSet(Date date);
     }
 
     public TodoDatePickerDialog() {
         //avoid to call default constructor
         setCallback(new TodoDatePickerDialog.Callback() {
             @Override
-            public void onDateSet(int year, int monthOfYear, int dayOfMonth) {
+            public void onDateSet(Date date) {
                 //empty callback
             }
         });
@@ -54,6 +55,13 @@ public class TodoDatePickerDialog extends DialogFragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        mCallback.onDateSet(year, monthOfYear + 1, dayOfMonth);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(year, monthOfYear, dayOfMonth);
+//        mCallback.onDateSet(year, monthOfYear + 1, dayOfMonth);
+        mCallback.onDateSet(calendar.getTime());
     }
 }

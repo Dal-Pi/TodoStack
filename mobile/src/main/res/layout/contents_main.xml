@@ -19,41 +19,42 @@
                 android:id="@+id/main_layout_todo_input_mode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-
                 android:visibility="gone">
-
-                <CheckBox
-                    android:id="@+id/main_cb_input_task"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/is_task"
-                    android:textAppearance="@style/MyTextStyle" />
-
-                <EditText
-                    android:id="@+id/main_edit_input_todo_name"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/todo_name"/>
 
                 <Button
                     android:id="@+id/main_btn_input_calendar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/MyButton"
-                    android:text="@string/calendar"
-                    android:textAppearance="@style/MyTextStyle" />
+                    style="@style/ControllView"
+                    android:singleLine="true"
+                    android:text="@string/calendar" />
+
+                <EditText
+                    android:id="@+id/main_edit_input_todo_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:singleLine="true"
+                    android:hint="@string/todo_name"/>
+
+                <CheckBox
+                    android:id="@+id/main_cb_input_task"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@string/is_task" />
 
                 <Button
                     android:id="@+id/main_btn_input_todo_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/MyButton"
+                    style="@style/ControllView"
+                    android:singleLine="true"
                     android:textStyle="bold"
-                    android:text="@string/add"
-                    android:textAppearance="@style/MyTextStyle" />
+                    android:text="@string/add" />
             </LinearLayout>
             <!--[end] MODE_INPUT_TODO-->
 
@@ -62,7 +63,7 @@
                 android:id="@+id/main_layout_subject_input_mode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
 
                 android:visibility="gone">
@@ -71,25 +72,27 @@
                     android:id="@+id/main_btn_input_subject_color"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/MyButton"
-                    android:text="@string/color"
-                    android:textAppearance="@style/MyTextStyle" />
+                    style="@style/ControllView"
+                    android:singleLine="true"
+                    android:text="@string/color" />
 
                 <EditText
                     android:id="@+id/main_edit_input_subject_name"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:singleLine="true"
                     android:hint="@string/subject_name" />
 
                 <Button
                     android:id="@+id/main_btn_subject_add"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/MyButton"
+                    style="@style/ControllView"
+                    android:singleLine="true"
                     android:textStyle="bold"
-                    android:text="@string/add"
-                    android:textAppearance="@style/MyTextStyle" />
+                    android:text="@string/add" />
 
             </LinearLayout>
             <!--[end] MODE_INPUT_SUBJECT-->
@@ -99,24 +102,37 @@
                 android:id="@+id/main_layout_todo_viewer_mode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
 
                 android:visibility="gone">
                 <ScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/main_text_view_todo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|end"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
+                        android:textAlignment="viewEnd"
                         android:text="@string/todo_initial_info"
-                        android:textColor="@color/color_gray"
-                        android:textAppearance="@style/MyTextStyle" />
+                        android:textColor="@color/color_gray" />
+
                 </ScrollView>
+
+                <Button
+                    android:id="@+id/main_btn_view_todo_done"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/ControllView"
+                    android:singleLine="true"
+                    android:textStyle="bold"
+                    android:text="@string/todo_done" />
+
             </LinearLayout>
             <!--[end] _MODE_VIEW_TODO-->
 
@@ -125,15 +141,13 @@
                 android:id="@+id/main_layout_subject_viewer_mode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
 
                 android:visibility="gone">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/fab_layout_size"
-                    android:layout_marginTop="@dimen/fab_layout_margin_top"
                     android:orientation="horizontal">
 
                     <android.support.v4.widget.Space
@@ -143,16 +157,17 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <Button
                             android:id="@+id/main_btn_subject_left"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="2"
-                            style="@style/MyButton"
-                            android:textAppearance="@style/MyTextStyle"
+                            android:singleLine="true"
+                            style="@style/ControllView"
                             android:text="@string/subject_move_left" />
 
                         <Button
@@ -160,9 +175,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="2"
-                            style="@style/MyButton"
-                            android:textAppearance="@style/MyTextStyle"
+                            android:singleLine="true"
+                            style="@style/ControllView"
                             android:text="@string/subject_move_right" />
 
                         <Button
@@ -170,9 +184,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="2"
-                            style="@style/MyButton"
-                            android:textAppearance="@style/MyTextStyle"
+                            android:singleLine="true"
+                            style="@style/ControllView"
                             android:text="@string/subject_edit_name" />
 
                         <Button
@@ -180,9 +193,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="2"
-                            style="@style/MyButton"
-                            android:textAppearance="@style/MyTextStyle"
+                            android:singleLine="true"
+                            style="@style/ControllView"
                             android:text="@string/color" />
 
                         <Button
@@ -190,9 +202,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:maxLines="2"
-                            style="@style/MyButton"
-                            android:textAppearance="@style/MyTextStyle"
+                            android:singleLine="true"
+                            style="@style/ControllView"
                             android:text="@string/delete"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -220,16 +231,17 @@
                 android:textSize="@dimen/text_size_guide"/>
         </LinearLayout>
 
-        <!-- ***** change to native FAB -->
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/main_btn_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="@dimen/fab_margin" >
-
-        </android.support.design.widget.FloatingActionButton>
-
     </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/main_btn_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin" >
+
+    </android.support.design.widget.FloatingActionButton>
 
 </RelativeLayout>
