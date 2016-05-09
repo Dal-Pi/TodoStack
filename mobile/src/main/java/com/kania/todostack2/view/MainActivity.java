@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
     public final String TAG_DIALOG_SELECT_TODO = "select_todo";
     public final String TAG_DIALOG_DONE_TODO = "done_todo";
 
-    public final String TODO_DIVIDER = TodoViewInfo.DELIMITER_ID;
+    public final String TODO_DIVIDER = " / ";
 
     public final int NOTIFICATION_ID = 1;
 
@@ -648,10 +648,12 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         mBtnChangeSubjectName.setTextColor(subjectColor);
         mBtnChangeSubjectcolor.setTextColor(subjectColor);
         mBtnDeleteSubject.setTextColor(subjectColor);
+        mBtnMoveLeft.setTextColor(
+                leftEnable ? subjectColor : getResources().getColor(R.color.color_lightgray));
         mBtnMoveLeft.setEnabled(leftEnable);
-        mBtnMoveLeft.setTextColor(subjectColor);
+        mBtnMoveRight.setTextColor(
+                rightEnable ? subjectColor : getResources().getColor(R.color.color_lightgray));
         mBtnMoveRight.setEnabled(rightEnable);
-        mBtnMoveRight.setTextColor(subjectColor);
     }
 
     public void setViewTodoVisible() {
@@ -1031,30 +1033,24 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         Calendar today = Calendar.getInstance();
         ArrayList<TodoData> todayTodos = TodoProvider.getInstance(getApplicationContext())
                 .getTodosByDate(today.getTime());
-//        String todayTodoIds = "";
-//        for (int i = 0; i < todayTodos.size(); ++i) {
-//            if (i == 0) {
-//                todayTodoIds += todayTodos.get(i).id;
-//            } else {
-//                todayTodoIds += TODO_DIVIDER + todayTodos.get(i).id;
-//            }
-//        }
-        String contentText = String.format(getResources().getString(R.string.noti_text),
-                todayTodos.size());
+        if (todayTodos.size() > 0) {
+            String contentText = String.format(getResources().getString(R.string.noti_text),
+                    todayTodos.size());
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_format_list_bulleted_white_24dp)
-                .setContentTitle(getResources().getString(R.string.cover_title))
-                .setContentText(contentText)
-                .setAutoCancel(true);
-        Intent notiIntent = new Intent(this, CoverActivity.class);
-        PendingIntent notiPendingIntent = PendingIntent.getActivity(this, 0, notiIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        builder.setContentIntent(notiPendingIntent);
-        NotificationManager notificationManager =
-                (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
-        //notification end
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.ic_format_list_bulleted_white_24dp)
+                    .setContentTitle(getResources().getString(R.string.cover_title))
+                    .setContentText(contentText)
+                    .setAutoCancel(true);
+            Intent notiIntent = new Intent(this, CoverActivity.class);
+            PendingIntent notiPendingIntent = PendingIntent.getActivity(this, 0, notiIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(notiPendingIntent);
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+            //notification end
+        }
         super.onStop();
     }
 
