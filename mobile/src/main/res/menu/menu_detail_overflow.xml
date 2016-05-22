@@ -2,8 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".view.DetailTodoListActivity" >
-    <item android:id="@+id/dummy"
-        android:title="dummy"
+    <item android:id="@+id/menu_order"
+        android:title="@string/sort"
         android:orderInCategory="100"
         app:showAsAction="never" />
 

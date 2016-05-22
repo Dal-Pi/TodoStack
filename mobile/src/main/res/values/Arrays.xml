@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="sort_order">
+        <item>@string/sort_order_create</item>
+        <item>@string/sort_order_update</item>
+        <item>@string/sort_order_duedate</item>
+    </string-array>
+</resources>

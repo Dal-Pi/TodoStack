@@ -39,7 +39,7 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="color">Color</string>
-
+    <string name="sort">Sort</string>
 
     <string name="guide_text_default">Guide TextView.</string>
     <string name="guide_text_mode_initial_setup">Select \"NEW SUBJECT\".</string>
@@ -98,5 +98,9 @@
 
     <string name="noti_title">Todo Stack</string>
     <string name="noti_text">%d Todo on today</string>
+
+    <string name="sort_order_create">Last Created</string>
+    <string name="sort_order_update">Last Updated</string>
+    <string name="sort_order_duedate">Due Date</string>
 
 </resources>

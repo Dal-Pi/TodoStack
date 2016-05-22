@@ -1,5 +1,7 @@
 package com.kania.todostack2.view;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,12 +23,15 @@ import com.kania.todostack2.data.SubjectData;
 import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.presenter.DetailTodoListPresenter;
 
+import java.util.ArrayList;
+
 /**
  * Created by user on 2016-02-23.
  */
 public class DetailTodoListActivity extends AppCompatActivity {
 
     public static final String START_PAGE = "start_page";
+    public static final String START_PAGE_ORDER = "start_page_order";
 
     public static final String TAB_TITLE_ALL = "All";
     public static final String TAB_TITLE_DATE = "Todo";
@@ -52,6 +57,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
 
     private int mSubjectOrder;
     private int mStartPage;
+    private int mStartPageOrder;
 
     private DetailTodoListPresenter mPresent;
 
@@ -64,6 +70,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
         mSubjectOrder = fromIntent.getIntExtra(TodoStackContract.SubjectEntry.ORDER,
                 DetailTodoListPresenter.SUBJECT_ORDER_ALL);
         mStartPage = fromIntent.getIntExtra(START_PAGE, DetailTodoListPresenter.TODO_TYPE_ALL);
+        mStartPageOrder = fromIntent.getIntExtra(START_PAGE_ORDER, EachTabFragment.SORT_ORDER_CREATE);
 
         mPresent = new DetailTodoListPresenter(this, mSubjectOrder);
 
@@ -85,6 +92,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.detail_viewpager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mSectionsPagerAdapter.setSortOrder(mStartPageOrder);
         mViewPager.setCurrentItem(mSectionsPagerAdapter.getPositionByType(mStartPage));
 
         mTabLayout = (TabLayout) findViewById(R.id.detail_tabs);
@@ -127,8 +135,25 @@ public class DetailTodoListActivity extends AppCompatActivity {
                 finish();
                 overridePendingTransition(R.anim.fade_in, R.anim.right_out);
                 return true;
-        //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
+            case R.id.menu_order:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setSingleChoiceItems(getResources().getStringArray(R.array.sort_order),
+                        -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            mSectionsPagerAdapter.setSortOrder(EachTabFragment.SORT_ORDER_CREATE);
+                        }
+                        else if (which == 1) {
+                            mSectionsPagerAdapter.setSortOrder(EachTabFragment.SORT_ORDER_UPDATE);
+                        }
+                        else if (which == 2) {
+                            mSectionsPagerAdapter.setSortOrder(EachTabFragment.SORT_ORDER_DUEDATE);
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                (builder.create()).show();
                 return true;
         }
 
@@ -140,17 +165,21 @@ public class DetailTodoListActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        ArrayList<EachTabFragment> pages;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+            pages = new ArrayList<>();
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return EachTabFragment.newInstance(position,
+            EachTabFragment page = EachTabFragment.newInstance(position,
                     mPresent.getTodoList(mSubjectOrder, getPageListType(position)));
+            pages.add(page);
+            return page;
         }
 
         @Override
@@ -194,6 +223,12 @@ public class DetailTodoListActivity extends AppCompatActivity {
                     return 2;
             }
             return 0;
+        }
+
+        public void setSortOrder(int sortOrder) {
+            for (EachTabFragment page : pages) {
+                page.setSortOrder(sortOrder);
+            }
         }
     }
 }

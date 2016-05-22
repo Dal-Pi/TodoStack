@@ -241,17 +241,21 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
 
         Intent detailIntent = new Intent(this, DetailTodoListActivity.class);
         int startType = DetailTodoListPresenter.TODO_TYPE_ALL;
+        int startPageOrder = EachTabFragment.SORT_ORDER_CREATE;
         detailIntent.putExtra(TodoStackContract.SubjectEntry.ORDER, order);
         switch (todoType) {
             case TodoData.TODO_DB_TYPE_ALLDAY:
             case TodoData.TODO_DB_TYPE_PERIOD:
                 startType = DetailTodoListPresenter.TODO_TYPE_ALLDAY;
+                startPageOrder = EachTabFragment.SORT_ORDER_UPDATE;
                 break;
             case TodoData.TODO_DB_TYPE_TASK:
                 startType = DetailTodoListPresenter.TODO_TYPE_TASK;
+                startPageOrder = EachTabFragment.SORT_ORDER_UPDATE;
                 break;
         }
         detailIntent.putExtra(DetailTodoListActivity.START_PAGE, startType);
+        detailIntent.putExtra(DetailTodoListActivity.START_PAGE_ORDER, startPageOrder);
         detailIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(detailIntent);
         overridePendingTransition(R.anim.right_in, R.anim.left_half_out);

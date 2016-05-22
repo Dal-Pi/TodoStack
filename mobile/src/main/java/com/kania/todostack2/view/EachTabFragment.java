@@ -20,6 +20,8 @@ import com.kania.todostack2.presenter.UpdateTodoTask;
 import com.kania.todostack2.provider.TodoProvider;
 import com.kania.todostack2.util.TodoDoneDialog;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,6 +29,10 @@ import java.util.List;
  */
 public class EachTabFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    public static final int SORT_ORDER_CREATE = 1;
+    public static final int SORT_ORDER_UPDATE = 2;
+    public static final int SORT_ORDER_DUEDATE = 3;
 
     public final String TAG_DIALOG_DONE_TODO = "done_todo";
 
@@ -36,6 +42,7 @@ public class EachTabFragment extends Fragment {
     private ItemTouchHelper mItemTouchHelper;
     private ItemTouchHelper.SimpleCallback mSimpleItemTouchCallback;
 
+    private int mSortOrder = SORT_ORDER_CREATE;
 
     public EachTabFragment() {
     }
@@ -84,7 +91,6 @@ public class EachTabFragment extends Fragment {
                 }
                 @Override
                 public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                    //TODO swipe action needed
                     showTodoDoneDialog(viewHolder);
                 }
             };
@@ -150,6 +156,7 @@ public class EachTabFragment extends Fragment {
                                 getActivity(), new LoadingTodoTask.TaskEndCallback() {
                             @Override
                             public void loadFinished() {
+                                sortTodoList(mSortOrder);
                                 mAdapter.notifyDataSetChanged();
                                 mSimpleItemTouchCallback.clearView(mRecyclerView, viewHolder);
                             }
@@ -159,6 +166,65 @@ public class EachTabFragment extends Fragment {
                 });
         moveTodoTask.setData(td, moveType);
         moveTodoTask.execute();
+    }
+
+    public void setSortOrder(int sortOrder) {
+        mSortOrder = sortOrder;
+        sortTodoList(mSortOrder);
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public void sortTodoList(int sortOrder) {
+        Comparator<TodoData> comparator = null;
+        switch (sortOrder) {
+            case SORT_ORDER_CREATE:
+                //be first if it made last
+                comparator = new Comparator<TodoData>() {
+                    @Override
+                    public int compare(TodoData lhs, TodoData rhs) {
+                        if (lhs.created > rhs.created)
+                            return -1;
+                        else if (lhs.created < rhs.created)
+                            return 1;
+                        else
+                            return 0;
+                    }
+                };
+                break;
+            case SORT_ORDER_UPDATE:
+                //be first if it made last
+                comparator = new Comparator<TodoData>() {
+                    @Override
+                    public int compare(TodoData lhs, TodoData rhs) {
+                        if (lhs.lastUpdated > rhs.lastUpdated)
+                            return -1;
+                        else if (lhs.lastUpdated < rhs.lastUpdated)
+                            return 1;
+                        else
+                            return 0;
+                    }
+                };
+                break;
+            case SORT_ORDER_DUEDATE:
+                //be first if it made first
+                comparator = new Comparator<TodoData>() {
+                    @Override
+                    public int compare(TodoData lhs, TodoData rhs) {
+                        if (lhs.date < rhs.date)
+                            return -1;
+                        else if (lhs.date > rhs.date)
+                            return 1;
+                        else
+                            return 0;
+                    }
+                };
+                break;
+        }
+        if (comparator != null) {
+            Collections.sort(mTodoList, comparator);
+        }
     }
 }
 

@@ -9,6 +9,9 @@ import com.kania.todostack2.data.TodoData;
 import com.kania.todostack2.provider.TodoProvider;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -49,10 +52,15 @@ public class DetailTodoListPresenter {
     }
 
     public void initTodoList(int order) {
+        mAllTodoList = new ArrayList<>();
         if (order == SUBJECT_ORDER_ALL) {
-            mAllTodoList = mProvider.getAllTodo();
+            for (TodoData td : mProvider.getAllTodo()) {
+                mAllTodoList.add(td);
+            }
         } else {
-            mAllTodoList = mProvider.getTodoList(order);
+            for (TodoData td : mProvider.getTodoList(order)) {
+                mAllTodoList.add(td);
+            }
         }
 
         mDateTodoList = new ArrayList<>();
@@ -71,7 +79,6 @@ public class DetailTodoListPresenter {
                     Log.w("TodoStack", "[initTodoList] unknown type!");
             }
         }
-        //TODO need to sort
     }
 
     public ArrayList<TodoData> getTodoList(int order, int todoType) {
