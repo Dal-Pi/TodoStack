@@ -73,6 +73,7 @@ public class EachTabFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        sortTodoList(mSortOrder);
         mAdapter = new DetailTodoListAdapter(getActivity(), mTodoList);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -105,6 +106,11 @@ public class EachTabFragment extends Fragment {
         FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
         DialogFragment dialog = TodoDoneDialog.newInstance(td.id, new TodoDoneDialog.Callback() {
             @Override
+            public void onEditTodo(TodoData editedTodo) {
+                updateTodo(viewHolder, editedTodo);
+            }
+
+            @Override
             public void onDeleteTodo(int id) {
                 deleteTodo(viewHolder);
             }
@@ -119,6 +125,27 @@ public class EachTabFragment extends Fragment {
             }
         });
         dialog.show(ft, TAG_DIALOG_DONE_TODO);
+    }
+
+    private void updateTodo(final RecyclerView.ViewHolder viewHolder, TodoData editedTodo) {
+        UpdateTodoTask updateTodoTask = new UpdateTodoTask(getActivity(),
+                new UpdateTodoTask.TaskEndCallback() {
+                    @Override
+                    public void updateFinished() {
+                        LoadingTodoTask refreshTask = new LoadingTodoTask(
+                                getActivity(), new LoadingTodoTask.TaskEndCallback() {
+                            @Override
+                            public void loadFinished() {
+                                sortTodoList(mSortOrder);
+                                mAdapter.notifyDataSetChanged();
+                                mSimpleItemTouchCallback.clearView(mRecyclerView, viewHolder);
+                            }
+                        });
+                        refreshTask.execute();
+                    }
+                });
+        updateTodoTask.setData(editedTodo, UpdateTodoTask.TODO_TASK_UPDATE_TODO);
+        updateTodoTask.execute();
     }
 
     private void deleteTodo(final RecyclerView.ViewHolder viewHolder) {

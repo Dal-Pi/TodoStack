@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        style="@style/DialogStyle"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/DialogTextViewTitle"
+            android:text="@string/subject_name"
+            android:textColor="@color/color_black"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/dialog_edit_todo_select_subject"
+            style="@style/DialogTextButton"
+            android:text="@string/todo_initial_info" />
+
+        <TextView
+            style="@style/DialogTextViewTitle"
+            android:text="@string/calendar"
+            android:textColor="@color/color_black"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/dialog_edit_todo_select_date"
+            style="@style/DialogTextButton"
+            android:text="@string/calendar" />
+
+        <TextView
+            style="@style/DialogTextViewTitle"
+            android:text="@string/todo_name"
+            android:textColor="@color/color_black"
+            android:textStyle="bold"/>
+        <EditText
+            android:id="@+id/dialog_edit_todo_subject_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingTop="@dimen/dialog_contents_vertical_padding"
+            android:paddingBottom="@dimen/dialog_contents_vertical_padding"
+            android:imeOptions="flagNoExtractUi"
+            android:singleLine="true"/>
+
+        <CheckBox
+            android:id="@+id/dialog_edit_todo_istask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/is_task" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/dialog_edit_btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/DialogButton"
+                    android:text="@string/cancel"/>
+
+                <Button
+                    android:id="@+id/dialog_edit_btn_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/DialogButton"
+                    android:text="@string/edit"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

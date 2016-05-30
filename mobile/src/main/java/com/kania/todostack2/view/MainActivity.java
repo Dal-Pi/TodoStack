@@ -715,42 +715,56 @@ public class MainActivity extends AppCompatActivity implements ITodoLayoutMediat
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         final DialogFragment dialog =
                 TodoDoneDialog.newInstance(todoId, new TodoDoneDialog.Callback() {
-            @Override
-            public void onDeleteTodo(int id) {
-                Context context = getApplicationContext();
-                UpdateTodoTask deleteTodoTask = new UpdateTodoTask(getActivityContext(),
-                        new UpdateTodoTask.TaskEndCallback() {
-                            @Override
-                            public void updateFinished() {
-                                changeMode(MODE_NO_SELECTION);
-                                refresh();
-                            }
-                        });
-                deleteTodoTask.setData(TodoProvider.getInstance(context).getTodoById(id),
-                        UpdateTodoTask.TODO_TASK_DELETE_TODO);
-                deleteTodoTask.execute();
-            }
+                    @Override
+                public void onEditTodo(TodoData editedTodo) {
+                        UpdateTodoTask moveTodoTask = new UpdateTodoTask(getActivityContext(),
+                                new UpdateTodoTask.TaskEndCallback() {
+                                    @Override
+                                    public void updateFinished() {
+                                        changeMode(MODE_NO_SELECTION);
+                                        refresh();
+                                    }
+                                });
+                        moveTodoTask.setData(editedTodo, UpdateTodoTask.TODO_TASK_UPDATE_TODO);
+                        moveTodoTask.execute();
+                }
 
-            @Override
-            public void onMoveTodo(int id, int moveType) {
-                UpdateTodoTask moveTodoTask = new UpdateTodoTask(getActivityContext(),
-                        new UpdateTodoTask.TaskEndCallback() {
-                            @Override
-                            public void updateFinished() {
-                                changeMode(MODE_NO_SELECTION);
-                                refresh();
-                            }
-                        });
-                moveTodoTask.setData(TodoProvider.
-                        getInstance(getApplicationContext()).getTodoById(id), moveType);
-                moveTodoTask.execute();
-            }
+                @Override
+                public void onDeleteTodo(int id) {
+                    Context context = getApplicationContext();
+                    UpdateTodoTask deleteTodoTask = new UpdateTodoTask(getActivityContext(),
+                            new UpdateTodoTask.TaskEndCallback() {
+                                @Override
+                                public void updateFinished() {
+                                    changeMode(MODE_NO_SELECTION);
+                                    refresh();
+                                }
+                            });
+                    deleteTodoTask.setData(TodoProvider.getInstance(context).getTodoById(id),
+                            UpdateTodoTask.TODO_TASK_DELETE_TODO);
+                    deleteTodoTask.execute();
+                }
 
-            @Override
-            public void onCancelSelected() {
-                //do nothing
-            }
-        });
+                @Override
+                public void onMoveTodo(int id, int moveType) {
+                    UpdateTodoTask moveTodoTask = new UpdateTodoTask(getActivityContext(),
+                            new UpdateTodoTask.TaskEndCallback() {
+                                @Override
+                                public void updateFinished() {
+                                    changeMode(MODE_NO_SELECTION);
+                                    refresh();
+                                }
+                            });
+                    moveTodoTask.setData(TodoProvider.
+                            getInstance(getApplicationContext()).getTodoById(id), moveType);
+                    moveTodoTask.execute();
+                }
+
+                @Override
+                public void onCancelSelected() {
+                    //do nothing
+                }
+            });
         dialog.show(ft, TAG_DIALOG_DONE_TODO);
         mDialogNowViewing = dialog;
     }

@@ -31,6 +31,19 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/dialog_btn_done_todo_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/DialogButton"
+                    android:text="@string/edit"/>
+            </LinearLayout>
+
             <android.support.v4.widget.Space
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -56,7 +69,6 @@
                     android:layout_weight="1"
                     style="@style/DialogButton"
                     android:text="@string/delete"/>
-
             </LinearLayout>
         </LinearLayout>
 

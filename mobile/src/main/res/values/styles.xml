@@ -80,7 +80,7 @@
         <item name="android:layout_margin">@dimen/fab_layout_margin</item>
     </style>
     <style name="DialogStyle">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">@dimen/dialog_minwidth</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minWidth">@dimen/dialog_minwidth</item>
         <item name="android:padding">@dimen/dialog_padding</item>

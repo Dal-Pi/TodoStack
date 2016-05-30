@@ -1,6 +1,7 @@
 package com.kania.todostack2.util;
 
 import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ public class TodoDoneDialog extends DialogFragment {
     private int mId;
 
     public interface Callback {
+        void onEditTodo(TodoData editedTodo);
         void onDeleteTodo(int id);
         void onMoveTodo(int id, int moveType);
         void onCancelSelected();
@@ -29,6 +31,9 @@ public class TodoDoneDialog extends DialogFragment {
 
     public TodoDoneDialog() {
         setCallback(new TodoDoneDialog.Callback() {
+            @Override
+            public void onEditTodo(TodoData editedTodo) {//empty callback
+            }
             @Override
             public void onDeleteTodo(int id) {//empty callback
             }
@@ -74,6 +79,16 @@ public class TodoDoneDialog extends DialogFragment {
                 (TextView) todoDoneView.findViewById(R.id.dialog_done_todo_todoname);
         textTodoName.setText(td.todoName);
         textTodoName.setTextColor(subjectColor);
+
+        Button btnEdit =
+                (Button) todoDoneView.findViewById(R.id.dialog_btn_done_todo_edit);
+        btnEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showEditTodoDialog();
+            }
+        });
+        btnEdit.setTextColor(subjectColor);
 
         Button btnDelete =
                 (Button) todoDoneView.findViewById(R.id.dialog_btn_done_todo_delete);
@@ -170,5 +185,19 @@ public class TodoDoneDialog extends DialogFragment {
         }
 
         return todoDoneView;
+    }
+
+    private void showEditTodoDialog() {
+        final String dialogTag = TodoEditDialog.class.getSimpleName();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        DialogFragment dialog = TodoEditDialog.newInstance(mId,
+                new TodoEditDialog.Callback() {
+                    @Override
+                    public void onEditTodo(TodoData editedTodo) {
+                        mCallback.onEditTodo(editedTodo);
+                        dismiss();
+                    }
+                });
+        dialog.show(ft, dialogTag);
     }
 }

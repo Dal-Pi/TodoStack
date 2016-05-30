@@ -62,9 +62,9 @@
     <string name="dialog_done_todo_title">Delete below todo as be done</string>
     <string name="dialog_done_todo_option_title">Or, select another move option</string>
     <string name="dialog_done_todo_option_tomorrow">Move to tomorrow</string>
-    <string name="dialog_done_todo_option_next_week">Move to next week</string>
-    <string name="dialog_done_todo_option_next_month">Move to next month</string>
-    <string name="dialog_done_todo_option_next_year">Move to next year</string>
+    <string name="dialog_done_todo_option_next_week">+1 week</string>
+    <string name="dialog_done_todo_option_next_month">+1 month</string>
+    <string name="dialog_done_todo_option_next_year">+1 year</string>
     <string name="dialog_done_todo_option_today">Move to today</string>
     <string name="dialog_done_todo_option_task">Move to Task todo</string>
     <string name="dialog_done_todo_option_custom">day move from today</string>

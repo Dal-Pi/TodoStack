@@ -118,6 +118,7 @@ public class DetailTodoListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //TODO need to disable Sort by DueDate when All or Task
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail_overflow, menu);
         return true;

@@ -14,6 +14,7 @@ import com.kania.todostack2.data.TodoStackDbHelper;
 import com.kania.todostack2.provider.TodoProvider;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by user on 2016-01-29.
@@ -23,7 +24,7 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
     public static final int TODO_TASK_ADD_TODO = 1;
     public static final int TODO_TASK_DELETE_TODO = 2;
 
-//    public static final int TODO_TASK_UPDATE_TODO = 3;
+    public static final int TODO_TASK_UPDATE_TODO = 3;
 
     public static final int TODO_MOVE_OPTION_TOMORROW = 4;
     public static final int TODO_MOVE_OPTION_NEXT_WEEK = 5;
@@ -92,6 +93,9 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
                 case TODO_TASK_DELETE_TODO:
                     deleteTodo();
                     break;
+                case TODO_TASK_UPDATE_TODO:
+                    updateTodo();
+                    break;
                 case TODO_MOVE_OPTION_TOMORROW:
                 case TODO_MOVE_OPTION_NEXT_WEEK:
                 case TODO_MOVE_OPTION_NEXT_MONTH:
@@ -132,7 +136,6 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
         cvTodo.put(TodoStackContract.TodoEntry.TIME_FROM, mData.timeFrom);
         cvTodo.put(TodoStackContract.TodoEntry.TIME_TO, mData.timeTo);
         cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
-//        String timeStamp = getUpdatedDateString();
 
         long nowDate = getUpdatedDateMils();
         cvTodo.put(TodoStackContract.TodoEntry.CREATED_DATE, nowDate);
@@ -161,12 +164,15 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                 break;
             case TODO_MOVE_OPTION_NEXT_WEEK:
+                calendar.setTime(new Date(mData.date));
                 calendar.add(Calendar.WEEK_OF_MONTH, 1);
                 break;
             case TODO_MOVE_OPTION_NEXT_MONTH:
+                calendar.setTime(new Date(mData.date));
                 calendar.add(Calendar.MONTH, 1);
                 break;
             case TODO_MOVE_OPTION_NEXT_YEAR:
+                calendar.setTime(new Date(mData.date));
                 calendar.add(Calendar.YEAR, 1);
                 break;
         }
@@ -190,6 +196,25 @@ public class UpdateTodoTask extends AsyncTask<Void, Void, Boolean> {
         String selectionMoveTodo =
                 TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
         todoStackDb.update(TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionMoveTodo, null);
+    }
+
+    private void updateTodo() {
+        ContentValues cvTodo = new ContentValues();
+        cvTodo.put(TodoStackContract.TodoEntry.TODO_NAME, mData.todoName);
+        cvTodo.put(TodoStackContract.TodoEntry.SUBJECT_ORDER, mData.subjectOrder);
+        cvTodo.put(TodoStackContract.TodoEntry.DATE, mData.date);
+        cvTodo.put(TodoStackContract.TodoEntry.TYPE, mData.type);
+        cvTodo.put(TodoStackContract.TodoEntry.TIME_FROM, mData.timeFrom);
+        cvTodo.put(TodoStackContract.TodoEntry.TIME_TO, mData.timeTo);
+        cvTodo.put(TodoStackContract.TodoEntry.LOCATION, mData.location);
+
+        long nowDate = getUpdatedDateMils();
+        cvTodo.put(TodoStackContract.TodoEntry.LAST_UPDATED_DATE, nowDate);
+
+        String selectionUpdateTodo =
+                TodoStackContract.TodoEntry._ID + " LIKE " + mData.id;
+        todoStackDb.update(
+                TodoStackContract.TodoEntry.TABLE_NAME, cvTodo, selectionUpdateTodo, null);
     }
 
     private String getUpdatedDateString() {
